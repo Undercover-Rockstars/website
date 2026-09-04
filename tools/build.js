@@ -140,7 +140,11 @@ function footer() {
     </nav>
   </div>
   <p class="footer-legal">
-    <span>undercoverrockstars.com · UR/01 · ${new Date().getFullYear()}</span>
+    <span>undercoverrockstars.com · UR/01</span>
+    <span class="fz-credit"><a href="https://factory0.ventures" rel="noopener">
+      <svg class="fz-ring" viewBox="0 0 16 16" width="11" height="11" aria-hidden="true" focusable="false"><circle cx="8" cy="8" r="6.1" fill="none" stroke="#FF5A36" stroke-width="1.9" stroke-dasharray="28.7 9.6"/></svg>
+      <span>&copy; ${new Date().getFullYear()} Factory Zero</span>
+    </a></span>
     <span><span data-mode-time>03:00</span> · <span data-mode-label>Night</span> mode</span>
   </p>
 </footer>

@@ -1146,3 +1146,18 @@ main, footer, .site-header { position: relative; z-index: 1; }
 
 /* honeypot: off-screen for people, present for bots */
 .hp { position: absolute; left: -9999px; width: 1px; height: 1px; overflow: hidden; }
+
+/* Factory Zero credit: the ring is the FZ mark, rotating slowly. */
+.fz-credit a {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  color: inherit;
+}
+.fz-credit a:hover { color: var(--acc); }
+.fz-ring {
+  flex: none;
+  transform-origin: 50% 50%;
+  animation: fzRing 12s linear infinite;
+}
+@keyframes fzRing { to { transform: rotate(360deg) } }
