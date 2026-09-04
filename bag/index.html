@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="en" data-mode="night">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+
+<title>Bag · Undercover Rockstars</title>
+<meta name="description" content="Your bag. Drop 01 is not open for sale yet, so reservations hold your pair and size until it is.">
+<link rel="canonical" href="https://undercoverrockstars.com/bag/">
+<meta name="robots" content="noindex, follow">
+<meta name="theme-color" content="#0a0a0b">
+<meta name="color-scheme" content="dark light">
+
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="Undercover Rockstars">
+<meta property="og:locale" content="en_GB">
+<meta property="og:url" content="https://undercoverrockstars.com/bag/">
+<meta property="og:title" content="Bag · Undercover Rockstars">
+<meta property="og:description" content="Your bag. Drop 01 is not open for sale yet, so reservations hold your pair and size until it is.">
+<meta property="og:image" content="https://undercoverrockstars.com/assets/og.png">
+<meta property="og:image:type" content="image/png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:image:alt" content="Bag · Undercover Rockstars">
+
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="Bag · Undercover Rockstars">
+<meta name="twitter:description" content="Your bag. Drop 01 is not open for sale yet, so reservations hold your pair and size until it is.">
+<meta name="twitter:image" content="https://undercoverrockstars.com/assets/og.png">
+
+<link rel="icon" href="/assets/favicon.svg" type="image/svg+xml">
+<link rel="apple-touch-icon" href="/assets/apple-touch-icon.png">
+<link rel="manifest" href="/site.webmanifest">
+<link rel="alternate" type="text/plain" href="/llms.txt" title="llms.txt">
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Archivo:ital,wdth,wght@0,62..125,100..900&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/assets/ur.css">
+<script>/* set the saved mode before first paint so the page never flashes */
+(function(){try{var m=JSON.parse(localStorage.getItem('ur.mode'));if(m==='day'||m==='night')document.documentElement.setAttribute('data-mode',m);}catch(e){}})();</script>
+</head>
+<body>
+
+<a class="skip-link" href="#main">Skip to content</a>
+<div class="backdrop" aria-hidden="true"></div>
+<header class="site-header">
+  <a class="wordmark" href="/" aria-label="Undercover Rockstars, home"><span>U</span><span class="veil">ndercover</span><span class="veil gap">&nbsp;</span><span>R</span><span class="veil">ockst</span><span class="star" aria-hidden="true">★</span><span class="veil">rs</span></a>
+  <nav class="site-nav" aria-label="Primary">
+    <a href="/collection/">Drop 01</a>
+    <a href="/thesis/">Thesis</a>
+    <a href="/fitting-room/" style="color:var(--acc)">Fitting room</a>
+    <a href="/#signal">Signal</a>
+  </nav>
+  <div class="header-right">
+    <button type="button" class="btn-mode" data-mode-toggle aria-label="Switch between day and night mode">
+      <span class="led" aria-hidden="true"></span>
+      Mode <span class="mute">/</span> <span data-mode-label>Night</span>
+    </button>
+    <button type="button" class="btn-bag" data-bag-open>
+      Bag <span data-bag-count>00</span>
+      <span class="sr-only" data-bag-count-label>0 items in your bag</span>
+    </button>
+  </div>
+</header>
+
+<main id="main" class="page-pad">
+  <div class="grid12 collection-head">
+    <div class="col-1-8">
+      <p class="eyebrow" style="margin-bottom:20px">UR/BAG · <span data-bag-count>00</span> in bag</p>
+      <h1 class="h-page">Bag</h1>
+    </div>
+    <p class="lede col-9-4" style="font-size:15px">Drop 01 is not open for sale yet. Reserve your pair and size and we will contact you the moment it opens. No payment is taken here.</p>
+  </div>
+
+  <div class="grid12" style="gap:48px var(--gap)">
+    <div class="col-1-8">
+      <div class="bag-body" id="bag-page-body" style="overflow:visible"></div>
+      <div class="bag-foot" style="margin-top:8px">
+        <div class="bag-total"><span>Total</span><span id="bag-page-total">€0</span></div>
+        <p class="fit-note">Shipping complimentary worldwide. Nothing is charged until Drop 01 opens and you confirm.</p>
+      </div>
+    </div>
+
+    <div class="col-9-4">
+      <div class="code" style="min-height:0">
+        <span class="eyebrow acc">Reserve</span>
+        <h2 style="margin:0;font-weight:700;text-transform:uppercase;font-size:18px;letter-spacing:.01em">Hold this bag</h2>
+        <form id="reserve-form" novalidate style="display:grid;gap:12px">
+          <label class="sr-only" for="rv-name">Name</label>
+          <input id="rv-name" name="name" placeholder="Name" autocomplete="name" style="background:none;border:1px solid var(--line);outline:0;padding:14px 16px;color:var(--fg);font-size:15px">
+          <label class="sr-only" for="rv-email">Email</label>
+          <input id="rv-email" name="email" type="email" required placeholder="Email" autocomplete="email" style="background:none;border:1px solid var(--line);outline:0;padding:14px 16px;color:var(--fg);font-size:15px">
+          <label class="sr-only" for="rv-note">Note</label>
+          <textarea id="rv-note" name="note" rows="3" placeholder="Anything we should know?" style="background:none;border:1px solid var(--line);outline:0;padding:14px 16px;color:var(--fg);font-size:15px;resize:vertical"></textarea>
+          <div class="hp" aria-hidden="true"><label>Company<input id="rv-company" name="company" tabindex="-1" autocomplete="off"></label></div>
+          <button type="submit" class="btn" id="rv-submit"><span id="rv-label">Reserve this bag</span><span aria-hidden="true">→</span></button>
+        </form>
+        <p class="signal-ok" id="rv-ok" hidden>Reserved. We'll be in touch before the drop opens.</p>
+        <p class="fit-note" id="rv-err" hidden></p>
+        <p class="fit-note">No card details are collected anywhere on this site.</p>
+      </div>
+    </div>
+  </div>
+</main>
+<footer class="site-footer">
+  <div class="footer-cols">
+    <div>
+      <p class="footer-mark">Undercover<br>Rockst<span class="acc">★</span>rs</p>
+    </div>
+    <nav aria-label="Drop">
+      <span class="mute">Drop</span>
+      <a href="/collection/">UR/01</a>
+      <a href="/collection/?cat=Blazer">Blazers</a>
+      <a href="/collection/?cat=Knit">Knitwear</a>
+    </nav>
+    <nav aria-label="House">
+      <span class="mute">House</span>
+      <a href="/thesis/">Thesis</a>
+      <a href="/fitting-room/">Fitting room</a>
+      <a href="/#signal">Signal</a>
+    </nav>
+    <nav aria-label="Channels">
+      <span class="mute">Channels</span>
+      <a href="mailto:hello@undercoverrockstars.com">Mail</a>
+      <a href="/bag/">Bag</a>
+    </nav>
+  </div>
+  <p class="footer-legal">
+    <span>undercoverrockstars.com · UR/01 · 2026</span>
+    <span><span data-mode-time>03:00</span> · <span data-mode-label>Night</span> mode</span>
+  </p>
+</footer>
+<button type="button" class="scrim" id="bag-scrim" hidden aria-label="Close bag"></button>
+<aside class="bag" id="bag" hidden aria-label="Bag">
+  <div class="bag-head">
+    <span>Bag · <span data-bag-count>00</span></span>
+    <button type="button" data-bag-close>Close</button>
+  </div>
+  <div class="bag-body" id="bag-body"></div>
+  <div class="bag-foot">
+    <div class="bag-total"><span>Total</span><span id="bag-total">€0</span></div>
+    <a class="btn" id="bag-checkout" href="/bag/"><span>Review bag</span><span aria-hidden="true">→</span></a>
+  </div>
+</aside>
+
+<script src="/assets/ur-data.js"></script>
+<script src="/assets/ur-common.js"></script>
+<script src="/assets/ur-bag.js"></script>
+</body>
+</html>

@@ -1,0 +1,28 @@
+# Cloudflare Pages response headers.
+# CSS and JS carry a ?v=<content hash> stamped by tools/build-dist.sh, so their
+# URLs change whenever the file does and they can be cached immutably.
+
+/*
+  X-Content-Type-Options: nosniff
+  Referrer-Policy: strict-origin-when-cross-origin
+  X-Frame-Options: SAMEORIGIN
+  Permissions-Policy: geolocation=(), microphone=(), camera=(), interest-cohort=()
+
+/assets/*.css
+  Cache-Control: public, max-age=31536000, immutable
+
+/assets/*.js
+  Cache-Control: public, max-age=31536000, immutable
+
+/assets/*.png
+  Cache-Control: public, max-age=604800
+
+/assets/*.svg
+  Cache-Control: public, max-age=604800
+
+/llms.txt
+  Cache-Control: public, max-age=3600
+  Content-Type: text/plain; charset=utf-8
+
+/.well-known/security.txt
+  Content-Type: text/plain; charset=utf-8

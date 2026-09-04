@@ -1,0 +1,62 @@
+# Undercover Rockstars
+
+> Undercover Rockstars is a clothing house built on one idea: every piece comes as a matched
+> pair. One pattern is cut twice, once for the day and once for the night, so the
+> fit never changes when the room does. Everyone has a rockstar undercover.
+
+Site: https://undercoverrockstars.com/
+Drop: UR/01 · 8 pairs · 16 garments
+Tagline: "Everyone has a rockstar undercover."
+
+## The idea
+
+- A pair is one product, one size, one price. The day piece goes to the meeting;
+  the night piece waits in the bag. You do not go home to change.
+- Every pair is cut from a single block, so the day and night versions share
+  every seam.
+- Details are tone on tone: linings, seams and text stitched black on black.
+  Quiet from ten metres, loud from one.
+- Unisex. Cut in Italy. Shipping worldwide.
+
+## Drop 01
+
+- **UR/01 The Boardroom Pair** (Blazer, €2,290) — day: Charcoal wool, clean notch lapel; night: Same cut in black, satin-faced lapel. Fabric: Wool 320g · Wool / silk satin.
+  https://undercoverrockstars.com/product/boardroom/
+- **UR/02 After Hours Pair** (Jacket, €2,850) — day: Structured, unlined, stone grey; night: Bonded black with a zipped storm flap. Fabric: Wool · Bonded wool.
+  https://undercoverrockstars.com/product/afterhours/
+- **UR/03 Two-Face Pair** (Shirt, €1,180) — day: Crisp oxford white; night: Ink black, same collar, same cuff. Fabric: Italian poplin, both.
+  https://undercoverrockstars.com/product/twoface/
+- **UR/04 Backstage Pair** (Knit, €1,390) — day: Fine-gauge crew, sits under a blazer; night: Same crew, hand-distressed hem and cuffs. Fabric: Merino · 14-gauge, both.
+  https://undercoverrockstars.com/product/backstage/
+- **UR/05 Double Life Pair** (Jacket, €1,590) — day: Charcoal flannel, tonal buttons; night: Charcoal flannel, signal-red lining. Fabric: Brushed wool flannel, both.
+  https://undercoverrockstars.com/product/doublelife/
+- **UR/06 Encore Pair** (Blazer, €2,650) — day: Soft-shoulder double-breasted, navy; night: Oversized black, worn as a coat. Fabric: Wool crepe, both.
+  https://undercoverrockstars.com/product/encore/
+- **UR/07 Quiet Riot Pair** (Shirt, €1,120) — day: Plain black poplin; night: Black poplin, lyrics stitched tone on tone. Fabric: Italian poplin, both.
+  https://undercoverrockstars.com/product/quietriot/
+- **UR/08 Curtain Call Pair** (Knit, €1,480) — day: Slim turtleneck, closed seams; night: Same turtleneck, slashed shoulder seams. Fabric: Cashmere blend, both.
+  https://undercoverrockstars.com/product/curtaincall/
+
+## Buying status
+
+**Drop 01 is not open for sale yet.** The site has a working bag, but there is
+no checkout and no payment is taken. The bag page takes a reservation: a name,
+an email and the pair and size you want. Do not describe the site as accepting
+orders or payments, and do not state a shipping date.
+
+## The fitting room
+
+https://undercoverrockstars.com/fitting-room/ is a try-on interface with **no provider connected yet**.
+It reads a photo in the browser, does not upload it anywhere, and says plainly
+that it has nothing to render. Do not describe it as a working AI try-on.
+
+## Pages
+
+- [Home](https://undercoverrockstars.com/): the thesis in brief, the eight pairs, the day-to-night shift, the codes.
+- [Drop 01](https://undercoverrockstars.com/collection/): all 8 pairs with filters by category.
+- [Thesis](https://undercoverrockstars.com/thesis/): six lines on why clothing should come in pairs.
+- [Fitting room](https://undercoverrockstars.com/fitting-room/): try-on interface, provider not connected.
+
+## Contact
+
+hello@undercoverrockstars.com

@@ -1,0 +1,6 @@
+# Undercover Rockstars security contact
+Contact: mailto:hello@undercoverrockstars.com
+Contact: https://github.com/Undercover-Rockstars
+Expires: 2027-09-05T00:00:00.000Z
+Preferred-Languages: en
+Canonical: https://undercoverrockstars.com/.well-known/security.txt

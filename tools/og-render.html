@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<!-- Source for the Open Graph cards. Regenerate with tools/render-og.sh -->
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Archivo:ital,wdth,wght@0,62..125,100..900&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  *{box-sizing:border-box}
+  html,body{margin:0;padding:0;width:1200px;height:630px;overflow:hidden;background:#0a0a0b}
+  .card{position:relative;width:1200px;height:630px;background:#0a0a0b;color:#ecebe6;
+        font-family:'Archivo',Helvetica,sans-serif;-webkit-font-smoothing:antialiased;overflow:hidden}
+  .grid{position:absolute;inset:0;
+        background-image:linear-gradient(rgba(236,235,230,.13) 1px,transparent 1px),
+                         linear-gradient(90deg,rgba(236,235,230,.13) 1px,transparent 1px);
+        background-size:120px 120px;opacity:.5;
+        -webkit-mask-image:radial-gradient(ellipse at 50% 0%,#000 30%,transparent 80%)}
+  .star{position:absolute;right:-60px;top:-140px;font-size:640px;line-height:1;color:transparent;
+        -webkit-text-stroke:1px rgba(236,235,230,.16)}
+  .c{position:relative;height:100%;display:grid;grid-template-rows:auto 1fr auto;padding:52px 60px}
+  .top{display:flex;align-items:center;justify-content:space-between;
+       font-family:'JetBrains Mono',monospace;font-size:15px;letter-spacing:.18em;text-transform:uppercase}
+  .mark{font-weight:800;font-stretch:112%;font-size:24px;letter-spacing:-.01em;text-transform:uppercase}
+  .mark i{color:#ff3b30;font-style:normal}
+  .kind{color:#7e7d78}
+  .mid{display:flex;align-items:center}
+  h1{margin:0;font-weight:800;font-stretch:112%;text-transform:uppercase;
+     font-size:104px;line-height:.86;letter-spacing:-.045em;max-width:16ch}
+  h1 .acc{color:#ff3b30}
+  .bottom{display:flex;align-items:flex-end;justify-content:space-between;gap:40px;
+          font-family:'JetBrains Mono',monospace;font-size:15px;letter-spacing:.14em;
+          text-transform:uppercase;color:#7e7d78}
+  .sub{font-family:'Archivo',sans-serif;letter-spacing:0;text-transform:none;font-size:21px;
+       line-height:1.45;color:#a9a8a3;max-width:44ch;font-weight:300}
+  .rule{position:absolute;left:0;right:0;bottom:0;height:6px;background:#ff3b30}
+</style>
+</head>
+<body>
+<div class="card">
+  <div class="grid"></div>
+  <div class="star">★</div>
+  <div class="c">
+    <div class="top">
+      <div class="mark">Undercover Rockst<i>★</i>rs</div>
+      <div class="kind" id="kind">Everyone has a rockstar undercover</div>
+    </div>
+    <div class="mid"><h1 id="title">Everyone has a rockstar <span class="acc">undercover.</span></h1></div>
+    <div class="bottom">
+      <div class="sub" id="sub">Clothing that comes in matched pairs: one cut for the day, the same pattern cut for the night.</div>
+      <div>undercoverrockstars.com</div>
+    </div>
+  </div>
+  <div class="rule"></div>
+</div>
+<script>
+(function () {
+  var q = new URLSearchParams(location.search);
+  if (q.get('t')) document.getElementById('title').innerHTML = q.get('t');
+  if (q.get('k')) document.getElementById('kind').textContent = q.get('k');
+  if (q.get('s')) document.getElementById('sub').textContent = q.get('s');
+  var fs = q.get('fs'); if (fs) document.getElementById('title').style.fontSize = fs + 'px';
+  // the same template doubles as the README banner at a wider, shorter size
+  var w = q.get('w'), h = q.get('h');
+  if (w && h) {
+    var css = 'html,body{width:' + w + 'px;height:' + h + 'px}.card{width:' + w + 'px;height:' + h + 'px}';
+    var st = document.createElement('style'); st.textContent = css; document.head.appendChild(st);
+  }
+})();
+</script>
+</body>
+</html>
