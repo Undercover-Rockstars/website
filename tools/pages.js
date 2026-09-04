@@ -532,7 +532,7 @@ ${urls.map(u => `  <url><loc>${ORIGIN}${u.loc}</loc><lastmod>${today}</lastmod><
 </urlset>
 `);
 
-write('robots.txt', `# ${BRAND} — ${ORIGIN}
+write('robots.txt', `# ${BRAND} · ${ORIGIN}
 # Answer engines and AI crawlers are welcome. /llms.txt carries a structured,
 # plain-text summary written for machine readers.
 
@@ -568,7 +568,7 @@ Tagline: "${TAGLINE}"
 
 ## Drop 01
 
-${PRODUCTS.map(p => `- **UR/${p.code} ${p.name}** (${p.cat}, ${format(p.price)}) — day: ${p.day}; night: ${p.night}. Fabric: ${p.fabric}.
+${PRODUCTS.map(p => `- **UR/${p.code} ${p.name}** (${p.cat}, ${format(p.price)}). Day: ${p.day}. Night: ${p.night}. Fabric: ${p.fabric}.
   ${ORIGIN}/product/${p.id}/`).join('\n')}
 
 ## Buying status

@@ -1,4 +1,4 @@
-# Undercover Rockstars — https://undercoverrockstars.com
+# Undercover Rockstars · https://undercoverrockstars.com
 # Answer engines and AI crawlers are welcome. /llms.txt carries a structured,
 # plain-text summary written for machine readers.
 
