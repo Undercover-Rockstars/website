@@ -25,7 +25,7 @@ card og.png 'Everyone has a rockstar <span class="acc">undercover.</span>' \
   'Clothing that comes in matched pairs: one cut for the day, the same pattern cut for the night.'
 
 card og-collection.png 'Drop <span class="acc">01</span>' 'UR/01 · 08 pairs · 16 garments' \
-  'Eight pairs. Sixteen garments. Each pair is one pattern cut twice. Unisex, cut in Italy.'
+  'Eight pairs. Sixteen garments. Each pair is one pattern cut twice. Unisex, cut in Bali.'
 
 card og-thesis.png 'The day is the <span class="acc">disguise.</span>' 'Thesis · UR/T.01' \
   'Six lines on why clothing should come in pairs.'

@@ -34,7 +34,7 @@ after.
 
 ### Drop 01
 
-Eight pairs, sixteen garments. Unisex, cut in Italy.
+Eight pairs, sixteen garments. Unisex, cut in Bali.
 
 | | Pair | Category | Day | Night | Price |
 | :--- | :--- | :--- | :--- | :--- | ---: |

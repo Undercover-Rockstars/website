@@ -216,7 +216,7 @@ console.log('home done');
 write('collection/index.html', head({
   slug: 'collection',
   title: `Drop 01 · ${BRAND}`,
-  description: 'Eight pairs. Sixteen garments. Each pair is one pattern cut twice: once for the day, once for the night. Unisex, cut in Italy.',
+  description: 'Eight pairs. Sixteen garments. Each pair is one pattern cut twice: once for the day, once for the night. Unisex, cut in Bali.',
   canonical: '/collection/',
   og: 'og-collection.png',
   jsonld: { '@context': 'https://schema.org', '@graph': [
@@ -234,7 +234,7 @@ write('collection/index.html', head({
       <p class="eyebrow" style="margin-bottom:20px">UR/01 · <span id="filter-count">08</span> pairs · <span data-mode-lower>night</span> mode</p>
       <h1 class="h-page">Drop 01</h1>
     </div>
-    <p class="lede col-9-4" style="font-size:15px">Eight pairs. Sixteen garments. Each pair is one pattern cut twice: once for the day, once for the night. Unisex. Cut in Italy.</p>
+    <p class="lede col-9-4" style="font-size:15px">Eight pairs. Sixteen garments. Each pair is one pattern cut twice: once for the day, once for the night. Unisex. Cut in Bali.</p>
   </div>
   <div class="filters" role="group" aria-label="Filter by category">
 ${CATEGORIES.map((c, i) => `    <button type="button" data-filter="${c}" aria-pressed="${i === 0}">${c}</button>`).join('\n')}
@@ -262,7 +262,7 @@ PRODUCTS.forEach((p, i) => {
         description: p.desc,
         brand: { '@type': 'Brand', name: BRAND },
         material: p.fabric,
-        countryOfOrigin: 'IT',
+        countryOfOrigin: 'ID',
         image: ORIGIN + '/assets/og-' + p.id + '.png',
         offers: {
           '@type': 'Offer',
@@ -310,7 +310,7 @@ ${SIZES.map(z => `        <button type="button" data-size="${z}" aria-pressed="f
     <dl class="spec-table">
       <div><dt>Contents</dt><dd>1 day + 1 night</dd></div>
       <div><dt>Fabric</dt><dd>${esc(p.fabric)}</dd></div>
-      <div><dt>Made in</dt><dd>Italy</dd></div>
+      <div><dt>Made in</dt><dd>Bali, Indonesia</dd></div>
       <div><dt>Shipping</dt><dd>Worldwide · 3–5 days</dd></div>
       <div><dt>Status</dt><dd>Drop 01 · reservations open</dd></div>
     </dl>
@@ -564,7 +564,7 @@ Tagline: "${TAGLINE}"
   every seam.
 - Details are tone on tone: linings, seams and text stitched black on black.
   Quiet from ten metres, loud from one.
-- Unisex. Cut in Italy. Shipping worldwide.
+- Unisex. Cut in Bali, Indonesia. Shipping worldwide.
 
 ## Drop 01
 
