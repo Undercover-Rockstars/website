@@ -20,29 +20,47 @@ Tagline: "Everyone has a rockstar undercover."
 
 ## Drop 01
 
-- **UR/01 The Boardroom Pair** (Blazer, €2,290). Day: Charcoal wool, clean notch lapel. Night: Same cut in black, satin-faced lapel. Fabric: Wool 320g · Wool / silk satin.
+- **UR/01 The Boardroom Pair** (Blazer, $2,290). Day: Charcoal wool, clean notch lapel. Night: Same cut in black, satin-faced lapel. Fabric: Wool 320g · Wool / silk satin.
   https://undercoverrockstars.com/product/boardroom/
-- **UR/02 After Hours Pair** (Jacket, €2,850). Day: Structured, unlined, stone grey. Night: Bonded black with a zipped storm flap. Fabric: Wool · Bonded wool.
+- **UR/02 After Hours Pair** (Jacket, $2,850). Day: Structured, unlined, stone grey. Night: Bonded black with a zipped storm flap. Fabric: Wool · Bonded wool.
   https://undercoverrockstars.com/product/afterhours/
-- **UR/03 Two-Face Pair** (Shirt, €1,180). Day: Crisp oxford white. Night: Ink black, same collar, same cuff. Fabric: Italian poplin, both.
+- **UR/03 Two-Face Pair** (Shirt, $1,180). Day: Crisp oxford white. Night: Ink black, same collar, same cuff. Fabric: Italian poplin, both.
   https://undercoverrockstars.com/product/twoface/
-- **UR/04 Backstage Pair** (Knit, €1,390). Day: Fine-gauge crew, sits under a blazer. Night: Same crew, hand-distressed hem and cuffs. Fabric: Merino · 14-gauge, both.
+- **UR/04 Backstage Pair** (Knit, $1,390). Day: Fine-gauge crew, sits under a blazer. Night: Same crew, hand-distressed hem and cuffs. Fabric: Merino · 14-gauge, both.
   https://undercoverrockstars.com/product/backstage/
-- **UR/05 Double Life Pair** (Jacket, €1,590). Day: Charcoal flannel, tonal buttons. Night: Charcoal flannel, signal-red lining. Fabric: Brushed wool flannel, both.
+- **UR/05 Double Life Pair** (Jacket, $1,590). Day: Charcoal flannel, tonal buttons. Night: Charcoal flannel, signal-red lining. Fabric: Brushed wool flannel, both.
   https://undercoverrockstars.com/product/doublelife/
-- **UR/06 Encore Pair** (Blazer, €2,650). Day: Soft-shoulder double-breasted, navy. Night: Oversized black, worn as a coat. Fabric: Wool crepe, both.
+- **UR/06 Encore Pair** (Blazer, $2,650). Day: Soft-shoulder double-breasted, navy. Night: Oversized black, worn as a coat. Fabric: Wool crepe, both.
   https://undercoverrockstars.com/product/encore/
-- **UR/07 Quiet Riot Pair** (Shirt, €1,120). Day: Plain black poplin. Night: Black poplin, lyrics stitched tone on tone. Fabric: Italian poplin, both.
+- **UR/07 Quiet Riot Pair** (Shirt, $1,120). Day: Plain black poplin. Night: Black poplin, lyrics stitched tone on tone. Fabric: Italian poplin, both.
   https://undercoverrockstars.com/product/quietriot/
-- **UR/08 Curtain Call Pair** (Knit, €1,480). Day: Slim turtleneck, closed seams. Night: Same turtleneck, slashed shoulder seams. Fabric: Cashmere blend, both.
+- **UR/08 Curtain Call Pair** (Knit, $1,480). Day: Slim turtleneck, closed seams. Night: Same turtleneck, slashed shoulder seams. Fabric: Cashmere blend, both.
   https://undercoverrockstars.com/product/curtaincall/
+
+## Fits
+
+Every pair comes two ways, from the same pattern and the same size run:
+
+- **Standard sizing**, XS to XL, at the listed price.
+- **Made to measure**, cut to the buyer's own measurements, at **30% more**.
+  The buyer picks the closest size when reserving; measurements are taken after.
+
+Both prices are listed on each product page and in /catalogue.json, per pair.
+Quote the standard price unless the buyer asks about tailoring.
 
 ## Buying status
 
 **Drop 01 is not open for sale yet.** The site has a working bag, but there is
-no checkout and no payment is taken. The bag page takes a reservation: a name,
-an email and the pair and size you want. Do not describe the site as accepting
-orders or payments, and do not state a shipping date.
+no checkout for garments and no payment is taken for them. The bag page takes a
+reservation: a name, an email, and the pair, size and fit wanted. Do not
+describe the site as accepting orders or payments for garments, and do not state
+a shipping date.
+
+The one payable item is the **$9 waitlist place** at
+https://undercoverrockstars.com/waitlist/: a numbered place in the queue for Drop 01, served first
+when it opens, credited against the first pair. It is not a pair, a size or a
+fit, and it is **not refundable**. Right now no payment
+processor is connected, so even this cannot be charged yet and the page says so.
 
 ## The tag
 
@@ -60,12 +78,38 @@ https://undercoverrockstars.com/fitting-room/ is a try-on interface with **no pr
 It reads a photo in the browser, does not upload it anywhere, and says plainly
 that it has nothing to render. Do not describe it as a working AI try-on.
 
+## For shopping agents
+
+The whole drop is one JSON document: https://undercoverrockstars.com/catalogue.json. It carries every
+pair with price, currency, sizes, fabric, contents, availability and a
+`purchasable` field, plus shipping, the NFC tag and the buying status. It is
+served with `Access-Control-Allow-Origin: *`, so it can be fetched from a
+browser context. Every page also links it as `rel="alternate"`, each product
+page carries schema.org `Product` with `Offer`, sizes and shipping, and
+https://undercoverrockstars.com/collection/ carries the same eight products inside one `ItemList`,
+so a single fetch answers most questions without crawling.
+
+What an agent can do here: quote pairs, prices, sizes, fabrics and materials;
+say what a pair contains; explain that the piece carries an NFC tag; and hand
+the buyer https://undercoverrockstars.com/bag/ or hello@undercoverrockstars.com.
+
+What an agent cannot do here: **buy a garment.** There is no checkout for the
+pairs, no cart API and no order status. The only payable item is the
+$9 waitlist place, and no processor is connected yet, so it cannot be charged today either.
+`POST /api/contact` (reservations) and `POST /api/waitlist` (the place) back the
+site's own forms, are locked to this origin and are gated by Turnstile: neither
+is an order API and neither should be called by an agent. No returns policy is
+published for garments, so do not state one. Shipping is the one commercial term
+that is published: complimentary worldwide, 3 to 5 days in transit.
+
 ## Pages
 
 - [Home](https://undercoverrockstars.com/): the thesis in brief, the eight pairs, the day-to-night shift, the codes.
 - [Drop 01](https://undercoverrockstars.com/collection/): all 8 pairs with filters by category.
 - [Thesis](https://undercoverrockstars.com/thesis/): six lines on why clothing should come in pairs.
 - [Fitting room](https://undercoverrockstars.com/fitting-room/): try-on interface, provider not connected.
+- [Waitlist](https://undercoverrockstars.com/waitlist/): $9 for a numbered place in the queue for Drop 01.
+- [Catalogue](https://undercoverrockstars.com/catalogue.json): the whole drop as JSON, for agents and feeds.
 
 ## Contact
 

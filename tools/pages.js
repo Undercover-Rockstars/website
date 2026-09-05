@@ -5,10 +5,14 @@ const fs = require('fs');
 const path = require('path');
 const L = require('./build.js');
 const D = require('../assets/ur-data.js');
-const { PRODUCTS, CATEGORIES, SIZES, format } = D;
-const { ORIGIN, BRAND, TAGLINE, esc, head, header, footer, foot, tile, ORG, SITE, crumbs } = L;
+const { PRODUCTS, CATEGORIES, SIZES, FITS, WAITLIST, format, priceOf } = D;
+const { ORIGIN, BRAND, TAGLINE, esc, head, header, footer, foot, tile, ORG, SITE, SHIPPING, FEED, crumbs } = L;
 
 const ROOT = path.join(__dirname, '..');
+const CONTENTS = '1 day garment + 1 night garment';
+const NOT_FOR_SALE = 'Drop 01 is not open for sale. There is no checkout, no cart API and ' +
+  'no payment endpoint on this site, so neither a person nor an agent can buy anything today. ' +
+  'The bag takes a reservation: a name, an email, and the pair and size wanted.';
 const write = (rel, html) => {
   const file = path.join(ROOT, rel);
   fs.mkdirSync(path.dirname(file), { recursive: true });
@@ -76,7 +80,7 @@ write('index.html', head({
   description: 'Clothing for people who live two lives in one day. Every piece comes as a matched pair: one cut for the meeting, the same pattern cut for what comes after.',
   canonical: '/',
   og: 'og.png',
-  jsonld: { '@context': 'https://schema.org', '@graph': [ORG, SITE, {
+  jsonld: { '@context': 'https://schema.org', '@graph': [ORG, SITE, FEED, {
     '@type': 'WebPage', '@id': ORIGIN + '/#webpage', url: ORIGIN + '/',
     name: `${BRAND} · ${TAGLINE}`, isPartOf: { '@id': ORIGIN + '/#website' },
     about: { '@id': ORIGIN + '/#organization' }, inLanguage: 'en'
@@ -214,6 +218,7 @@ ${TAGS.map(t => `        <div class="code"><span class="eyebrow acc">${t.n}</spa
         <p class="signal-ok" id="signal-ok" hidden>Signal received. See you at 00:00.</p>
         <p class="signal-ok" id="signal-err" hidden style="border-color:var(--mute);color:var(--mute)"></p>
         <p class="fit-note" style="margin-top:14px">One email per drop. No sharing, unsubscribe any time.</p>
+        <p class="fit-note" style="margin-top:10px">Or <a href="/waitlist/">hold a place in the queue for ${WAITLIST.formatted}</a>. Paid places are served first when Drop 01 opens.</p>
       </div>
       <div class="log">
         <div class="log-head"><span>UR/LOG</span><span class="rec">●</span></div>
@@ -239,9 +244,24 @@ write('collection/index.html', head({
   jsonld: { '@context': 'https://schema.org', '@graph': [
     { '@type': 'CollectionPage', '@id': ORIGIN + '/collection/#webpage', url: ORIGIN + '/collection/',
       name: `Drop 01 · ${BRAND}`, isPartOf: { '@id': ORIGIN + '/#website' }, inLanguage: 'en',
+      // Each entry carries price, sizes and availability, so one fetch of this
+      // page answers what a shopping agent would otherwise crawl 8 pages for.
       mainEntity: { '@type': 'ItemList', numberOfItems: PRODUCTS.length,
         itemListElement: PRODUCTS.map((p, i) => ({
-          '@type': 'ListItem', position: i + 1, url: ORIGIN + '/product/' + p.id + '/', name: p.name })) } },
+          '@type': 'ListItem', position: i + 1, url: ORIGIN + '/product/' + p.id + '/', name: p.name,
+          item: {
+            '@type': 'Product', '@id': ORIGIN + '/product/' + p.id + '/#product',
+            name: p.name, sku: 'UR-' + p.code, category: p.cat, url: ORIGIN + '/product/' + p.id + '/',
+            size: SIZES, material: p.fabric,
+            offers: {
+              '@type': 'Offer', url: ORIGIN + '/product/' + p.id + '/',
+              price: p.price, priceCurrency: D.CURRENCY,
+              availability: 'https://schema.org/PreOrder',
+              itemCondition: 'https://schema.org/NewCondition',
+              seller: { '@id': ORIGIN + '/#organization' }
+            }
+          } })) } },
+    FEED,
     crumbs([{ name: BRAND, path: '/' }, { name: 'Drop 01', path: '/collection/' }])
   ] }
 }) + header('collection') + `
@@ -251,7 +271,7 @@ write('collection/index.html', head({
       <p class="eyebrow" style="margin-bottom:20px">UR/01 · <span id="filter-count">08</span> pairs · <span data-mode-lower>night</span> mode</p>
       <h1 class="h-page">Drop 01</h1>
     </div>
-    <p class="lede col-9-4" style="font-size:15px">Eight pairs. Sixteen garments. Each pair is one pattern cut twice: once for the day, once for the night. Unisex. Cut in Bali. All sixteen carry an NFC tag in the seam.</p>
+    <p class="lede col-9-4" style="font-size:15px">Eight pairs. Sixteen garments. Each pair is one pattern cut twice: once for the day, once for the night. Unisex. Cut in Bali. All sixteen carry an NFC tag in the seam, and every pair can be made to measure for 30% more.</p>
   </div>
   <div class="filters" role="group" aria-label="Filter by category">
 ${CATEGORIES.map((c, i) => `    <button type="button" data-filter="${c}" aria-pressed="${i === 0}">${c}</button>`).join('\n')}
@@ -281,6 +301,15 @@ PRODUCTS.forEach((p, i) => {
         material: p.fabric,
         countryOfOrigin: 'ID',
         image: ORIGIN + '/assets/og-' + p.id + '.png',
+        mpn: 'UR-' + p.code,
+        // One price, one size run, sold as a pair. An agent asking "what sizes,
+        // what is in the box, is it real" gets all three without reading prose.
+        size: SIZES,
+        audience: { '@type': 'PeopleAudience', suggestedGender: 'unisex' },
+        additionalProperty: [
+          { '@type': 'PropertyValue', name: 'Contents', value: CONTENTS },
+          { '@type': 'PropertyValue', name: 'Authenticity tag', value: 'NFC tag in the seam of both pieces' }
+        ],
         offers: {
           '@type': 'Offer',
           url: ORIGIN + '/product/' + p.id + '/',
@@ -288,6 +317,8 @@ PRODUCTS.forEach((p, i) => {
           // Drop 01 is not open for sale yet: the bag takes reservations, so
           // PreOrder is the honest availability rather than InStock.
           availability: 'https://schema.org/PreOrder',
+          itemCondition: 'https://schema.org/NewCondition',
+          shippingDetails: SHIPPING,
           seller: { '@id': ORIGIN + '/#organization' }
         } },
       crumbs([{ name: BRAND, path: '/' }, { name: 'Drop 01', path: '/collection/' },
@@ -315,10 +346,18 @@ PRODUCTS.forEach((p, i) => {
     </div>
     <p class="lede" style="font-size:15px">${esc(p.desc)}</p>
     <div>
+      <p class="eyebrow" style="margin-bottom:12px">Fit — <span id="fit-label">Standard sizing</span></p>
+      <div class="fits" role="group" aria-label="Choose a fit">
+${FITS.map((f, i) => `        <button type="button" data-fit="${f.id}" aria-pressed="${i === 0}"><span>${esc(f.name)}</span><span class="p">${format(priceOf(p, f.id))}${f.premium ? ' · +' + Math.round(f.premium * 100) + '%' : ''}</span></button>`).join('\n')}
+      </div>
+      <p class="fit-note" id="fit-note" style="margin-top:10px">${esc(FITS[0].note)}</p>
+    </div>
+    <div>
       <p class="eyebrow" style="margin-bottom:12px">Size — <span id="size-label">select</span></p>
       <div class="sizes" role="group" aria-label="Choose a size">
 ${SIZES.map(z => `        <button type="button" data-size="${z}" aria-pressed="false">${z}</button>`).join('\n')}
       </div>
+      <p class="fit-note" id="size-hint" hidden style="margin-top:10px">The size closest to you. A made-to-measure pair is cut from your own measurements, taken after you reserve.</p>
     </div>
     <div style="display:grid;gap:8px">
       <button type="button" class="btn btn--lg" id="add-to-bag" disabled><span id="add-label">Select a size</span><span aria-hidden="true">→</span></button>
@@ -327,6 +366,7 @@ ${SIZES.map(z => `        <button type="button" data-size="${z}" aria-pressed="f
     <dl class="spec-table">
       <div><dt>Contents</dt><dd>1 day + 1 night</dd></div>
       <div><dt>Tag</dt><dd>NFC · both pieces</dd></div>
+      <div><dt>Made to measure</dt><dd>+30% · ${format(priceOf(p, 'tailored'))}</dd></div>
       <div><dt>Fabric</dt><dd>${esc(p.fabric)}</dd></div>
       <div><dt>Made in</dt><dd>Bali, Indonesia</dd></div>
       <div><dt>Shipping</dt><dd>Worldwide · 3–5 days</dd></div>
@@ -464,6 +504,70 @@ ${PRODUCTS.map((p, i) => `          <button type="button" data-fit-product="${p.
 </main>
 ` + footer() + foot(['/assets/ur-fitting.js']));
 
+/* --------------------------------------------------------------- waitlist */
+
+write('waitlist/index.html', head({
+  slug: 'waitlist',
+  title: `Waitlist · ${BRAND}`,
+  description: `Drop 01 is not open yet. ${WAITLIST.formatted} holds a numbered place in the queue, paid places are served first, and it comes off your first pair.`,
+  canonical: '/waitlist/',
+  og: 'og-waitlist.png',
+  jsonld: { '@context': 'https://schema.org', '@graph': [
+    { '@type': 'WebPage', '@id': ORIGIN + '/waitlist/#webpage', url: ORIGIN + '/waitlist/',
+      name: `Waitlist · ${BRAND}`, isPartOf: { '@id': ORIGIN + '/#website' }, inLanguage: 'en' },
+    { '@type': 'Product', '@id': ORIGIN + '/waitlist/#place',
+      name: WAITLIST.name, category: 'Waitlist place',
+      description: WAITLIST.perks.join(' ') + ' ' + WAITLIST.terms,
+      brand: { '@type': 'Brand', name: BRAND },
+      offers: {
+        '@type': 'Offer', url: ORIGIN + '/waitlist/',
+        price: WAITLIST.amount, priceCurrency: WAITLIST.currency,
+        // PreOrder until a processor is connected: the offer is real, but it
+        // cannot be completed yet, and saying InStock would be a lie.
+        availability: WAITLIST.live ? 'https://schema.org/InStock' : 'https://schema.org/PreOrder',
+        seller: { '@id': ORIGIN + '/#organization' }
+      } },
+    crumbs([{ name: BRAND, path: '/' }, { name: 'Waitlist', path: '/waitlist/' }])
+  ] }
+}) + header('waitlist') + `
+<main id="main" class="page-pad">
+  <div class="grid12 collection-head">
+    <div class="col-1-8">
+      <p class="eyebrow" style="margin-bottom:20px">UR/01 · waitlist · ${WAITLIST.formatted}</p>
+      <h1 class="h-page">Hold your<br><span class="acc">place.</span></h1>
+    </div>
+    <p class="lede col-9-4" style="font-size:15px">Drop 01 is eight pairs and sixteen garments, and it is not open yet. ${WAITLIST.formatted} holds a numbered place in the queue for it.</p>
+  </div>
+
+  <div class="grid12" style="gap:48px var(--gap)">
+    <div class="col-1-8">
+      <div class="codes codes--tight">
+${WAITLIST.perks.map((t, i) => `        <div class="code"><span class="eyebrow acc">${String(i + 1).padStart(2, '0')}</span><p style="font-size:15px;color:var(--fg);line-height:1.5">${esc(t)}</p></div>`).join('\n')}
+      </div>
+      <p class="fit-note" style="margin-top:20px;max-width:60ch">${esc(WAITLIST.terms)}</p>
+      <p class="fit-note" style="margin-top:10px;max-width:60ch">Payment is taken by Stripe on Stripe's own page. No card details are entered on this site, and none are stored here.</p>
+    </div>
+
+    <div class="col-9-4">
+      <div class="code" style="min-height:0">
+        <span class="eyebrow acc">Waitlist</span>
+        <h2 style="margin:0;font-weight:700;text-transform:uppercase;font-size:18px;letter-spacing:.01em">${WAITLIST.formatted} · one place</h2>
+        <p class="fit-note" id="wl-paid" hidden style="border:1px solid var(--acc);padding:12px 14px;color:var(--fg)">Paid. Your place is held and the receipt is on its way. We will write before the drop opens.</p>
+        <form id="wl-form" novalidate style="display:grid;gap:12px">
+          <label class="sr-only" for="wl-email">Email</label>
+          <input id="wl-email" name="email" type="email" required placeholder="you@somewhere.com" autocomplete="email" style="background:none;border:1px solid var(--line);outline:0;padding:14px 16px;color:var(--fg);font-size:15px">
+          <div class="hp" aria-hidden="true"><label>Company<input id="wl-company" name="company" tabindex="-1" autocomplete="off"></label></div>
+          <button type="submit" class="btn" id="wl-submit"${WAITLIST.live ? '' : ' disabled'}><span id="wl-label">${WAITLIST.live ? 'Hold my place · ' + WAITLIST.formatted : 'Not open yet'}</span><span aria-hidden="true">→</span></button>
+        </form>
+        <p class="fit-note" id="wl-err" hidden></p>
+${WAITLIST.live ? '' : `        <p class="fit-note">No payment processor is connected yet, so nothing can be charged today and nothing is being collected. Write to <a href="mailto:hello@undercoverrockstars.com">hello@undercoverrockstars.com</a> and we will note you by hand.</p>`}
+        <p class="fit-note">One place per address. Reserving a pair in the <a href="/bag/">bag</a> stays free.</p>
+      </div>
+    </div>
+  </div>
+</main>
+` + footer() + foot(['/assets/ur-waitlist.js']));
+
 /* -------------------------------------------------------------------- bag */
 
 write('bag/index.html', head({
@@ -480,14 +584,14 @@ write('bag/index.html', head({
       <p class="eyebrow" style="margin-bottom:20px">UR/BAG · <span data-bag-count>00</span> in bag</p>
       <h1 class="h-page">Bag</h1>
     </div>
-    <p class="lede col-9-4" style="font-size:15px">Drop 01 is not open for sale yet. Reserve your pair and size and we will contact you the moment it opens. No payment is taken here.</p>
+    <p class="lede col-9-4" style="font-size:15px">Drop 01 is not open for sale yet. Reserve your pair, size and fit and we will contact you the moment it opens. No payment is taken here.</p>
   </div>
 
   <div class="grid12" style="gap:48px var(--gap)">
     <div class="col-1-8">
       <div class="bag-body" id="bag-page-body" style="overflow:visible"></div>
       <div class="bag-foot" style="margin-top:8px">
-        <div class="bag-total"><span>Total</span><span id="bag-page-total">€0</span></div>
+        <div class="bag-total"><span>Total</span><span id="bag-page-total">$0</span></div>
         <p class="fit-note">Shipping complimentary worldwide. Nothing is charged until Drop 01 opens and you confirm.</p>
       </div>
     </div>
@@ -509,6 +613,7 @@ write('bag/index.html', head({
         <p class="signal-ok" id="rv-ok" hidden>Reserved. We'll be in touch before the drop opens.</p>
         <p class="fit-note" id="rv-err" hidden></p>
         <p class="fit-note">No card details are collected anywhere on this site.</p>
+        <p class="fit-note">Reserving is free and does not hold a place in the queue. A <a href="/waitlist/">${WAITLIST.formatted} waitlist place</a> is served first when the drop opens.</p>
       </div>
     </div>
   </div>
@@ -543,7 +648,8 @@ const urls = [
   { loc: '/collection/', pri: '0.9', freq: 'weekly' },
   ...PRODUCTS.map(p => ({ loc: `/product/${p.id}/`, pri: '0.8', freq: 'monthly' })),
   { loc: '/thesis/', pri: '0.7', freq: 'monthly' },
-  { loc: '/fitting-room/', pri: '0.6', freq: 'monthly' }
+  { loc: '/fitting-room/', pri: '0.6', freq: 'monthly' },
+  { loc: '/waitlist/', pri: '0.8', freq: 'monthly' }
 ];
 write('sitemap.xml', `<?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
@@ -553,7 +659,8 @@ ${urls.map(u => `  <url><loc>${ORIGIN}${u.loc}</loc><lastmod>${today}</lastmod><
 
 write('robots.txt', `# ${BRAND} · ${ORIGIN}
 # Answer engines and AI crawlers are welcome. /llms.txt carries a structured,
-# plain-text summary written for machine readers.
+# plain-text summary written for machine readers, and /catalogue.json carries the
+# whole drop as JSON: prices, sizes, availability and buying status.
 
 User-agent: *
 Allow: /
@@ -590,12 +697,29 @@ Tagline: "${TAGLINE}"
 ${PRODUCTS.map(p => `- **UR/${p.code} ${p.name}** (${p.cat}, ${format(p.price)}). Day: ${p.day}. Night: ${p.night}. Fabric: ${p.fabric}.
   ${ORIGIN}/product/${p.id}/`).join('\n')}
 
+## Fits
+
+Every pair comes two ways, from the same pattern and the same size run:
+
+- **Standard sizing**, XS to XL, at the listed price.
+- **Made to measure**, cut to the buyer's own measurements, at **30% more**.
+  The buyer picks the closest size when reserving; measurements are taken after.
+
+Both prices are listed on each product page and in /catalogue.json, per pair.
+Quote the standard price unless the buyer asks about tailoring.
+
 ## Buying status
 
 **Drop 01 is not open for sale yet.** The site has a working bag, but there is
-no checkout and no payment is taken. The bag page takes a reservation: a name,
-an email and the pair and size you want. Do not describe the site as accepting
-orders or payments, and do not state a shipping date.
+no checkout for garments and no payment is taken for them. The bag page takes a
+reservation: a name, an email, and the pair, size and fit wanted. Do not
+describe the site as accepting orders or payments for garments, and do not state
+a shipping date.
+
+The one payable item is the **${WAITLIST.formatted} waitlist place** at
+${ORIGIN}/waitlist/: a numbered place in the queue for Drop 01, served first
+when it opens, credited against the first pair. It is not a pair, a size or a
+fit, and it is **not refundable**.${WAITLIST.live ? '' : ' Right now no payment\nprocessor is connected, so even this cannot be charged yet and the page says so.'}
 
 ## The tag
 
@@ -613,17 +737,131 @@ ${ORIGIN}/fitting-room/ is a try-on interface with **no provider connected yet**
 It reads a photo in the browser, does not upload it anywhere, and says plainly
 that it has nothing to render. Do not describe it as a working AI try-on.
 
+## For shopping agents
+
+The whole drop is one JSON document: ${ORIGIN}/catalogue.json. It carries every
+pair with price, currency, sizes, fabric, contents, availability and a
+\`purchasable\` field, plus shipping, the NFC tag and the buying status. It is
+served with \`Access-Control-Allow-Origin: *\`, so it can be fetched from a
+browser context. Every page also links it as \`rel="alternate"\`, each product
+page carries schema.org \`Product\` with \`Offer\`, sizes and shipping, and
+${ORIGIN}/collection/ carries the same eight products inside one \`ItemList\`,
+so a single fetch answers most questions without crawling.
+
+What an agent can do here: quote pairs, prices, sizes, fabrics and materials;
+say what a pair contains; explain that the piece carries an NFC tag; and hand
+the buyer ${ORIGIN}/bag/ or hello@undercoverrockstars.com.
+
+What an agent cannot do here: **buy a garment.** There is no checkout for the
+pairs, no cart API and no order status. The only payable item is the
+${WAITLIST.formatted} waitlist place${WAITLIST.live ? '' : ', and no processor is connected yet, so it cannot be charged today either'}.
+\`POST /api/contact\` (reservations) and \`POST /api/waitlist\` (the place) back the
+site's own forms, are locked to this origin and are gated by Turnstile: neither
+is an order API and neither should be called by an agent. No returns policy is
+published for garments, so do not state one. Shipping is the one commercial term
+that is published: complimentary worldwide, 3 to 5 days in transit.
+
 ## Pages
 
 - [Home](${ORIGIN}/): the thesis in brief, the eight pairs, the day-to-night shift, the codes.
 - [Drop 01](${ORIGIN}/collection/): all ${PRODUCTS.length} pairs with filters by category.
 - [Thesis](${ORIGIN}/thesis/): six lines on why clothing should come in pairs.
 - [Fitting room](${ORIGIN}/fitting-room/): try-on interface, provider not connected.
+- [Waitlist](${ORIGIN}/waitlist/): ${WAITLIST.formatted} for a numbered place in the queue for Drop 01.
+- [Catalogue](${ORIGIN}/catalogue.json): the whole drop as JSON, for agents and feeds.
 
 ## Contact
 
 hello@undercoverrockstars.com
 `);
+
+/* One JSON document that answers what a shopping agent actually asks: what is
+   for sale, at what price, in what sizes, and can it be bought right now. The
+   answer to the last one is no, so `purchasable` is a first-class field rather
+   than something to infer from prose. Generated from the same ur-data.js as the
+   pages, so the two cannot drift. */
+write('catalogue.json', JSON.stringify({
+  brand: BRAND,
+  site: ORIGIN + '/',
+  drop: 'UR/01',
+  generated: today,
+  documentation: ORIGIN + '/llms.txt',
+  currency: D.CURRENCY,
+  purchasable: false,
+  status: {
+    forSale: false,
+    payableItems: WAITLIST.live ? [ORIGIN + '/waitlist/'] : [],
+    availability: 'https://schema.org/PreOrder',
+    note: NOT_FOR_SALE,
+    checkoutUrl: null,
+    paymentAccepted: false,
+    reserveUrl: ORIGIN + '/bag/',
+    reservationApi: null,
+    apiNote: 'POST /api/contact (reservations) and POST /api/waitlist (the ' +
+      WAITLIST.formatted + ' place) exist for the site\'s own forms. Both are locked to this ' +
+      'origin and gated by Turnstile, neither is an order API, and agents should not call ' +
+      'them. Send the buyer to ' + ORIGIN + '/bag/, ' + ORIGIN + '/waitlist/ or to ' +
+      'hello@undercoverrockstars.com.'
+  },
+  sizes: SIZES,
+  categories: CATEGORIES.filter(c => c !== 'All'),
+  fits: FITS.map(f => ({ id: f.id, name: f.name, premiumPercent: Math.round(f.premium * 100), note: f.note })),
+  waitlist: {
+    url: ORIGIN + '/waitlist/',
+    name: WAITLIST.name,
+    amount: WAITLIST.amount,
+    currency: WAITLIST.currency,
+    // The one payable thing on this site, and only once a processor is wired up.
+    purchasable: WAITLIST.live,
+    live: WAITLIST.live,
+    perks: WAITLIST.perks,
+    terms: WAITLIST.terms,
+    note: WAITLIST.live
+      ? 'Paid by card on Stripe. The site never sees card details.'
+      : 'The offer is published but no payment processor is connected yet, so nothing can be charged today.'
+  },
+  shipping: { cost: 0, currency: D.CURRENCY, destination: 'worldwide', transitDays: [3, 5] },
+  returnPolicy: { published: false, note: 'No returns policy is published yet. Do not state one.' },
+  tag: {
+    type: 'NFC',
+    perGarment: true,
+    purpose: ['authenticity check', 'lost piece returned to its owner without exposing the owner'],
+    live: false,
+    note: 'Tags travel with the garments. Drop 01 has not shipped, there is no verification URL yet, and nothing is in circulation to tap.'
+  },
+  fittingRoom: { url: ORIGIN + '/fitting-room/', providerConnected: false,
+    note: 'A try-on interface with no provider wired up. It renders nothing. Do not describe it as a working AI try-on.' },
+  contact: 'hello@undercoverrockstars.com',
+  products: PRODUCTS.map(p => ({
+    id: p.id,
+    sku: 'UR-' + p.code,
+    code: p.code,
+    name: p.name,
+    url: ORIGIN + '/product/' + p.id + '/',
+    image: ORIGIN + '/assets/og-' + p.id + '.png',
+    category: p.cat,
+    price: p.price,
+    currency: D.CURRENCY,
+    priceFormatted: format(p.price),
+    fits: FITS.map(f => ({
+      id: f.id, name: f.name,
+      premiumPercent: Math.round(f.premium * 100),
+      price: priceOf(p, f.id), priceFormatted: format(priceOf(p, f.id))
+    })),
+    availability: 'https://schema.org/PreOrder',
+    purchasable: false,
+    sizes: SIZES,
+    unisex: true,
+    contents: CONTENTS,
+    day: p.day,
+    night: p.night,
+    fabric: p.fabric,
+    madeIn: 'Bali, Indonesia',
+    countryOfOrigin: 'ID',
+    nfcTag: true,
+    description: p.desc
+  }))
+}, null, 2) + '\n');
 
 write('site.webmanifest', JSON.stringify({
   name: BRAND,

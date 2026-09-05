@@ -20,9 +20,31 @@
 /assets/*.svg
   Cache-Control: public, max-age=604800
 
+# The two machine-readable files are served cross-origin on purpose: an agent
+# running in a browser context cannot read them otherwise. Both are public,
+# generated from the same data as the pages, and carry no user data.
+
 /llms.txt
   Cache-Control: public, max-age=3600
   Content-Type: text/plain; charset=utf-8
+  Access-Control-Allow-Origin: *
+
+/catalogue.json
+  Cache-Control: public, max-age=3600
+  Content-Type: application/json; charset=utf-8
+  Access-Control-Allow-Origin: *
+
+# Point at the catalogue from the pages themselves, so a HEAD request finds it
+# without parsing HTML. Listed per page rather than on /*, to keep it off assets.
+
+/
+  Link: </catalogue.json>; rel="alternate"; type="application/json"; title="Product catalogue"
+
+/collection/
+  Link: </catalogue.json>; rel="alternate"; type="application/json"; title="Product catalogue"
+
+/product/*
+  Link: </catalogue.json>; rel="alternate"; type="application/json"; title="Product catalogue"
 
 /.well-known/security.txt
   Content-Type: text/plain; charset=utf-8

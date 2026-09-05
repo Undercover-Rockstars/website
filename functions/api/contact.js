@@ -15,6 +15,8 @@
 
 const LIMITS = { name: 200, email: 254, message: 4000, body: 20000, bag: 40 };
 const INTENTS = new Set(['reserve', 'signal']);
+// Fit is an enum, never free text: a tampered payload cannot invent a cut.
+const FITS = new Set(['standard', 'tailored']);
 const ALLOWED_ORIGINS = new Set([
   'https://undercoverrockstars.com',
   'https://www.undercoverrockstars.com',
@@ -73,6 +75,7 @@ export async function onRequest({ request, env }) {
       .map(l => ({
         id: oneLine(l && l.id, 40),
         size: oneLine(l && l.size, 4),
+        fit: FITS.has(oneLine(l && l.fit, 20)) ? oneLine(l && l.fit, 20) : 'standard',
         qty: Math.max(1, Math.min(20, parseInt(l && l.qty, 10) || 0)),
       }))
       .filter(l => l.id && l.size);
@@ -112,7 +115,9 @@ export async function onRequest({ request, env }) {
   ];
   if (bagLines.length) {
     lines.push('', 'Bag:');
-    bagLines.forEach(l => lines.push(`  ${l.qty} × ${l.id} · size ${l.size}`));
+    bagLines.forEach(l => lines.push(
+      `  ${l.qty} × ${l.id} · size ${l.size}` +
+      (l.fit === 'tailored' ? ' · MADE TO MEASURE (+30%)' : '')));
   }
   if (message) lines.push('', message);
   lines.push('', '--', `Country: ${request.cf?.country || 'unknown'}`,

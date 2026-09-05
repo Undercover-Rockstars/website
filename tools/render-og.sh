@@ -30,6 +30,9 @@ card og-collection.png 'Drop <span class="acc">01</span>' 'UR/01 · 08 pairs · 
 card og-thesis.png 'The day is the <span class="acc">disguise.</span>' 'Thesis · UR/T.01' \
   'Six lines on why clothing should come in pairs.'
 
+card og-waitlist.png 'Hold your <span class="acc">place.</span>' 'UR/01 · waitlist · $9' \
+  '$9 holds a numbered place in the queue for Drop 01. Paid places are served first.'
+
 card og-fitting.png 'Fitting <span class="acc">room</span>' 'UR/FIT · try-on' \
   'One photo, both versions. Your photo is read in the browser and is not uploaded.'
 

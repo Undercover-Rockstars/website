@@ -70,22 +70,29 @@
     return l && typeof l.id === 'string' && D && D.PRODUCTS.some(function (p) { return p.id === l.id; })
       && D.SIZES.indexOf(l.size) !== -1 && l.qty > 0;
   });
+  // A bag saved before made-to-measure existed has no fit. It was standard.
+  cart.forEach(function (l) { l.fit = D.fitOf(l.fit).id; });
 
   function productOf(id) {
     return D.PRODUCTS.filter(function (p) { return p.id === id; })[0];
   }
   function count() { return cart.reduce(function (a, l) { return a + l.qty; }, 0); }
+  function lineTotal(l) { return D.priceOf(productOf(l.id), l.fit) * l.qty; }
   function total() {
-    return cart.reduce(function (a, l) { return a + productOf(l.id).price * l.qty; }, 0);
+    return cart.reduce(function (a, l) { return a + lineTotal(l); }, 0);
   }
   function persist() { write(LS_CART, cart); render(); }
 
-  function add(id, size) {
-    var existing = cart.filter(function (l) { return l.id === id && l.size === size; })[0];
+  function add(id, size, fit) {
+    fit = D.fitOf(fit).id;
+    // A tailored pair and a standard pair are different lines, not one quantity.
+    var existing = cart.filter(function (l) {
+      return l.id === id && l.size === size && l.fit === fit;
+    })[0];
     if (existing) existing.qty++;
-    else cart.push({ id: id, size: size, qty: 1 });
+    else cart.push({ id: id, size: size, fit: fit, qty: 1 });
     persist();
-    toast('Added to bag');
+    toast(fit === 'tailored' ? 'Added to bag, made to measure' : 'Added to bag');
   }
   function setQty(index, delta) {
     var line = cart[index];
@@ -151,9 +158,11 @@
           el('div', { class: 'body' }, [
             el('div', { class: 'title' }, [
               el('span', { text: p.name }),
-              el('span', { class: 'amt', text: D.format(p.price * l.qty) })
+              el('span', { class: 'amt', text: D.format(lineTotal(l)) })
             ]),
-            el('p', { class: 'size', text: 'Size ' + l.size }),
+            el('p', { class: 'size', text: l.fit === 'tailored'
+              ? 'Made to measure · from size ' + l.size
+              : 'Size ' + l.size }),
             el('div', { class: 'qty' }, [minus, el('span', { class: 'n', text: String(l.qty) }), plus, rm])
           ])
         ]));

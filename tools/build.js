@@ -28,7 +28,8 @@ const esc = s => String(s == null ? '' : s)
 const NAV = [
   { href: '/collection/',   label: 'Drop 01', key: 'collection' },
   { href: '/thesis/',       label: 'Thesis',  key: 'thesis' },
-  { href: '/fitting-room/', label: 'Fitting room', key: 'fitting', accent: true },
+  { href: '/fitting-room/', label: 'Fitting room', key: 'fitting' },
+  { href: '/waitlist/',     label: 'Waitlist', key: 'waitlist', accent: true },
   { href: '/#signal',       label: 'Signal',  key: 'signal' },
 ];
 
@@ -73,6 +74,7 @@ function head({ slug, title, description, canonical, og, jsonld, scripts = [], n
 <link rel="apple-touch-icon" href="/assets/apple-touch-icon.png">
 <link rel="manifest" href="/site.webmanifest">
 <link rel="alternate" type="text/plain" href="/llms.txt" title="llms.txt">
+<link rel="alternate" type="application/json" href="/catalogue.json" title="Product catalogue">
 
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -131,6 +133,7 @@ function footer() {
       <span class="mute">House</span>
       <a href="/thesis/">Thesis</a>
       <a href="/fitting-room/">Fitting room</a>
+      <a href="/waitlist/">Waitlist</a>
       <a href="/#signal">Signal</a>
     </nav>
     <nav aria-label="Channels">
@@ -160,7 +163,7 @@ function bagDrawer() {
   </div>
   <div class="bag-body" id="bag-body"></div>
   <div class="bag-foot">
-    <div class="bag-total"><span>Total</span><span id="bag-total">€0</span></div>
+    <div class="bag-total"><span>Total</span><span id="bag-total">$0</span></div>
     <a class="btn" id="bag-checkout" href="/bag/"><span>Review bag</span><span aria-hidden="true">→</span></a>
   </div>
 </aside>
@@ -208,6 +211,29 @@ const SITE = {
   inLanguage: 'en',
   publisher: { '@id': ORIGIN + '/#organization' }
 };
+/* Everything below is stated in visible copy too: the product spec table says
+   "Worldwide · 3–5 days" and the bag page says shipping is complimentary. Do not
+   add a returns policy here: the site does not publish one, and inventing one in
+   markup would answer an agent's question with a fact nobody decided. */
+const SHIPPING = {
+  '@type': 'OfferShippingDetails',
+  shippingRate: { '@type': 'MonetaryAmount', value: 0, currency: 'USD' },
+  deliveryTime: {
+    '@type': 'ShippingDeliveryTime',
+    transitTime: { '@type': 'QuantitativeValue', minValue: 3, maxValue: 5, unitCode: 'DAY' }
+  }
+};
+const FEED = {
+  '@type': 'DataFeed',
+  '@id': ORIGIN + '/catalogue.json#feed',
+  url: ORIGIN + '/catalogue.json',
+  name: BRAND + ' product catalogue',
+  description: 'Every pair in Drop 01 as JSON: price, sizes, fabric, availability and buying status.',
+  encodingFormat: 'application/json',
+  inLanguage: 'en',
+  isAccessibleForFree: true,
+  creator: { '@id': ORIGIN + '/#organization' }
+};
 const crumbs = items => ({
   '@type': 'BreadcrumbList',
   itemListElement: items.map((it, i) => ({
@@ -215,4 +241,4 @@ const crumbs = items => ({
   }))
 });
 
-module.exports = { ORIGIN, BRAND, TAGLINE, esc, head, header, footer, foot, tile, ORG, SITE, crumbs, NAV };
+module.exports = { ORIGIN, BRAND, TAGLINE, esc, head, header, footer, foot, tile, ORG, SITE, SHIPPING, FEED, crumbs, NAV };

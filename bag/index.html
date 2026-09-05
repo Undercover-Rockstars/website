@@ -32,6 +32,7 @@
 <link rel="apple-touch-icon" href="/assets/apple-touch-icon.png">
 <link rel="manifest" href="/site.webmanifest">
 <link rel="alternate" type="text/plain" href="/llms.txt" title="llms.txt">
+<link rel="alternate" type="application/json" href="/catalogue.json" title="Product catalogue">
 
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -49,7 +50,8 @@
   <nav class="site-nav" aria-label="Primary">
     <a href="/collection/">Drop 01</a>
     <a href="/thesis/">Thesis</a>
-    <a href="/fitting-room/" style="color:var(--acc)">Fitting room</a>
+    <a href="/fitting-room/">Fitting room</a>
+    <a href="/waitlist/" style="color:var(--acc)">Waitlist</a>
     <a href="/#signal">Signal</a>
   </nav>
   <div class="header-right">
@@ -70,14 +72,14 @@
       <p class="eyebrow" style="margin-bottom:20px">UR/BAG · <span data-bag-count>00</span> in bag</p>
       <h1 class="h-page">Bag</h1>
     </div>
-    <p class="lede col-9-4" style="font-size:15px">Drop 01 is not open for sale yet. Reserve your pair and size and we will contact you the moment it opens. No payment is taken here.</p>
+    <p class="lede col-9-4" style="font-size:15px">Drop 01 is not open for sale yet. Reserve your pair, size and fit and we will contact you the moment it opens. No payment is taken here.</p>
   </div>
 
   <div class="grid12" style="gap:48px var(--gap)">
     <div class="col-1-8">
       <div class="bag-body" id="bag-page-body" style="overflow:visible"></div>
       <div class="bag-foot" style="margin-top:8px">
-        <div class="bag-total"><span>Total</span><span id="bag-page-total">€0</span></div>
+        <div class="bag-total"><span>Total</span><span id="bag-page-total">$0</span></div>
         <p class="fit-note">Shipping complimentary worldwide. Nothing is charged until Drop 01 opens and you confirm.</p>
       </div>
     </div>
@@ -99,6 +101,7 @@
         <p class="signal-ok" id="rv-ok" hidden>Reserved. We'll be in touch before the drop opens.</p>
         <p class="fit-note" id="rv-err" hidden></p>
         <p class="fit-note">No card details are collected anywhere on this site.</p>
+        <p class="fit-note">Reserving is free and does not hold a place in the queue. A <a href="/waitlist/">$9 waitlist place</a> is served first when the drop opens.</p>
       </div>
     </div>
   </div>
@@ -118,6 +121,7 @@
       <span class="mute">House</span>
       <a href="/thesis/">Thesis</a>
       <a href="/fitting-room/">Fitting room</a>
+      <a href="/waitlist/">Waitlist</a>
       <a href="/#signal">Signal</a>
     </nav>
     <nav aria-label="Channels">
@@ -143,7 +147,7 @@
   </div>
   <div class="bag-body" id="bag-body"></div>
   <div class="bag-foot">
-    <div class="bag-total"><span>Total</span><span id="bag-total">€0</span></div>
+    <div class="bag-total"><span>Total</span><span id="bag-total">$0</span></div>
     <a class="btn" id="bag-checkout" href="/bag/"><span>Review bag</span><span aria-hidden="true">→</span></a>
   </div>
 </aside>

@@ -32,6 +32,7 @@
 <link rel="apple-touch-icon" href="/assets/apple-touch-icon.png">
 <link rel="manifest" href="/site.webmanifest">
 <link rel="alternate" type="text/plain" href="/llms.txt" title="llms.txt">
+<link rel="alternate" type="application/json" href="/catalogue.json" title="Product catalogue">
 
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -84,6 +85,7 @@
     <a href="/collection/">Drop 01</a>
     <a href="/thesis/">Thesis</a>
     <a href="/fitting-room/" aria-current="page">Fitting room</a>
+    <a href="/waitlist/" style="color:var(--acc)">Waitlist</a>
     <a href="/#signal">Signal</a>
   </nav>
   <div class="header-right">
@@ -121,14 +123,14 @@
       <div class="fit-block">
         <p class="step">02 / Pair</p>
         <div class="fit-pairs" role="group" aria-label="Choose a pair">
-          <button type="button" data-fit-product="boardroom" aria-pressed="true"><span>UR/01 The Boardroom Pair</span><span class="p">€2,290</span></button>
-          <button type="button" data-fit-product="afterhours" aria-pressed="false"><span>UR/02 After Hours Pair</span><span class="p">€2,850</span></button>
-          <button type="button" data-fit-product="twoface" aria-pressed="false"><span>UR/03 Two-Face Pair</span><span class="p">€1,180</span></button>
-          <button type="button" data-fit-product="backstage" aria-pressed="false"><span>UR/04 Backstage Pair</span><span class="p">€1,390</span></button>
-          <button type="button" data-fit-product="doublelife" aria-pressed="false"><span>UR/05 Double Life Pair</span><span class="p">€1,590</span></button>
-          <button type="button" data-fit-product="encore" aria-pressed="false"><span>UR/06 Encore Pair</span><span class="p">€2,650</span></button>
-          <button type="button" data-fit-product="quietriot" aria-pressed="false"><span>UR/07 Quiet Riot Pair</span><span class="p">€1,120</span></button>
-          <button type="button" data-fit-product="curtaincall" aria-pressed="false"><span>UR/08 Curtain Call Pair</span><span class="p">€1,480</span></button>
+          <button type="button" data-fit-product="boardroom" aria-pressed="true"><span>UR/01 The Boardroom Pair</span><span class="p">$2,290</span></button>
+          <button type="button" data-fit-product="afterhours" aria-pressed="false"><span>UR/02 After Hours Pair</span><span class="p">$2,850</span></button>
+          <button type="button" data-fit-product="twoface" aria-pressed="false"><span>UR/03 Two-Face Pair</span><span class="p">$1,180</span></button>
+          <button type="button" data-fit-product="backstage" aria-pressed="false"><span>UR/04 Backstage Pair</span><span class="p">$1,390</span></button>
+          <button type="button" data-fit-product="doublelife" aria-pressed="false"><span>UR/05 Double Life Pair</span><span class="p">$1,590</span></button>
+          <button type="button" data-fit-product="encore" aria-pressed="false"><span>UR/06 Encore Pair</span><span class="p">$2,650</span></button>
+          <button type="button" data-fit-product="quietriot" aria-pressed="false"><span>UR/07 Quiet Riot Pair</span><span class="p">$1,120</span></button>
+          <button type="button" data-fit-product="curtaincall" aria-pressed="false"><span>UR/08 Curtain Call Pair</span><span class="p">$1,480</span></button>
         </div>
       </div>
       <div class="fit-block">
@@ -189,6 +191,7 @@
       <span class="mute">House</span>
       <a href="/thesis/">Thesis</a>
       <a href="/fitting-room/">Fitting room</a>
+      <a href="/waitlist/">Waitlist</a>
       <a href="/#signal">Signal</a>
     </nav>
     <nav aria-label="Channels">
@@ -214,7 +217,7 @@
   </div>
   <div class="bag-body" id="bag-body"></div>
   <div class="bag-foot">
-    <div class="bag-total"><span>Total</span><span id="bag-total">€0</span></div>
+    <div class="bag-total"><span>Total</span><span id="bag-total">$0</span></div>
     <a class="btn" id="bag-checkout" href="/bag/"><span>Review bag</span><span aria-hidden="true">→</span></a>
   </div>
 </aside>

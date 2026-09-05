@@ -5,7 +5,7 @@
 <p align="center">
   <img src="https://img.shields.io/badge/DROP-01-FF3B30?style=flat-square&labelColor=0A0A0B" alt="Drop 01">
   <img src="https://img.shields.io/badge/PAIRS-08-ECEBE6?style=flat-square&labelColor=0A0A0B" alt="8 pairs">
-  <img src="https://img.shields.io/badge/PAGES-14-ECEBE6?style=flat-square&labelColor=0A0A0B" alt="14 pages">
+  <img src="https://img.shields.io/badge/PAGES-15-ECEBE6?style=flat-square&labelColor=0A0A0B" alt="15 pages">
   <img src="https://img.shields.io/badge/BUILD%20STEP-NONE-ECEBE6?style=flat-square&labelColor=0A0A0B" alt="No build step">
   <img src="https://img.shields.io/badge/DEPENDENCIES-ZERO-FF3B30?style=flat-square&labelColor=0A0A0B" alt="Zero dependencies">
 </p>
@@ -35,18 +35,23 @@ after.
 
 ### Drop 01
 
-Eight pairs, sixteen garments. Unisex, cut in Bali.
+Eight pairs, sixteen garments. Unisex, cut in Bali. Every pair comes two ways:
+standard sizing at the listed price, or **made to measure at 30% more**, cut
+from the buyer's own measurements. The premium lives in `FITS` in
+`assets/ur-data.js` and everything else prices through `priceOf()`, so the
+product page, the bag, the feed and the reservation email cannot quote different
+money.
 
 | | Pair | Category | Day | Night | Price |
 | :--- | :--- | :--- | :--- | :--- | ---: |
-| UR/01 | The Boardroom Pair | Blazer | Charcoal wool, clean notch lapel | Same cut in black, satin-faced lapel | €2,290 |
-| UR/02 | After Hours Pair | Jacket | Structured, unlined, stone grey | Bonded black with a zipped storm flap | €2,850 |
-| UR/03 | Two-Face Pair | Shirt | Crisp oxford white | Ink black, same collar, same cuff | €1,180 |
-| UR/04 | Backstage Pair | Knit | Fine-gauge crew | Same crew, hand-distressed hem and cuffs | €1,390 |
-| UR/05 | Double Life Pair | Jacket | Charcoal flannel, tonal buttons | Charcoal flannel, signal-red lining | €1,590 |
-| UR/06 | Encore Pair | Blazer | Soft-shoulder double-breasted, navy | Oversized black, worn as a coat | €2,650 |
-| UR/07 | Quiet Riot Pair | Shirt | Plain black poplin | Lyrics stitched tone on tone | €1,120 |
-| UR/08 | Curtain Call Pair | Knit | Slim turtleneck, closed seams | Same turtleneck, slashed shoulder seams | €1,480 |
+| UR/01 | The Boardroom Pair | Blazer | Charcoal wool, clean notch lapel | Same cut in black, satin-faced lapel | $2,290 |
+| UR/02 | After Hours Pair | Jacket | Structured, unlined, stone grey | Bonded black with a zipped storm flap | $2,850 |
+| UR/03 | Two-Face Pair | Shirt | Crisp oxford white | Ink black, same collar, same cuff | $1,180 |
+| UR/04 | Backstage Pair | Knit | Fine-gauge crew | Same crew, hand-distressed hem and cuffs | $1,390 |
+| UR/05 | Double Life Pair | Jacket | Charcoal flannel, tonal buttons | Charcoal flannel, signal-red lining | $1,590 |
+| UR/06 | Encore Pair | Blazer | Soft-shoulder double-breasted, navy | Oversized black, worn as a coat | $2,650 |
+| UR/07 | Quiet Riot Pair | Shirt | Plain black poplin | Lyrics stitched tone on tone | $1,120 |
+| UR/08 | Curtain Call Pair | Knit | Slim turtleneck, closed seams | Same turtleneck, slashed shoulder seams | $1,480 |
 
 ---
 
@@ -72,6 +77,7 @@ indexable and there is no URL for a product. This is a real multi-page site:
 /product/<id>/        one page per pair, ×8
 /thesis/              the manifesto
 /fitting-room/        try-on interface
+/waitlist/            the $9 place in the queue
 /bag/                 bag and reservation (noindex)
 ```
 
@@ -91,10 +97,12 @@ assets/
   ur-fitting.js       fitting room
   ur-signal.js        newsletter
   ur-bag.js           reservation form
+  ur-waitlist.js      waitlist checkout hand-off
   tryon.js            try-on provider hook (nothing connected yet)
   og*.png             one Open Graph card per page (generated)
 functions/api/
   contact.js          reservations and signups
+  waitlist.js         Stripe Checkout Session for the $9 place
 tools/
   pages.js            generates every page from ur-data.js
   build.js            shared layout, head, chrome, JSON-LD
@@ -157,6 +165,41 @@ provider that uploads it, the copy on that page has to change.
 - **Responsive** — the source is desktop-only (12-column grids, four-across
   tiles, 7fr/5fr splits). Added breakpoints at 1100, 900 and 700px.
 
+### The waitlist, and the only money on this site
+
+`/waitlist/` sells one thing: a **$9 place in the queue** for Drop 01. Numbered
+place, paid places served first when the drop opens, credited against the first
+pair, **not refundable**. The amount and every promise made about it live in
+`WAITLIST` in `assets/ur-data.js`, so the page, `catalogue.json`, `llms.txt` and
+the Stripe line item say one thing.
+
+Prices across the site are US dollars. The numbers did not move when the
+currency did: this is a currency change, not an FX conversion, so `$2,290` is
+the same 2290 the design shipped with. `CURRENCY` and `format()` in
+`assets/ur-data.js` are the only two places that decide it.
+
+**No card field exists anywhere on this site.** `functions/api/waitlist.js`
+creates a Stripe Checkout Session and returns its URL; the card is entered on
+Stripe. The amount is fixed server-side, so a tampered payload cannot change
+what is charged. The endpoint is origin-locked, honeypotted and Turnstile-gated
+like the contact one, because an open session-creating endpoint is a free way to
+fill a Stripe dashboard with junk.
+
+It is **not live yet**, and the site says so rather than pretending:
+`WAITLIST.live` is `false`, the button reads *Not open yet* and is disabled, the
+JSON-LD offer is `PreOrder` rather than `InStock`, and `catalogue.json` carries
+`waitlist.live: false`. Two steps turn it on, and they belong in one commit:
+
+```sh
+npx wrangler pages secret put STRIPE_SECRET_KEY --project-name undercover-rockstars
+# or, for the no-code path, set STRIPE_PAYMENT_LINK to a Stripe Payment Link URL
+```
+
+then flip `live: true` in `WAITLIST` and run `node tools/pages.js`. Without
+either secret the endpoint returns `503 not_configured` and the page says the
+waitlist is not open, so a half-finished setup never takes money it cannot
+account for.
+
 ### The NFC tag
 
 The tag is a garment feature, not a site feature: nothing on this site reads or
@@ -166,6 +209,46 @@ and `llms.txt` say plainly that tags travel with the garments and that Drop 01
 has not shipped, so nothing is in circulation to tap. Building the verify page
 and the finder-to-owner relay is what has to happen before that hedge can come
 out, and the copy has to change with it.
+
+### Agent-readable commerce
+
+A shopping agent asks four things: what is for sale, at what price, in what
+sizes, and can it be bought right now. Prose answers none of them reliably, so
+each has a field:
+
+- **`/catalogue.json`** is the whole drop as JSON, generated from `ur-data.js`
+  by `tools/pages.js` like every page, so the two cannot drift. Per pair: sku,
+  url, price, currency, sizes, category, fabric, contents, country of origin,
+  the NFC tag and `purchasable`. Alongside them: shipping, the buying status,
+  the tag, the fitting room and a `returnPolicy` that says *no policy is
+  published, do not state one*, because the alternative is an agent inventing
+  one.
+- **Discovery** without reading this file: every page carries
+  `<link rel="alternate" type="application/json" href="/catalogue.json">`, the
+  home and collection JSON-LD graphs carry a `DataFeed` node pointing at it,
+  `robots.txt` names it, and `_headers` sends a `Link:` header on the page
+  routes so a HEAD request finds it without parsing HTML.
+- **CORS.** `/catalogue.json` and `/llms.txt` are served
+  `Access-Control-Allow-Origin: *`. An agent in a browser context cannot read
+  them otherwise. Both are public and carry no user data.
+- **Structured data.** Each product carries `size`, `audience`, `mpn`,
+  `additionalProperty` (contents, authenticity tag) and an `Offer` with
+  `itemCondition` and `shippingDetails`. `/collection/` embeds all eight
+  products inside its `ItemList`, so one fetch replaces an eight page crawl.
+- **`llms.txt`** has a *For shopping agents* section stating what an agent can
+  do here and what it cannot, plus a *Fits* section so a quote for a pair is
+  never off by the 30% tailoring premium.
+- **Both prices per pair** are in the feed (`products[].fits[]`) and on the page,
+  and the waitlist is its own feed block with `live` and `purchasable` flags.
+
+The honest part matters most: **nothing on this site can be bought, by a person
+or an agent.** There is no checkout, no cart API, no payment endpoint and no
+order status, and `purchasable: false` says so in the first fifteen lines of the
+feed. `POST /api/contact` backs the site's own two forms, is locked to this
+origin and is gated by Turnstile; it is not an order API and the feed says so.
+When a processor is wired up, the fields to flip are `purchasable`,
+`status.forSale`, `status.checkoutUrl` and the `PreOrder` availability, in the
+feed and in the product JSON-LD together.
 
 ### Search and answer engines
 

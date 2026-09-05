@@ -32,6 +32,7 @@
 <link rel="apple-touch-icon" href="/assets/apple-touch-icon.png">
 <link rel="manifest" href="/site.webmanifest">
 <link rel="alternate" type="text/plain" href="/llms.txt" title="llms.txt">
+<link rel="alternate" type="application/json" href="/catalogue.json" title="Product catalogue">
 
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -57,12 +58,54 @@
       "material": "Wool · Bonded wool",
       "countryOfOrigin": "ID",
       "image": "https://undercoverrockstars.com/assets/og-afterhours.png",
+      "mpn": "UR-02",
+      "size": [
+        "XS",
+        "S",
+        "M",
+        "L",
+        "XL"
+      ],
+      "audience": {
+        "@type": "PeopleAudience",
+        "suggestedGender": "unisex"
+      },
+      "additionalProperty": [
+        {
+          "@type": "PropertyValue",
+          "name": "Contents",
+          "value": "1 day garment + 1 night garment"
+        },
+        {
+          "@type": "PropertyValue",
+          "name": "Authenticity tag",
+          "value": "NFC tag in the seam of both pieces"
+        }
+      ],
       "offers": {
         "@type": "Offer",
         "url": "https://undercoverrockstars.com/product/afterhours/",
         "price": 2850,
-        "priceCurrency": "EUR",
+        "priceCurrency": "USD",
         "availability": "https://schema.org/PreOrder",
+        "itemCondition": "https://schema.org/NewCondition",
+        "shippingDetails": {
+          "@type": "OfferShippingDetails",
+          "shippingRate": {
+            "@type": "MonetaryAmount",
+            "value": 0,
+            "currency": "USD"
+          },
+          "deliveryTime": {
+            "@type": "ShippingDeliveryTime",
+            "transitTime": {
+              "@type": "QuantitativeValue",
+              "minValue": 3,
+              "maxValue": 5,
+              "unitCode": "DAY"
+            }
+          }
+        },
         "seller": {
           "@id": "https://undercoverrockstars.com/#organization"
         }
@@ -104,7 +147,8 @@
   <nav class="site-nav" aria-label="Primary">
     <a href="/collection/" aria-current="page">Drop 01</a>
     <a href="/thesis/">Thesis</a>
-    <a href="/fitting-room/" style="color:var(--acc)">Fitting room</a>
+    <a href="/fitting-room/">Fitting room</a>
+    <a href="/waitlist/" style="color:var(--acc)">Waitlist</a>
     <a href="/#signal">Signal</a>
   </nav>
   <div class="header-right">
@@ -133,12 +177,20 @@
   <div class="product-panel">
     <a class="crumb" href="/collection/">← UR/01 / Jacket / UR/02</a>
     <h1 class="h-page" style="font-size:clamp(32px,3.4vw,54px);line-height:.92;letter-spacing:-.03em">After Hours Pair</h1>
-    <p class="product-price">€2,850 <small>· Pair of 2 · one size for both</small></p>
+    <p class="product-price">$2,850 <small>· Pair of 2 · one size for both</small></p>
     <div class="versions">
       <div class="v-day"><p class="label">Day version</p><p>Structured, unlined, stone grey</p></div>
       <div class="v-night"><p class="label">Night version</p><p>Bonded black with a zipped storm flap</p></div>
     </div>
     <p class="lede" style="font-size:15px">A jacket built twice. By day, an unlined structured jacket in stone grey that sits like tailoring. By night, the same silhouette in bonded matte black with a storm flap that zips into a hard, straight line.</p>
+    <div>
+      <p class="eyebrow" style="margin-bottom:12px">Fit — <span id="fit-label">Standard sizing</span></p>
+      <div class="fits" role="group" aria-label="Choose a fit">
+        <button type="button" data-fit="standard" aria-pressed="true"><span>Standard sizing</span><span class="p">$2,850</span></button>
+        <button type="button" data-fit="tailored" aria-pressed="false"><span>Made to measure</span><span class="p">$3,705 · +30%</span></button>
+      </div>
+      <p class="fit-note" id="fit-note" style="margin-top:10px">Cut to the size run, XS to XL.</p>
+    </div>
     <div>
       <p class="eyebrow" style="margin-bottom:12px">Size — <span id="size-label">select</span></p>
       <div class="sizes" role="group" aria-label="Choose a size">
@@ -148,6 +200,7 @@
         <button type="button" data-size="L" aria-pressed="false">L</button>
         <button type="button" data-size="XL" aria-pressed="false">XL</button>
       </div>
+      <p class="fit-note" id="size-hint" hidden style="margin-top:10px">The size closest to you. A made-to-measure pair is cut from your own measurements, taken after you reserve.</p>
     </div>
     <div style="display:grid;gap:8px">
       <button type="button" class="btn btn--lg" id="add-to-bag" disabled><span id="add-label">Select a size</span><span aria-hidden="true">→</span></button>
@@ -156,6 +209,7 @@
     <dl class="spec-table">
       <div><dt>Contents</dt><dd>1 day + 1 night</dd></div>
       <div><dt>Tag</dt><dd>NFC · both pieces</dd></div>
+      <div><dt>Made to measure</dt><dd>+30% · $3,705</dd></div>
       <div><dt>Fabric</dt><dd>Wool · Bonded wool</dd></div>
       <div><dt>Made in</dt><dd>Bali, Indonesia</dd></div>
       <div><dt>Shipping</dt><dd>Worldwide · 3–5 days</dd></div>
@@ -183,6 +237,7 @@
       <span class="mute">House</span>
       <a href="/thesis/">Thesis</a>
       <a href="/fitting-room/">Fitting room</a>
+      <a href="/waitlist/">Waitlist</a>
       <a href="/#signal">Signal</a>
     </nav>
     <nav aria-label="Channels">
@@ -208,7 +263,7 @@
   </div>
   <div class="bag-body" id="bag-body"></div>
   <div class="bag-foot">
-    <div class="bag-total"><span>Total</span><span id="bag-total">€0</span></div>
+    <div class="bag-total"><span>Total</span><span id="bag-total">$0</span></div>
     <a class="btn" id="bag-checkout" href="/bag/"><span>Review bag</span><span aria-hidden="true">→</span></a>
   </div>
 </aside>

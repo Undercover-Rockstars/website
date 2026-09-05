@@ -52,12 +52,56 @@
       desc: 'Two turtlenecks from one pattern. The day version is finished clean. The night version has the shoulder seams left open and bound. Under a jacket both disappear. Without one, only one does.' }
   ];
 
+  /* Every pair can be cut to measure instead of to the size run, for 30% more.
+     The premium lives here alone: the pages, the bag, the feed and the
+     reservation email all price through priceOf(), so there is one number to
+     change and no way for two surfaces to quote different money. */
+  var FITS = [
+    { id: 'standard', name: 'Standard sizing', premium: 0,
+      note: 'Cut to the size run, XS to XL.' },
+    { id: 'tailored', name: 'Made to measure', premium: 0.30,
+      note: 'Cut to your measurements. Pick the size closest to you now; we take the measurements after you reserve.' }
+  ];
+
+  function fitOf(id) {
+    return FITS.filter(function (f) { return f.id === id; })[0] || FITS[0];
+  }
+  function priceOf(product, fit) {
+    return Math.round(product.price * (1 + fitOf(fit).premium));
+  }
+
+  /* The waitlist is the one thing on this site that takes money, and it is the
+     only paid item until a real checkout exists. Amount, currency and every
+     promise made about it live here, so the page, the feed, llms.txt and the
+     Stripe line item cannot drift from each other. */
+  var WAITLIST = {
+    // Flip to true in the same commit that sets the Stripe secret. While it is
+    // false the page shows the offer but cannot charge, and says so.
+    live: false,
+    amount: 9,
+    currency: 'USD',
+    unitAmount: 900,               // minor units, what Stripe is sent
+    formatted: '$9',
+    name: 'Drop 01 waitlist place',
+    perks: [
+      'A numbered place in the queue for Drop 01.',
+      'Paid places are served first when the drop opens, before it goes public.',
+      'The $9 comes off your first pair.'
+    ],
+    terms: 'A place is not a pair: it does not hold a size, a fit or a piece, and ' +
+      'the $9 is not refundable. It comes off your first pair when Drop 01 opens.'
+  };
+
   return {
     PRODUCTS: PRODUCTS,
+    WAITLIST: WAITLIST,
     CATEGORIES: ['All', 'Blazer', 'Jacket', 'Shirt', 'Knit'],
     SIZES: ['XS', 'S', 'M', 'L', 'XL'],
-    CURRENCY: 'EUR',
-    // Prices are shown as whole euros, formatted the way the design did.
-    format: function (n) { return '€' + n.toLocaleString('en-IE'); }
+    FITS: FITS,
+    fitOf: fitOf,
+    priceOf: priceOf,
+    CURRENCY: 'USD',
+    // Prices are shown as whole dollars, formatted the way the design did.
+    format: function (n) { return '$' + n.toLocaleString('en-US'); }
   };
 });

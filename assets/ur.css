@@ -559,6 +559,8 @@ main, footer, .site-header { position: relative; z-index: 1; }
 /* The tag section runs two cards, not three. The 1100px rule below collapses
    both variants to a single column. */
 .codes--2 { grid-template-columns: repeat(2, 1fr); }
+/* Cards holding one line, not a paragraph: the 220px floor leaves a hole. */
+.codes--tight .code { min-height: 0; }
 
 /* ---------------------------------------------------------------- signal */
 
@@ -787,6 +789,31 @@ main, footer, .site-header { position: relative; z-index: 1; }
 }
 .sizes button:last-child { border-right: 0; }
 .sizes button[aria-pressed="true"] { background: var(--fg); color: var(--bg); }
+
+/* Fit chooser: standard against made to measure, price on each so the premium
+   is never a surprise at the bag. */
+.fits { display: grid; grid-template-columns: 1fr 1fr; border: 1px solid var(--line); width: 100%; }
+.fits button {
+  display: grid;
+  gap: 6px;
+  justify-items: start;
+  text-align: left;
+  padding: 14px 16px;
+  background: transparent;
+  color: var(--fg);
+  border: 0;
+  border-right: 1px solid var(--line);
+  cursor: pointer;
+  font-family: var(--mono);
+  font-size: 11px;
+  letter-spacing: .1em;
+  text-transform: uppercase;
+  transition: background-color .2s, color .2s;
+}
+.fits button:last-child { border-right: 0; }
+.fits button .p { color: var(--mute); }
+.fits button[aria-pressed="true"] { background: var(--fg); color: var(--bg); }
+.fits button[aria-pressed="true"] .p { color: var(--bg); }
 
 .spec-table {
   display: grid;
@@ -1141,6 +1168,9 @@ main, footer, .site-header { position: relative; z-index: 1; }
   .statusbar > div { border-right: 0; border-bottom: 1px solid var(--line); }
   .media-row { grid-template-columns: 1fr; }
   .media--day, .media--detail:first-child { border-right: 0; border-bottom: 1px solid var(--line); }
+  .fits { grid-template-columns: 1fr; }
+  .fits button { border-right: 0; border-bottom: 1px solid var(--line); }
+  .fits button:last-child { border-bottom: 0; }
   .versions { grid-template-columns: 1fr; }
   .versions .v-day { border-right: 0; border-bottom: 1px solid var(--line); }
   .footer-cols { grid-template-columns: 1fr; }

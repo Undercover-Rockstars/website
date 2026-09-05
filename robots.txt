@@ -1,6 +1,7 @@
 # Undercover Rockstars · https://undercoverrockstars.com
 # Answer engines and AI crawlers are welcome. /llms.txt carries a structured,
-# plain-text summary written for machine readers.
+# plain-text summary written for machine readers, and /catalogue.json carries the
+# whole drop as JSON: prices, sizes, availability and buying status.
 
 User-agent: *
 Allow: /

@@ -1,0 +1,461 @@
+{
+  "brand": "Undercover Rockstars",
+  "site": "https://undercoverrockstars.com/",
+  "drop": "UR/01",
+  "generated": "2026-09-05",
+  "documentation": "https://undercoverrockstars.com/llms.txt",
+  "currency": "USD",
+  "purchasable": false,
+  "status": {
+    "forSale": false,
+    "payableItems": [],
+    "availability": "https://schema.org/PreOrder",
+    "note": "Drop 01 is not open for sale. There is no checkout, no cart API and no payment endpoint on this site, so neither a person nor an agent can buy anything today. The bag takes a reservation: a name, an email, and the pair and size wanted.",
+    "checkoutUrl": null,
+    "paymentAccepted": false,
+    "reserveUrl": "https://undercoverrockstars.com/bag/",
+    "reservationApi": null,
+    "apiNote": "POST /api/contact (reservations) and POST /api/waitlist (the $9 place) exist for the site's own forms. Both are locked to this origin and gated by Turnstile, neither is an order API, and agents should not call them. Send the buyer to https://undercoverrockstars.com/bag/, https://undercoverrockstars.com/waitlist/ or to hello@undercoverrockstars.com."
+  },
+  "sizes": [
+    "XS",
+    "S",
+    "M",
+    "L",
+    "XL"
+  ],
+  "categories": [
+    "Blazer",
+    "Jacket",
+    "Shirt",
+    "Knit"
+  ],
+  "fits": [
+    {
+      "id": "standard",
+      "name": "Standard sizing",
+      "premiumPercent": 0,
+      "note": "Cut to the size run, XS to XL."
+    },
+    {
+      "id": "tailored",
+      "name": "Made to measure",
+      "premiumPercent": 30,
+      "note": "Cut to your measurements. Pick the size closest to you now; we take the measurements after you reserve."
+    }
+  ],
+  "waitlist": {
+    "url": "https://undercoverrockstars.com/waitlist/",
+    "name": "Drop 01 waitlist place",
+    "amount": 9,
+    "currency": "USD",
+    "purchasable": false,
+    "live": false,
+    "perks": [
+      "A numbered place in the queue for Drop 01.",
+      "Paid places are served first when the drop opens, before it goes public.",
+      "The $9 comes off your first pair."
+    ],
+    "terms": "A place is not a pair: it does not hold a size, a fit or a piece, and the $9 is not refundable. It comes off your first pair when Drop 01 opens.",
+    "note": "The offer is published but no payment processor is connected yet, so nothing can be charged today."
+  },
+  "shipping": {
+    "cost": 0,
+    "currency": "USD",
+    "destination": "worldwide",
+    "transitDays": [
+      3,
+      5
+    ]
+  },
+  "returnPolicy": {
+    "published": false,
+    "note": "No returns policy is published yet. Do not state one."
+  },
+  "tag": {
+    "type": "NFC",
+    "perGarment": true,
+    "purpose": [
+      "authenticity check",
+      "lost piece returned to its owner without exposing the owner"
+    ],
+    "live": false,
+    "note": "Tags travel with the garments. Drop 01 has not shipped, there is no verification URL yet, and nothing is in circulation to tap."
+  },
+  "fittingRoom": {
+    "url": "https://undercoverrockstars.com/fitting-room/",
+    "providerConnected": false,
+    "note": "A try-on interface with no provider wired up. It renders nothing. Do not describe it as a working AI try-on."
+  },
+  "contact": "hello@undercoverrockstars.com",
+  "products": [
+    {
+      "id": "boardroom",
+      "sku": "UR-01",
+      "code": "01",
+      "name": "The Boardroom Pair",
+      "url": "https://undercoverrockstars.com/product/boardroom/",
+      "image": "https://undercoverrockstars.com/assets/og-boardroom.png",
+      "category": "Blazer",
+      "price": 2290,
+      "currency": "USD",
+      "priceFormatted": "$2,290",
+      "fits": [
+        {
+          "id": "standard",
+          "name": "Standard sizing",
+          "premiumPercent": 0,
+          "price": 2290,
+          "priceFormatted": "$2,290"
+        },
+        {
+          "id": "tailored",
+          "name": "Made to measure",
+          "premiumPercent": 30,
+          "price": 2977,
+          "priceFormatted": "$2,977"
+        }
+      ],
+      "availability": "https://schema.org/PreOrder",
+      "purchasable": false,
+      "sizes": [
+        "XS",
+        "S",
+        "M",
+        "L",
+        "XL"
+      ],
+      "unisex": true,
+      "contents": "1 day garment + 1 night garment",
+      "day": "Charcoal wool, clean notch lapel",
+      "night": "Same cut in black, satin-faced lapel",
+      "fabric": "Wool 320g · Wool / silk satin",
+      "madeIn": "Bali, Indonesia",
+      "countryOfOrigin": "ID",
+      "nfcTag": true,
+      "description": "Two blazers from one pattern. The day version is charcoal wool with a clean lapel and nothing to explain. The night version is the identical cut in black with a satin-faced lapel that catches the light. Same shoulders, same length, same you."
+    },
+    {
+      "id": "afterhours",
+      "sku": "UR-02",
+      "code": "02",
+      "name": "After Hours Pair",
+      "url": "https://undercoverrockstars.com/product/afterhours/",
+      "image": "https://undercoverrockstars.com/assets/og-afterhours.png",
+      "category": "Jacket",
+      "price": 2850,
+      "currency": "USD",
+      "priceFormatted": "$2,850",
+      "fits": [
+        {
+          "id": "standard",
+          "name": "Standard sizing",
+          "premiumPercent": 0,
+          "price": 2850,
+          "priceFormatted": "$2,850"
+        },
+        {
+          "id": "tailored",
+          "name": "Made to measure",
+          "premiumPercent": 30,
+          "price": 3705,
+          "priceFormatted": "$3,705"
+        }
+      ],
+      "availability": "https://schema.org/PreOrder",
+      "purchasable": false,
+      "sizes": [
+        "XS",
+        "S",
+        "M",
+        "L",
+        "XL"
+      ],
+      "unisex": true,
+      "contents": "1 day garment + 1 night garment",
+      "day": "Structured, unlined, stone grey",
+      "night": "Bonded black with a zipped storm flap",
+      "fabric": "Wool · Bonded wool",
+      "madeIn": "Bali, Indonesia",
+      "countryOfOrigin": "ID",
+      "nfcTag": true,
+      "description": "A jacket built twice. By day, an unlined structured jacket in stone grey that sits like tailoring. By night, the same silhouette in bonded matte black with a storm flap that zips into a hard, straight line."
+    },
+    {
+      "id": "twoface",
+      "sku": "UR-03",
+      "code": "03",
+      "name": "Two-Face Pair",
+      "url": "https://undercoverrockstars.com/product/twoface/",
+      "image": "https://undercoverrockstars.com/assets/og-twoface.png",
+      "category": "Shirt",
+      "price": 1180,
+      "currency": "USD",
+      "priceFormatted": "$1,180",
+      "fits": [
+        {
+          "id": "standard",
+          "name": "Standard sizing",
+          "premiumPercent": 0,
+          "price": 1180,
+          "priceFormatted": "$1,180"
+        },
+        {
+          "id": "tailored",
+          "name": "Made to measure",
+          "premiumPercent": 30,
+          "price": 1534,
+          "priceFormatted": "$1,534"
+        }
+      ],
+      "availability": "https://schema.org/PreOrder",
+      "purchasable": false,
+      "sizes": [
+        "XS",
+        "S",
+        "M",
+        "L",
+        "XL"
+      ],
+      "unisex": true,
+      "contents": "1 day garment + 1 night garment",
+      "day": "Crisp oxford white",
+      "night": "Ink black, same collar, same cuff",
+      "fabric": "Italian poplin, both",
+      "madeIn": "Bali, Indonesia",
+      "countryOfOrigin": "ID",
+      "nfcTag": true,
+      "description": "Two shirts, one collar. The day shirt is crisp oxford white. The night shirt is ink black, cut from the same block with the same collar and cuff so the jacket sits identically over both."
+    },
+    {
+      "id": "backstage",
+      "sku": "UR-04",
+      "code": "04",
+      "name": "Backstage Pair",
+      "url": "https://undercoverrockstars.com/product/backstage/",
+      "image": "https://undercoverrockstars.com/assets/og-backstage.png",
+      "category": "Knit",
+      "price": 1390,
+      "currency": "USD",
+      "priceFormatted": "$1,390",
+      "fits": [
+        {
+          "id": "standard",
+          "name": "Standard sizing",
+          "premiumPercent": 0,
+          "price": 1390,
+          "priceFormatted": "$1,390"
+        },
+        {
+          "id": "tailored",
+          "name": "Made to measure",
+          "premiumPercent": 30,
+          "price": 1807,
+          "priceFormatted": "$1,807"
+        }
+      ],
+      "availability": "https://schema.org/PreOrder",
+      "purchasable": false,
+      "sizes": [
+        "XS",
+        "S",
+        "M",
+        "L",
+        "XL"
+      ],
+      "unisex": true,
+      "contents": "1 day garment + 1 night garment",
+      "day": "Fine-gauge crew, sits under a blazer",
+      "night": "Same crew, hand-distressed hem and cuffs",
+      "fabric": "Merino · 14-gauge, both",
+      "madeIn": "Bali, Indonesia",
+      "countryOfOrigin": "ID",
+      "nfcTag": true,
+      "description": "Two merino crews from one knit programme. The day crew is pristine and disappears under a blazer. The night crew is the same gauge and colour with the hem and cuffs hand-distressed after knitting."
+    },
+    {
+      "id": "doublelife",
+      "sku": "UR-05",
+      "code": "05",
+      "name": "Double Life Pair",
+      "url": "https://undercoverrockstars.com/product/doublelife/",
+      "image": "https://undercoverrockstars.com/assets/og-doublelife.png",
+      "category": "Jacket",
+      "price": 1590,
+      "currency": "USD",
+      "priceFormatted": "$1,590",
+      "fits": [
+        {
+          "id": "standard",
+          "name": "Standard sizing",
+          "premiumPercent": 0,
+          "price": 1590,
+          "priceFormatted": "$1,590"
+        },
+        {
+          "id": "tailored",
+          "name": "Made to measure",
+          "premiumPercent": 30,
+          "price": 2067,
+          "priceFormatted": "$2,067"
+        }
+      ],
+      "availability": "https://schema.org/PreOrder",
+      "purchasable": false,
+      "sizes": [
+        "XS",
+        "S",
+        "M",
+        "L",
+        "XL"
+      ],
+      "unisex": true,
+      "contents": "1 day garment + 1 night garment",
+      "day": "Charcoal flannel, tonal buttons",
+      "night": "Charcoal flannel, signal-red lining",
+      "fabric": "Brushed wool flannel, both",
+      "madeIn": "Bali, Indonesia",
+      "countryOfOrigin": "ID",
+      "nfcTag": true,
+      "description": "Two overshirts that look identical from the outside. The day version is lined in charcoal. The night version is lined in signal red that shows only at the cuff and the hem, only when you move."
+    },
+    {
+      "id": "encore",
+      "sku": "UR-06",
+      "code": "06",
+      "name": "Encore Pair",
+      "url": "https://undercoverrockstars.com/product/encore/",
+      "image": "https://undercoverrockstars.com/assets/og-encore.png",
+      "category": "Blazer",
+      "price": 2650,
+      "currency": "USD",
+      "priceFormatted": "$2,650",
+      "fits": [
+        {
+          "id": "standard",
+          "name": "Standard sizing",
+          "premiumPercent": 0,
+          "price": 2650,
+          "priceFormatted": "$2,650"
+        },
+        {
+          "id": "tailored",
+          "name": "Made to measure",
+          "premiumPercent": 30,
+          "price": 3445,
+          "priceFormatted": "$3,445"
+        }
+      ],
+      "availability": "https://schema.org/PreOrder",
+      "purchasable": false,
+      "sizes": [
+        "XS",
+        "S",
+        "M",
+        "L",
+        "XL"
+      ],
+      "unisex": true,
+      "contents": "1 day garment + 1 night garment",
+      "day": "Soft-shoulder double-breasted, navy",
+      "night": "Oversized black, worn as a coat",
+      "fabric": "Wool crepe, both",
+      "madeIn": "Bali, Indonesia",
+      "countryOfOrigin": "ID",
+      "nfcTag": true,
+      "description": "A double-breasted pair. The day blazer is navy wool crepe cut to size. The night blazer is the same pattern graded a half-size up in black, so it wears as a coat over nothing much."
+    },
+    {
+      "id": "quietriot",
+      "sku": "UR-07",
+      "code": "07",
+      "name": "Quiet Riot Pair",
+      "url": "https://undercoverrockstars.com/product/quietriot/",
+      "image": "https://undercoverrockstars.com/assets/og-quietriot.png",
+      "category": "Shirt",
+      "price": 1120,
+      "currency": "USD",
+      "priceFormatted": "$1,120",
+      "fits": [
+        {
+          "id": "standard",
+          "name": "Standard sizing",
+          "premiumPercent": 0,
+          "price": 1120,
+          "priceFormatted": "$1,120"
+        },
+        {
+          "id": "tailored",
+          "name": "Made to measure",
+          "premiumPercent": 30,
+          "price": 1456,
+          "priceFormatted": "$1,456"
+        }
+      ],
+      "availability": "https://schema.org/PreOrder",
+      "purchasable": false,
+      "sizes": [
+        "XS",
+        "S",
+        "M",
+        "L",
+        "XL"
+      ],
+      "unisex": true,
+      "contents": "1 day garment + 1 night garment",
+      "day": "Plain black poplin",
+      "night": "Black poplin, lyrics stitched tone on tone",
+      "fabric": "Italian poplin, both",
+      "madeIn": "Bali, Indonesia",
+      "countryOfOrigin": "ID",
+      "nfcTag": true,
+      "description": "Two black shirts. The day shirt is plain. The night shirt carries a line of text stitched black on black along the placket. You have to be close to read it."
+    },
+    {
+      "id": "curtaincall",
+      "sku": "UR-08",
+      "code": "08",
+      "name": "Curtain Call Pair",
+      "url": "https://undercoverrockstars.com/product/curtaincall/",
+      "image": "https://undercoverrockstars.com/assets/og-curtaincall.png",
+      "category": "Knit",
+      "price": 1480,
+      "currency": "USD",
+      "priceFormatted": "$1,480",
+      "fits": [
+        {
+          "id": "standard",
+          "name": "Standard sizing",
+          "premiumPercent": 0,
+          "price": 1480,
+          "priceFormatted": "$1,480"
+        },
+        {
+          "id": "tailored",
+          "name": "Made to measure",
+          "premiumPercent": 30,
+          "price": 1924,
+          "priceFormatted": "$1,924"
+        }
+      ],
+      "availability": "https://schema.org/PreOrder",
+      "purchasable": false,
+      "sizes": [
+        "XS",
+        "S",
+        "M",
+        "L",
+        "XL"
+      ],
+      "unisex": true,
+      "contents": "1 day garment + 1 night garment",
+      "day": "Slim turtleneck, closed seams",
+      "night": "Same turtleneck, slashed shoulder seams",
+      "fabric": "Cashmere blend, both",
+      "madeIn": "Bali, Indonesia",
+      "countryOfOrigin": "ID",
+      "nfcTag": true,
+      "description": "Two turtlenecks from one pattern. The day version is finished clean. The night version has the shoulder seams left open and bound. Under a jacket both disappear. Without one, only one does."
+    }
+  ]
+}
