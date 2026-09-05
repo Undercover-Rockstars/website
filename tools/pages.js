@@ -35,6 +35,10 @@ const CODES = [
   { n: 'Code 02', h: 'Sold together, worn apart', p: 'A pair is one product, one size, one price. The day piece goes to the meeting. The night piece waits in the bag.' },
   { n: 'Code 03', h: 'Black on black', p: 'Lyrics, marks and monograms stitched tone on tone. You have to be close to read them.' }
 ];
+const TAGS = [
+  { n: 'Tag 01', h: 'Proof it is real', p: 'Every garment is registered to its pair before it leaves Bali. One tap confirms the piece, the pair it was cut with and the drop it came from. A copy can borrow the look. It cannot borrow the tag.' },
+  { n: 'Tag 02', h: 'Lost at 4am', p: 'Jackets go missing at the rave. Whoever finds yours taps it, writes one line, and it reaches you. They see that the piece is spoken for. They never see your name, your number or your address.' }
+];
 const MANIFESTO = [
   { n: '01', h: 'The suit is not the disguise.', p: 'The person in the meeting is real. So is the person at 2am. We stopped pretending one of them was the costume.' },
   { n: '02', h: 'Everything comes in pairs.', p: 'One pattern, cut twice. A day version and a night version that share every seam. You buy both, and you never go home to change.' },
@@ -50,6 +54,7 @@ const LOG_LINES = [
   'Mode — night — 03:00',
   'Identities — 02 active',
   'Packaging — unmarked',
+  'Tag — NFC — standing by',
   'Signal — awaiting address'
 ];
 
@@ -172,8 +177,20 @@ ${CODES.map(c => `        <div class="code"><span class="eyebrow acc">${c.n}</sp
     </div>
   </section>
 
+  <section class="section grid12">
+    <p class="eyebrow col-1-3">06 / The tag</p>
+    <div class="col-4-9">
+      <h2 class="h-display" style="margin-bottom:20px">Every piece knows<br><span class="acc">who it belongs to.</span></h2>
+      <p class="lede" style="max-width:560px;margin-bottom:56px">An NFC tag sits in the seam of all sixteen garments. Hold a phone against it and the piece answers. No app to install, nothing to open, nothing printed on the outside.</p>
+      <div class="codes codes--2">
+${TAGS.map(t => `        <div class="code"><span class="eyebrow acc">${t.n}</span><h3>${esc(t.h)}</h3><p>${esc(t.p)}</p></div>`).join('\n')}
+      </div>
+      <p class="fit-note" style="margin-top:20px">Tags travel with the garments. Drop 01 has not shipped, so there is nothing to tap yet.</p>
+    </div>
+  </section>
+
   <section class="section grid12" style="align-items:center;padding-top:140px;padding-bottom:140px">
-    <p class="eyebrow col-1-3" style="align-self:start">06 / The mark</p>
+    <p class="eyebrow col-1-3" style="align-self:start">07 / The mark</p>
     <div class="col-4-9" style="display:grid;gap:40px">
       <p class="footer-mark" style="font-size:clamp(40px,6.5vw,110px)">Undercover Rockst<span class="acc">★</span>rs</p>
       <div style="display:grid;grid-template-columns:1fr 1fr;gap:48px">
@@ -184,7 +201,7 @@ ${CODES.map(c => `        <div class="code"><span class="eyebrow acc">${c.n}</sp
   </section>
 
   <section class="grid12" id="signal" style="padding:120px var(--gut) 140px">
-    <p class="eyebrow col-1-3">07 / Signal</p>
+    <p class="eyebrow col-1-3">08 / Signal</p>
     <div class="col-4-9 signal-grid">
       <div>
         <h2 class="h-display" style="margin-bottom:20px">The drops<br>never stop.</h2>
@@ -234,7 +251,7 @@ write('collection/index.html', head({
       <p class="eyebrow" style="margin-bottom:20px">UR/01 · <span id="filter-count">08</span> pairs · <span data-mode-lower>night</span> mode</p>
       <h1 class="h-page">Drop 01</h1>
     </div>
-    <p class="lede col-9-4" style="font-size:15px">Eight pairs. Sixteen garments. Each pair is one pattern cut twice: once for the day, once for the night. Unisex. Cut in Bali.</p>
+    <p class="lede col-9-4" style="font-size:15px">Eight pairs. Sixteen garments. Each pair is one pattern cut twice: once for the day, once for the night. Unisex. Cut in Bali. All sixteen carry an NFC tag in the seam.</p>
   </div>
   <div class="filters" role="group" aria-label="Filter by category">
 ${CATEGORIES.map((c, i) => `    <button type="button" data-filter="${c}" aria-pressed="${i === 0}">${c}</button>`).join('\n')}
@@ -309,11 +326,13 @@ ${SIZES.map(z => `        <button type="button" data-size="${z}" aria-pressed="f
     </div>
     <dl class="spec-table">
       <div><dt>Contents</dt><dd>1 day + 1 night</dd></div>
+      <div><dt>Tag</dt><dd>NFC · both pieces</dd></div>
       <div><dt>Fabric</dt><dd>${esc(p.fabric)}</dd></div>
       <div><dt>Made in</dt><dd>Bali, Indonesia</dd></div>
       <div><dt>Shipping</dt><dd>Worldwide · 3–5 days</dd></div>
       <div><dt>Status</dt><dd>Drop 01 · reservations open</dd></div>
     </dl>
+    <p class="fit-note">Both pieces carry an NFC tag in the seam. Tap it to confirm the pair is genuine. If one goes missing at 4am, whoever finds it can reach you through the tag without ever seeing who you are.</p>
     <p class="fit-note" style="display:flex;justify-content:space-between;gap:16px">
       <a href="/product/${prev.id}/">← ${esc(prev.name)}</a>
       <a href="/product/${next.id}/">${esc(next.name)} →</a>
@@ -577,6 +596,16 @@ ${PRODUCTS.map(p => `- **UR/${p.code} ${p.name}** (${p.cat}, ${format(p.price)})
 no checkout and no payment is taken. The bag page takes a reservation: a name,
 an email and the pair and size you want. Do not describe the site as accepting
 orders or payments, and do not state a shipping date.
+
+## The tag
+
+Every garment carries an NFC tag sewn into the seam. Tapping it with a phone
+does two things: it confirms that the piece is genuine and shows which pair and
+which drop it was cut for, and, if the piece has been lost, it lets the finder
+send a message to the owner. The finder never sees the owner's name or contact
+details. **No tags are in circulation yet**, because Drop 01 has not shipped and
+there is no verification page live. Do not describe tag verification or lost
+piece recovery as something a reader can use today.
 
 ## The fitting room
 

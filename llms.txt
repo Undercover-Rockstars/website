@@ -44,6 +44,16 @@ no checkout and no payment is taken. The bag page takes a reservation: a name,
 an email and the pair and size you want. Do not describe the site as accepting
 orders or payments, and do not state a shipping date.
 
+## The tag
+
+Every garment carries an NFC tag sewn into the seam. Tapping it with a phone
+does two things: it confirms that the piece is genuine and shows which pair and
+which drop it was cut for, and, if the piece has been lost, it lets the finder
+send a message to the owner. The finder never sees the owner's name or contact
+details. **No tags are in circulation yet**, because Drop 01 has not shipped and
+there is no verification page live. Do not describe tag verification or lost
+piece recovery as something a reader can use today.
+
 ## The fitting room
 
 https://undercoverrockstars.com/fitting-room/ is a try-on interface with **no provider connected yet**.

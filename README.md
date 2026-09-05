@@ -31,6 +31,7 @@ after.
 | One pattern, two fabrics | Every pair is cut from a single block, so the day and night versions share every seam and the fit never changes when the world does. |
 | Sold together, worn apart | A pair is one product, one size, one price. The day piece goes to the meeting; the night piece waits in the bag. |
 | Black on black | Lyrics, marks and monograms stitched tone on tone. Quiet from ten metres, loud from one. |
+| Tap to answer | Every garment has an NFC tag in the seam. It proves the piece is genuine, and if one goes missing at 4am the finder can reach the owner through it without ever seeing who they are. |
 
 ### Drop 01
 
@@ -155,6 +156,16 @@ provider that uploads it, the copy on that page has to change.
   which is the viewport rather than its container. Now `100%`.
 - **Responsive** — the source is desktop-only (12-column grids, four-across
   tiles, 7fr/5fr splits). Added breakpoints at 1100, 900 and 700px.
+
+### The NFC tag
+
+The tag is a garment feature, not a site feature: nothing on this site reads or
+writes one, and there is no `/verify/<id>` route, no tag registry and no
+message relay for a finder. The home page (`06 / The tag`), every product page
+and `llms.txt` say plainly that tags travel with the garments and that Drop 01
+has not shipped, so nothing is in circulation to tap. Building the verify page
+and the finder-to-owner relay is what has to happen before that hedge can come
+out, and the copy has to change with it.
 
 ### Search and answer engines
 

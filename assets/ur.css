@@ -556,6 +556,9 @@ main, footer, .site-header { position: relative; z-index: 1; }
   line-height: 1.15;
 }
 .code p { margin: 0; font-size: 14px; line-height: 1.65; color: var(--mute); }
+/* The tag section runs two cards, not three. The 1100px rule below collapses
+   both variants to a single column. */
+.codes--2 { grid-template-columns: repeat(2, 1fr); }
 
 /* ---------------------------------------------------------------- signal */
 
