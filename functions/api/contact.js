@@ -15,7 +15,12 @@
  *    bag: numbers in sane human ranges, unknown keys dropped, and it is
  *    ignored entirely unless a made-to-measure line is reserved. A chest of
  *    400 cm drops the profile; it never reaches the email.
+ *  - The block mapping in the email is derived here, server-side, from the
+ *    same ur-data.js the whole site prices from, never echoed from the
+ *    client payload.
  */
+
+import UR_DATA from '../../assets/ur-data.js';
 
 const LIMITS = { name: 200, email: 254, message: 4000, body: 20000, bag: 40 };
 const INTENTS = new Set(['reserve', 'signal']);
@@ -96,6 +101,32 @@ const profileEmailLines = (p) => {
   }
   lines.push('  These are estimates to pre-cut from. Confirm with a tape before cutting (#8).');
   return lines;
+};
+
+/* How each made-to-measure line maps onto a standard block (#7): the
+   nearest size by chest, the deltas from it, and the flag for #8's human
+   step. Derived from the validated profile and the drafted (provisional)
+   table in ur-data.js, never from anything the client sent as prose. */
+const blockEmailLines = (profile, bagLines) => {
+  if (!profile) return [];
+  const lines = ['', 'Block mapping (drafted size run, provisional until the pattern cutter signs it):'];
+  let any = false;
+  for (const l of bagLines) {
+    if (l.fit !== 'tailored') continue;
+    const p = UR_DATA.PRODUCTS.find(pr => pr.id === l.id);
+    if (!p) continue;
+    any = true;
+    const r = UR_DATA.blockFor(profile, p.cat);
+    if (!r) {
+      lines.push(`  ${l.id} (${p.cat}): no block mapping, chest unreadable`);
+      continue;
+    }
+    const ease = `ease draft: chest +${r.ease.chest}, waist +${r.ease.waist}, seat +${r.ease.hip} cm`;
+    const tape = r.needsByTape && !r.needsByTape.startsWith('none')
+      ? ` · tape needed: ${r.needsByTape}` : '';
+    lines.push(`  ${l.id} (${p.cat}): ${UR_DATA.blockLine(r)} · ${ease}${tape}`);
+  }
+  return any ? lines : [];
 };
 
 export async function onRequest({ request, env }) {
@@ -188,6 +219,7 @@ export async function onRequest({ request, env }) {
       (l.fit === 'tailored' ? ' · MADE TO MEASURE (+30%)' : '')));
   }
   if (profile) lines.push(...profileEmailLines(profile));
+  if (profile) lines.push(...blockEmailLines(profile, bagLines));
   if (message) lines.push('', message);
   lines.push('', '--', `Country: ${request.cf?.country || 'unknown'}`,
     'Sent by the undercoverrockstars.com site. No payment was taken.');

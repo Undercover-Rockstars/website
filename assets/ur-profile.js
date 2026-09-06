@@ -17,6 +17,11 @@
   var KEY = 'ur.profile.v1';
   var LOW_AT = (window.URMeasure && window.URMeasure.LOW_AT) || 0.6;
 
+  /* Set while the profile screen is on the page, so the block line can
+     follow live edits and the selected pair's category without the
+     caller rebuilding the whole screen. */
+  var live = null;
+
   /* Copy that states the deal per measurement: label, the one-line tape
      hint, and the sane human range the field and the server both enforce. */
   var FIELDS = [
@@ -121,6 +126,7 @@
     var tape = {};   // session memory only, never persisted
     var dirty = false;
     var savedNow = false;
+    live = { profile: profile, values: values, category: opts.category || null, box: null };
 
     root.appendChild(el('span', { class: 'eyebrow acc', text: 'Your profile' }));
     root.appendChild(el('h3', {
@@ -186,10 +192,18 @@
         chip.textContent = 'you set this';
         drawDiagram();
         drawTapeDiffs();
+        showBlock(live.category);
       });
       rows.appendChild(row);
     });
     root.appendChild(rows);
+
+    /* The block line: the same sentence the reservation email carries,
+       recomputed from the live values on every correction. */
+    var blockBox = el('div', { class: 'pf-block' });
+    root.appendChild(blockBox);
+    live.box = blockBox;
+    showBlock(live.category);
 
     /* The tape-check block: #5's spike, on real people. */
     var tapeBlock = el('div', { class: 'pf-block' });
@@ -328,9 +342,37 @@
     drawDiagram();
   }
 
+  /* The block line under the measurements (#7): "cut from an M, sleeve
+     +2 cm, back +1 cm" for the selected pair's category, from the same
+     blockFor() the reservation email uses. Rendered from the live
+     values, so corrections move it immediately. */
+  function showBlock(category) {
+    if (!live || !live.box) return;
+    var D = window.UR_DATA;
+    live.box.textContent = '';
+    live.category = category || null;
+    if (!D || !D.blockFor || !live.category) return;
+    var r = D.blockFor({ heightCm: live.profile.heightCm, values: live.values }, live.category);
+    if (!r) return;
+
+    live.box.appendChild(el('span', { class: 'eyebrow', text: 'Your block, for a ' + live.category.toLowerCase() }));
+    live.box.appendChild(el('p', {
+      class: 'pf-blockmain',
+      text: D.blockLine(r) + '.'
+    }));
+    var tapeNote = r.needsByTape && r.needsByTape.indexOf('none') !== 0
+      ? ' The cutter still takes ' + r.needsByTape + ' with a tape after you reserve.'
+      : '';
+    live.box.appendChild(el('p', {
+      class: 'fit-note',
+      text: 'A starting point for the order, not a promise: the size run and the ease behind it are a draft from standard grading, waiting on our pattern cutter\'s real numbers.' + tapeNote
+    }));
+  }
+
   /* Dropping the screen drops the tape values with it: they were never
      written anywhere, and now they are not held anywhere either. */
   function hide() {
+    live = null;
     var root = document.getElementById('fit-profile');
     if (root) { root.hidden = true; root.textContent = ''; }
   }
@@ -342,6 +384,7 @@
     save: save,
     clear: clearSaved,
     attachPayload: attachPayload,
+    showBlock: showBlock,
     FIELDS: FIELDS
   };
 })();

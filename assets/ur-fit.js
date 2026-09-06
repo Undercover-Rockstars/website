@@ -43,6 +43,7 @@
   var modeChip = document.getElementById('fit-mode-chip');
   var fromBlock = document.getElementById('fit-from');
   var fromLinks = document.getElementById('fit-from-links');
+  var viewerCtl = null;   // set when the fit viewer is opened, below
 
   function pair() {
     return D.PRODUCTS.filter(function (p) { return p.id === pairId; })[0];
@@ -60,11 +61,18 @@
     }
     if (fromLinks) fromLinks.href = '/product/' + p.id + '/';
   }
-
   pairBtns.forEach(function (b) {
-    b.addEventListener('click', function () { pairId = b.dataset.fitProduct; syncPair(); });
+    b.addEventListener('click', function () {
+      pairId = b.dataset.fitProduct;
+      syncPair();
+      // The profile screen's block line follows the selected pair's
+      // category, and so does the viewer when it is open.
+      if (window.URProfile && !document.getElementById('fit-profile').hidden) {
+        window.URProfile.showBlock(pair().cat);
+      }
+      if (viewerCtl && viewerCtl.setCategory) viewerCtl.setCategory(pair().cat);
+    });
   });
-
   if (modeChip) modeChip.hidden = !measurementMode;
   if (fromBlock) fromBlock.hidden = !fromProduct;
 
@@ -258,6 +266,7 @@
   function toProfile(profile, heightCm) {
     if (!window.URProfile) return landing();
     window.URProfile.present(profile, {
+      category: pair().cat,
       onRetake: function () {
         window.URProfile.hide();
         toCapture(heightCm);
