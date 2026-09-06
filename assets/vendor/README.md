@@ -38,7 +38,7 @@ on another is worse than no code.
 
 | | |
 | :--- | :--- |
-| Files | `mediapipe/tasks-vision-1.0.1/vision_bundle.mjs` and the six files in `mediapipe/tasks-vision-1.0.1/wasm/` (`vision_wasm_internal.{js,wasm}`, `vision_wasm_nosimd_internal.{js,wasm}`, `vision_wasm_module_internal.{js,wasm}`) |
+| Files | `mediapipe/tasks-vision-1.0.1/vision_bundle.mjs` and the four files in `mediapipe/tasks-vision-1.0.1/wasm/` (`vision_wasm_internal.{js,wasm}`, `vision_wasm_nosimd_internal.{js,wasm}`). The upstream package also ships `vision_wasm_module_internal.{js,wasm}`, 11.5 MB that `FilesetResolver` never selects: it chooses between the SIMD and no-SIMD `internal` builds. Not vendored. |
 | Upstream | https://www.npmjs.com/package/@mediapipe/tasks-vision (npm tarball, `npm pack @mediapipe/tasks-vision@1.0.1`) |
 | Version | 1.0.1, only the vision task runtime taken: the ES module bundle and the WASM loader pairs. The `.cjs`, UMD and `.map` files in the package are not vendored. |
 | Licence | Apache-2.0 (see `mediapipe/LICENSE`, the licence text from the MediaPipe repository; the npm tarball itself carries only the SPDX id) |
@@ -47,8 +47,6 @@ on another is worse than no code.
 | | `wasm/vision_wasm_internal.wasm` `8da277a733926eacd0474b8704b36742d6ec3231c57a860c5b889dff8f1df886` |
 | | `wasm/vision_wasm_nosimd_internal.js` `e81d715a3d42cc3373602eb2f7aff795d164934db680e32496b65dab537f9658` |
 | | `wasm/vision_wasm_nosimd_internal.wasm` `a28483cd42e74e855bf5ebdb6b40d9b66a5b49e35e95020bc97669e6822a3192` |
-| | `wasm/vision_wasm_module_internal.js` `da8934057f147b622e82cfb4c0dbd85461c598e268588b5a8ba9ca963a8ff82d` |
-| | `wasm/vision_wasm_module_internal.wasm` `2dabd8e23c60984628beb7bb338764c81a08e6837145273f59578684b5d53c1b` |
 | Used by | `assets/ur-measure.js` and `assets/ur-capture.js`, the on-device measurement engine (#5) |
 | Global | none; loaded with a dynamic `import()` of the `.mjs` after the user consents and begins, so nothing large loads on page load |
 
