@@ -652,7 +652,11 @@ function buildScene(THREE, stage, D, say, section) {
   let currentPreset = 'full';
   let presetTo = null;
   function applyCameraPreset(name, jump) {
-    const p = PRESETS[name] || PRESETS.full;
+    // Each preset is a function of H, the current body height, so it has to be
+    // called. Reading .ty off the function itself yields undefined, which sets
+    // orbit.dist to undefined, puts the camera at NaN and renders an empty
+    // frame without throwing anything.
+    const p = (PRESETS[name] || PRESETS.full)();
     const to = { ty: p.ty, dist: p.dist };
     if (jump) {
       orbit.target.y = to.ty; orbit.dist = to.dist;
