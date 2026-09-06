@@ -82,10 +82,31 @@
   // app is controlled. The shop pages stay out of it on purpose: they are
   // cache-busted every deploy and a worker that wedged them would cost more
   // than offline fit pages are worth (#3).
+  //
+  // Localhost is exempt. In development the worker's stale-while-revalidate
+  // kept serving yesterday's JavaScript past every ?cachebust= query string,
+  // because the cache is keyed on the path and matched with ignoreSearch.
+  // Two real fixes were declared broken by a browser that never saw them.
+  // On localhost or 127.0.0.1 the app therefore runs uncached: no
+  // registration, and any worker left over from before this exemption is
+  // unregistered along with its caches, or it would keep controlling the
+  // page until someone cleared DevTools by hand. Any other hostname takes
+  // exactly the path this code took before the exemption, so production
+  // behaviour is unchanged.
   if ('serviceWorker' in navigator) {
-    try {
-      navigator.serviceWorker.register('/fit/sw.js');
-    } catch (e) { /* the page works without it; the next visit can retry */ }
+    var swHost = location.hostname;
+    if (swHost === 'localhost' || swHost === '127.0.0.1') {
+      navigator.serviceWorker.getRegistrations().then(function (regs) {
+        regs.forEach(function (r) { r.unregister(); });
+        return caches.keys();
+      }).then(function (keys) {
+        keys.forEach(function (k) { caches.delete(k); });
+      }).catch(function () { /* nothing to clean up is a fine outcome */ });
+    } else {
+      try {
+        navigator.serviceWorker.register('/fit/sw.js');
+      } catch (e) { /* the page works without it; the next visit can retry */ }
+    }
   }
 
   /* ------------------------------------------------- the fit viewer */
