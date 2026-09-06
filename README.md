@@ -60,10 +60,11 @@ money.
 Static HTML, CSS and vanilla JavaScript. **No build step to develop, no
 framework, nothing loaded from a CDN.** Serve the repo root and it runs.
 When a problem genuinely needs a library (the QR encoder in the fit-app
-handoff is the first), the file is vendored into `assets/vendor/` with its
-version, licence and checksum recorded in `assets/vendor/README.md`. That
-posture was decided once, in #3, so dependencies do not drift in one script
-tag at a time.
+handoff was the first, MediaPipe's pose runtime for the fit scanner is the
+second), the file is vendored into `assets/vendor/` with its version,
+licence and checksum recorded in `assets/vendor/README.md`. That posture
+was decided once, in #3, so dependencies do not drift in one script tag at
+a time.
 
 Implemented from the Claude Design source `Undercover Rockstars v3.dc.html`,
 which targets the `dc-runtime` preview environment (`<x-dc>` templates, `{{ }}`
@@ -99,7 +100,10 @@ assets/
   ur-common.js        theme, wordmark collapse, bag, drawer, toast
   ur-collection.js    category filters
   ur-product.js       size selection, add to bag
-  ur-fit.js           /fit/ app shell: pair preselect, service worker
+  ur-fit.js           /fit/ app shell: pair preselect, scan flow, service worker
+  ur-capture.js       the guided two-photo shoot (#4): guide, timer, review
+  ur-measure.js       the measurement engine (#5): measure() and its pure core
+  ur-profile.js       review, correct, tape-check, save, delete, attach (#6)
   ur-handoff.js       Try it on QR handoff on product pages
   ur-signal.js        newsletter
   ur-bag.js           reservation form
@@ -116,6 +120,7 @@ functions/api/
 tools/
   pages.js            generates every page from ur-data.js
   build.js            shared layout, head, chrome, JSON-LD
+  test-measure.js     the measurement fixture test: node tools/test-measure.js
   og-render.html      OG card and banner template
   render-og.sh        regenerates every raster asset
   build-dist.sh       assembles dist/ (allowlist + cache-bust stamping)
@@ -162,28 +167,44 @@ themselves in the garment.
 The honest version shipped first as a fitting room that read the photo in the
 browser and said *"No provider connected — we are not going to hand your own
 photo back and call it a render."* That page is now retired (the old
-`/fitting-room/` URL 301s to `/fit/`), and its successor is **UR Fit**, the
-shell of the body-scanning app the fitting room is becoming (issue #1):
+`/fitting-room/` URL 301s to `/fit/`), and its successor is **UR Fit**, now in
+phase 1 of the fitting room v2 epic (issue #1): a real on-device scanner with
+the privacy deal unchanged from the phase 0 shell.
 
-- `/fit/` explains what it will do when measurement exists: two photos on
-  your phone, processed on the device, photos discarded, numbers kept in the
-  browser and deletable in one tap, adults only.
-- It says **measurement is not connected yet**, in the same words and the
-  same posture as the waitlist's *Not open yet*, with a disabled primary
-  button rather than a hidden one. No camera is requested, nothing is
-  captured, and there is no progress bar pretending otherwise.
+- `/fit/` asks for consent first, in one paragraph, and the engine (a vendored
+  MediaPipe pose model, about 17 MB) loads only after consent and a tap on
+  Begin, never on arrival. The page stays as fast to read as it was before
+  the scanner existed.
+- The shoot (#4): setup notes, a remembered height in cm or ft/in, a live
+  pose guide with spoken-plain feedback, auto-capture after a steady second
+  or a beeped 3s timer, review, retake. Portrait only, front or rear camera.
+- The measurement (#5): `URMeasure.measure({ front, side, heightCm })`, the
+  swappable hook a vendor scanner could replace. Landmarks find the measuring
+  lines; widths and depths are scanned from the segmentation mask, because
+  landmarks are joint centres, not body edges; circumferences assume an
+  ellipse and say so. Every value carries a confidence, low values are
+  flagged, and `tools/test-measure.js` proves the pixels-to-centimetres path
+  on synthetic shapes whose dimensions are known.
+- The profile (#6): every value on a body diagram, correctable with tape
+  hints, a tape-check mode that prints the scan-vs-tape difference line by
+  line for the spike in #5, saved as numbers under `ur.profile.v1` (never
+  photos), one tap to delete, and attached to made-to-measure reservations,
+  where the endpoint validates it like the bag: numbers in sane human ranges
+  or the whole profile is dropped, never emailed.
+- Photos never leave the device (issue #12's promise, kept and published in
+  `llms.txt` and `catalogue.json`): frames go canvas to engine to wiped. The
+  site still says a phone scan is an estimate, not a tape, and measurements
+  are confirmed after you reserve.
 - "Try it on" on a product page hands off to the phone: a QR code on a
   desktop (rendered client-side as SVG by a vendored encoder, so the URL
-  never leaves the page), a plain link on a phone, chosen by capability
-  rather than a user-agent string, with "show the code anyway" so no device
-  is trapped in the wrong branch.
+  never leaves the page), a plain link on a phone, with "show the code
+  anyway" so no device is trapped in the wrong branch.
 - It is an installable PWA with its own manifest (`UR Fit`, scope `/fit/`,
   so installing it does not install the shop) and a service worker scoped
-  to `/fit/` only. The worker precaches the shell, is network-first for
-  pages and stale-while-revalidate for assets, never touches `/api/*`, and
-  cleans up its old caches on activate. The marketing pages are deliberately
-  outside its control: they change every deploy, and a worker that wedged
-  the shop would cost more than offline fit pages are worth.
+  to `/fit/` only: network-first for pages, stale-while-revalidate for
+  assets, `/api/*` never touched, the shell precached and the ~17 MB
+  engine cached on demand after its first use, never in `install`. The
+  marketing pages are deliberately outside its control.
 
 The consent note on `/fit/` states the privacy deal in one paragraph, and the
 deal and the note change in the same commit or not at all (issue #12).
@@ -287,8 +308,9 @@ Every page carries a unique title, description, canonical, its own generated
 1200×630 card, and JSON-LD: `Organization` / `WebSite` on the home page,
 `CollectionPage` with an `ItemList` on the collection, a full `Product` with
 `Offer` on each pair, and a `BreadcrumbList` throughout. `llms.txt` states
-plainly that the drop is not on sale and that the fit app's measurement is not
-connected, so answer engines do not claim otherwise.
+plainly that the drop is not on sale and that the fit app's scan is an
+on-device estimate with a confidence, never exact sizing, so answer engines
+do not claim otherwise.
 
 ### Deployment
 

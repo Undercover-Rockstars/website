@@ -35,6 +35,13 @@
     btn.disabled = true;
     if (label) label.textContent = 'Reserving…';
 
+    // #6 attach: a made-to-measure line carries the profile saved by UR Fit
+    // in this browser, numbers only, never photos. If nothing sane is
+    // saved, or a vendor scanner left no profile, nothing is attached and
+    // the reservation is the same as it ever was.
+    var hasTailored = lines.some(function (l) { return l.fit === 'tailored'; });
+    var profile = hasTailored && window.URProfile ? window.URProfile.attachPayload() : null;
+
     fetch('/api/contact', {
       method: 'POST',
       headers: { 'content-type': 'application/json' },
@@ -44,13 +51,23 @@
         name: document.getElementById('rv-name').value,
         message: document.getElementById('rv-note').value,
         company: document.getElementById('rv-company').value,
-        bag: lines
+        bag: lines,
+        profile: profile
       })
     }).then(function (r) { return r.json().then(function (d) { return { ok: r.ok && d.ok, d: d }; }); })
       .then(function (r) {
         btn.disabled = false;
         if (label) label.textContent = 'Reserve this bag';
-        if (r.ok) { form.hidden = true; if (ok) ok.hidden = false; return; }
+        if (r.ok) {
+          form.hidden = true;
+          if (ok) {
+            ok.hidden = false;
+            if (profile) {
+              ok.textContent = 'Reserved, with your saved measurements attached to the email. They are numbers only, still in this browser, and one tap in UR Fit deletes them.';
+            }
+          }
+          return;
+        }
         fail('Could not reserve right now. Write to <a href="mailto:hello@undercoverrockstars.com">hello@undercoverrockstars.com</a> and we will hold it by hand.');
       })
       .catch(function () {

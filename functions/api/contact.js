@@ -11,12 +11,30 @@
  *  - `from` is always our own verified domain; the submitter goes in reply_to,
  *    because spoofing their domain would fail DMARC.
  *  - No payment data is accepted. The bag is a reservation, not a checkout.
+ *  - An optional `profile` (UR Fit measurements, #6) is validated like the
+ *    bag: numbers in sane human ranges, unknown keys dropped, and it is
+ *    ignored entirely unless a made-to-measure line is reserved. A chest of
+ *    400 cm drops the profile; it never reaches the email.
  */
 
 const LIMITS = { name: 200, email: 254, message: 4000, body: 20000, bag: 40 };
 const INTENTS = new Set(['reserve', 'signal']);
 // Fit is an enum, never free text: a tampered payload cannot invent a cut.
 const FITS = new Set(['standard', 'tailored']);
+// The measurement profile from UR Fit (#6), validated the way the bag is:
+// every field a number in a sane human range, unknown keys dropped, the
+// whole profile ignored unless a made-to-measure line is actually being
+// reserved. A chest of 400 cm drops the profile, it is not emailed.
+const PROFILE_HEIGHT = [100, 250];
+const PROFILE_FIELDS = new Map([
+  ['chest', [60, 200]],
+  ['waist', [50, 200]],
+  ['hip', [60, 210]],
+  ['shoulder', [30, 70]],
+  ['sleeve', [30, 90]],
+  ['back', [30, 90]],
+  ['inseam', [30, 100]],
+]);
 const ALLOWED_ORIGINS = new Set([
   'https://undercoverrockstars.com',
   'https://www.undercoverrockstars.com',
@@ -35,6 +53,50 @@ const json = (status, obj) =>
 
 const oneLine = (v, max) => String(v ?? '').replace(/[\r\n\0]+/g, ' ').trim().slice(0, max);
 const EMAIL_RE = /^[^@\s]+@[^@\s.]+\.[^@\s]+$/;
+
+/* Parses the profile or returns null. All or nothing: one out-of-range
+   value drops the whole object, because half a profile is worse than none
+   in a tailor's inbox. Numbers are rounded to a precision a phone scan
+   can support (0.1 cm), never strings, never extra keys. */
+const parseProfile = (raw, hasTailoredLine) => {
+  if (!raw || typeof raw !== 'object' || Array.isArray(raw)) return null;
+  if (!hasTailoredLine) return null;
+  const height = Number(raw.heightCm);
+  if (!(height >= PROFILE_HEIGHT[0] && height <= PROFILE_HEIGHT[1])) return null;
+  const incoming = raw.values;
+  if (!incoming || typeof incoming !== 'object' || Array.isArray(incoming)) return null;
+  const values = {};
+  for (const [id, [min, max]] of PROFILE_FIELDS) {
+    const v = incoming[id];
+    if (!v || typeof v !== 'object') return null;
+    const cm = Number(v.cm);
+    if (!(cm >= min && cm <= max)) return null;
+    const confidence = Number(v.confidence);
+    values[id] = {
+      cm: Math.round(cm * 10) / 10,
+      confidence: Number.isFinite(confidence) && confidence >= 0 && confidence <= 1
+        ? Math.round(confidence * 100) / 100 : null,
+      low: v.low === true,
+      edited: v.edited === true,
+    };
+  }
+  return { heightCm: Math.round(height * 10) / 10, values };
+};
+
+const confidenceWord = (c) =>
+  c == null ? 'no confidence data' : c >= 0.8 ? 'high confidence' : c >= 0.6 ? 'ok confidence' : 'low confidence, check with buyer';
+
+const profileEmailLines = (p) => {
+  const lines = ['', 'Measurements (phone-scan estimate from UR Fit, not a tape):',
+    `  Height (stated by buyer): ${p.heightCm} cm`];
+  for (const [id] of PROFILE_FIELDS) {
+    const v = p.values[id];
+    lines.push(`  ${id.padEnd(9)}: ${String(v.cm).padStart(6)} cm  · ${confidenceWord(v.confidence)}` +
+      (v.edited ? ' · corrected by buyer' : ''));
+  }
+  lines.push('  These are estimates to pre-cut from. Confirm with a tape before cutting (#8).');
+  return lines;
+};
 
 export async function onRequest({ request, env }) {
   if (request.method === 'OPTIONS') return json(204, {});
@@ -82,6 +144,12 @@ export async function onRequest({ request, env }) {
     if (!bagLines.length) return json(400, { error: 'Your bag is empty.' });
   }
 
+  // The profile only ever rides a made-to-measure reservation, and only if
+  // every value survives validation. Dropped otherwise, silently to the
+  // tailor: a partial or tampered profile is not a measurement.
+  const hasTailored = bagLines.some(l => l.fit === 'tailored');
+  const profile = intent === 'reserve' ? parseProfile(body.profile, hasTailored) : null;
+
   if (env.TURNSTILE_SECRET) {
     const token = oneLine(body.turnstileToken, 2048);
     if (!token) return json(400, { error: 'Verification is required.' });
@@ -119,6 +187,7 @@ export async function onRequest({ request, env }) {
       `  ${l.qty} × ${l.id} · size ${l.size}` +
       (l.fit === 'tailored' ? ' · MADE TO MEASURE (+30%)' : '')));
   }
+  if (profile) lines.push(...profileEmailLines(profile));
   if (message) lines.push('', message);
   lines.push('', '--', `Country: ${request.cf?.country || 'unknown'}`,
     'Sent by the undercoverrockstars.com site. No payment was taken.');
