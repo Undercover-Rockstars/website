@@ -35,7 +35,7 @@ const NAV = [
 
 /* ------------------------------------------------------------------ head */
 
-function head({ slug, title, description, canonical, og, jsonld, scripts = [], noindex = false, manifest = '/site.webmanifest' }) {
+function head({ slug, title, description, canonical, og, jsonld, scripts = [], noindex = false, manifest = '/site.webmanifest', turnstile = false }) {
   const url = ORIGIN + canonical;
   const image = ORIGIN + '/assets/' + (og || 'og.png');
   const ld = jsonld
@@ -79,7 +79,7 @@ function head({ slug, title, description, canonical, og, jsonld, scripts = [], n
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Archivo:ital,wdth,wght@0,62..125,100..900&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="/assets/ur.css">
+<link rel="stylesheet" href="/assets/ur.css">${turnstile ? '\n<script src="https://challenges.cloudflare.com/turnstile/v0/api.js" async defer></script>' : ''}
 <script>/* set the saved mode before first paint so the page never flashes */
 (function(){try{var m=JSON.parse(localStorage.getItem('ur.mode'));if(m==='day'||m==='night')document.documentElement.setAttribute('data-mode',m);}catch(e){}})();</script>${ld}
 </head>

@@ -10,6 +10,17 @@
   var err = document.getElementById('rv-err');
   var btn = document.getElementById('rv-submit');
   var label = document.getElementById('rv-label');
+  // Turnstile: the widget writes its token into a hidden input inside the form.
+  function turnstileToken(form) {
+    var el = (form || document).querySelector('[name="cf-turnstile-response"]');
+    return el ? el.value : '';
+  }
+  function resetTurnstile() {
+    if (window.turnstile && typeof window.turnstile.reset === 'function') {
+      try { window.turnstile.reset(); } catch (e) { /* not rendered */ }
+    }
+  }
+
 
   function fail(html) {
     if (!err) return;
@@ -52,7 +63,8 @@
         message: document.getElementById('rv-note').value,
         company: document.getElementById('rv-company').value,
         bag: lines,
-        profile: profile
+        profile: profile,
+        turnstileToken: turnstileToken(form)
       })
     }).then(function (r) { return r.json().then(function (d) { return { ok: r.ok && d.ok, d: d }; }); })
       .then(function (r) {

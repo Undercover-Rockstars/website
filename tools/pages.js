@@ -80,6 +80,7 @@ write('index.html', head({
   description: 'Clothing for people who live two lives in one day. Every piece comes as a matched pair: one cut for the meeting, the same pattern cut for what comes after.',
   canonical: '/',
   og: 'og.png',
+  turnstile: true,
   jsonld: { '@context': 'https://schema.org', '@graph': [ORG, SITE, FEED, {
     '@type': 'WebPage', '@id': ORIGIN + '/#webpage', url: ORIGIN + '/',
     name: `${BRAND} · ${TAGLINE}`, isPartOf: { '@id': ORIGIN + '/#website' },
@@ -215,6 +216,7 @@ ${TAGS.map(t => `        <div class="code"><span class="eyebrow acc">${t.n}</spa
           <input id="signal-email" name="email" type="email" required placeholder="you@somewhere.com" autocomplete="email">
           <button type="submit">Join →</button>
         </form>
+        <div class="cf-turnstile" data-sitekey="0x4AAAAAAEqQosRqYRl39i6l" data-theme="auto" data-size="flexible" data-action="signal" style="margin-top:12px"></div>
         <p class="signal-ok" id="signal-ok" hidden>Signal received. See you at 00:00.</p>
         <p class="signal-ok" id="signal-err" hidden style="border-color:var(--mute);color:var(--mute)"></p>
         <p class="fit-note" style="margin-top:14px">One email per drop. No sharing, unsubscribe any time.</p>
@@ -229,7 +231,7 @@ ${LOG_LINES.map((l, i) => `        <div class="log-line" style="animation-delay:
   </section>
 
 </main>
-` + footer() + foot(['/assets/ur-signal.js']));
+` + footer() + foot(['/assets/ur-signal.js','turnstile']));
 
 console.log('home done');
 
@@ -820,6 +822,7 @@ write('bag/index.html', head({
   description: 'Your bag. Drop 01 is not open for sale yet, so reservations hold your pair and size until it is.',
   canonical: '/bag/',
   og: 'og.png',
+  turnstile: true,
   noindex: true
 }) + header('bag') + `
 <main id="main" class="page-pad">
@@ -852,6 +855,7 @@ write('bag/index.html', head({
           <label class="sr-only" for="rv-note">Note</label>
           <textarea id="rv-note" name="note" rows="3" placeholder="Anything we should know?" style="background:none;border:1px solid var(--line);outline:0;padding:14px 16px;color:var(--fg);font-size:15px;resize:vertical"></textarea>
           <div class="hp" aria-hidden="true"><label>Company<input id="rv-company" name="company" tabindex="-1" autocomplete="off"></label></div>
+          <div class="cf-turnstile" data-sitekey="0x4AAAAAAEqQosRqYRl39i6l" data-theme="auto" data-size="flexible" data-action="reserve"></div>
           <button type="submit" class="btn" id="rv-submit"><span id="rv-label">Reserve this bag</span><span aria-hidden="true">→</span></button>
         </form>
         <p class="signal-ok" id="rv-ok" hidden>Reserved. We'll be in touch before the drop opens.</p>
@@ -863,7 +867,7 @@ write('bag/index.html', head({
     </div>
   </div>
 </main>
-` + footer() + foot(['/assets/ur-bag.js']));
+` + footer() + foot(['/assets/ur-bag.js','turnstile']));
 
 /* -------------------------------------------------------------------- 404 */
 

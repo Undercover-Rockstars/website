@@ -38,6 +38,7 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Archivo:ital,wdth,wght@0,62..125,100..900&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="/assets/ur.css">
+<script src="https://challenges.cloudflare.com/turnstile/v0/api.js" async defer></script>
 <script>/* set the saved mode before first paint so the page never flashes */
 (function(){try{var m=JSON.parse(localStorage.getItem('ur.mode'));if(m==='day'||m==='night')document.documentElement.setAttribute('data-mode',m);}catch(e){}})();</script>
 <script type="application/ld+json">
@@ -348,6 +349,7 @@
           <input id="signal-email" name="email" type="email" required placeholder="you@somewhere.com" autocomplete="email">
           <button type="submit">Join →</button>
         </form>
+        <div class="cf-turnstile" data-sitekey="0x4AAAAAAEqQosRqYRl39i6l" data-theme="auto" data-size="flexible" data-action="signal" style="margin-top:12px"></div>
         <p class="signal-ok" id="signal-ok" hidden>Signal received. See you at 00:00.</p>
         <p class="signal-ok" id="signal-err" hidden style="border-color:var(--mute);color:var(--mute)"></p>
         <p class="fit-note" style="margin-top:14px">One email per drop. No sharing, unsubscribe any time.</p>
@@ -421,5 +423,6 @@
 <script src="/assets/ur-data.js"></script>
 <script src="/assets/ur-common.js"></script>
 <script src="/assets/ur-signal.js"></script>
+<script src="turnstile"></script>
 </body>
 </html>
