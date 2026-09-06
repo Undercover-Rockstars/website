@@ -224,4 +224,7 @@
   render();
 
   window.URBag = { add: add, count: count, open: openBag, lines: function () { return cart.slice(); } };
+  /* Day/night is the site's one mode switch, and the fit viewer's day and
+     night garment versions hang off the same state (#10). */
+  window.URMode = { get: currentMode, set: applyMode };
 })();

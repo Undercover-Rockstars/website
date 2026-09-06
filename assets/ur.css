@@ -1308,3 +1308,46 @@ main, footer, .site-header { position: relative; z-index: 1; }
   animation: fzRing 12s linear infinite;
 }
 @keyframes fzRing { to { transform: rotate(360deg) } }
+
+/* The fit viewer (#10 layer 1): chips follow the filters/sizes pattern,
+   the stage is a tall portrait canvas that never breaks the page flow. */
+.vw-controls {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px 20px;
+  margin-bottom: 14px;
+}
+.vw-chips { display: flex; border: 1px solid var(--line); width: max-content; }
+.vw-chips button {
+  background: transparent;
+  color: var(--fg);
+  border: 0;
+  border-right: 1px solid var(--line);
+  padding: 9px 14px;
+  font-family: var(--mono);
+  font-size: 11px;
+  letter-spacing: .08em;
+  text-transform: uppercase;
+  cursor: pointer;
+}
+.vw-chips button:last-child { border-right: 0; }
+.vw-chips button[aria-pressed="true"] { background: var(--fg); color: var(--bg); }
+.vw-chips button:hover { color: var(--acc); }
+.vw-chips button[aria-pressed="true"]:hover { color: var(--bg); }
+.vw-stage {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 3 / 4;
+  max-height: 72vh;
+  margin: 0 auto;
+  border: 1px solid var(--line);
+  background:
+    radial-gradient(60% 45% at 50% 78%, color-mix(in oklab, var(--acc) 6%, transparent), transparent 70%),
+    linear-gradient(color-mix(in oklab, var(--bg) 92%, var(--fg) 8%), var(--bg));
+  overflow: hidden;
+  touch-action: none;
+}
+.vw-stage canvas { cursor: grab; }
+.vw-stage canvas:active { cursor: grabbing; }
+#vw-open-row { margin-top: 14px; }
+#vw-status { margin-top: 12px; }

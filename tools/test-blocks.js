@@ -161,13 +161,60 @@ section('the sentence the reservation email carries');
   check('email sentence', D.blockLine(r), 'cut from an M, sleeve +2 cm, back +1 cm');
 }
 
+/* -------------------------------------------------------- 7 · the loft */
+
+section('the viewer maths: measurements to rings');
+
+(async () => {
+  const V = await import('../assets/ur-viewer.js');
+
+  // The inverse of the engine's circumference(): a circumference plus a
+  // squash ratio gives axes whose ellipse has that exact circumference.
+  const ax = V.axesFor(96, 0.7);
+  check('axes invert Ramanujan', V.ramanujan(ax.a, ax.b), 96, 0.001);
+  check('a circle is exact', V.axesFor(80, 1).b, V.axesFor(80, 1).a, 1e-9);
+
+  // Levels from a real-shaped profile: waist is nape minus back, crotch
+  // is the inseam, and the canon-placed levels sit between them.
+  const v = { chest: 96, waist: 82, hip: 101, shoulder: 44.5, sleeve: 61, back: 43.5, inseam: 80 };
+  const L = V.levelsFor(v, 178);
+  check('waist from back length', L.waistY, L.shoulderY - 43.5, 0.001);
+  check('crotch from inseam', L.crotchY, 80, 0.001);
+  check('seat below waist, above crotch', L.hipY < L.waistY && L.hipY > L.crotchY, true);
+  check('chest between waist and shoulder', L.chestY > L.waistY && L.chestY < L.shoulderY, true);
+
+  // The body rings: every measured ring's circumference is the measured
+  // number, so the mannequin cannot imply a shape that was not measured.
+  const body = V.bodyRings(v, 178);
+  const ringCirc = i => V.ramanujan(body.rings[i].a, body.rings[i].b);
+  check('seat ring is the seat measurement', ringCirc(1), 101, 0.01);
+  check('waist ring is the waist measurement', ringCirc(2), 82, 0.01);
+  check('chest ring is the chest measurement', ringCirc(4), 96, 0.01);
+
+  // The shell: the same levels plus the drafted ease, so the visible
+  // gap at each level is exactly the category's drafted number.
+  const ease = { chest: 11, waist: 9, hip: 9 };
+  const shell = V.garmentRings(body, ease, 24);
+  const shellCirc = i => V.ramanujan(shell[i].a, shell[i].b);
+  check('shell chest = body + ease', shellCirc(4), 96 + 11, 0.05);
+  check('shell waist = body + ease', shellCirc(2), 82 + 9, 0.05);
+  check('shell seat = body + ease', shellCirc(1), 101 + 9, 0.05);
+  check('hem below the seat by the drafted drop', shell[0].y, L.hipY - 24, 0.001);
+  check('shell is outside the body everywhere', shell[4].a > body.rings[4].a && shell[1].a > body.rings[1].a, true);
+
+  finish();
+})();
+
 /* -------------------------------------------------------------- exit */
 
-console.log(`\n${checks - failures}/${checks} checks passed`);
-if (failures) {
-  console.error('FAILED');
-  process.exit(1);
+function finish() {
+  console.log(`\n${checks - failures}/${checks} checks passed`);
+  if (failures) {
+    console.error('FAILED');
+    process.exit(1);
+  }
+  console.log('The block mapping holds: nearest size, deltas, flag, sentence.');
+  console.log('What this cannot prove: the tailoring. The table is a draft,');
+  console.log('marked as one, until the pattern cutter replaces it.');
+  process.exit(0);
 }
-console.log('The block mapping holds: nearest size, deltas, flag, sentence.');
-console.log('What this cannot prove: the tailoring. The table is a draft,');
-console.log('marked as one, until the pattern cutter replaces it.');

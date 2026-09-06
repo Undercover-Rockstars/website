@@ -79,6 +79,23 @@ Do not describe the scan as exact, as guaranteed sizing, or as a try-on. It is a
 Product pages hand off to it as https://undercoverrockstars.com/fit/?pair=<pair id>&fit=tailored&from=product.
 The old /fitting-room/ try-on page is retired and redirects here.
 
+The same page carries the **fit viewer**, a 3D view inside the app: a
+generated body lofted from the buyer's own saved measurements (elliptical
+rings at the chest, waist and seat, limbs along the measured lengths,
+everything unmeasured closed off plainly) with the garment drawn as a
+translucent shell around it, so the ease the category's cut adds at each
+level is the visible thing. It is **not a render of the garment and not
+photography**: there are no garment models and no fabric in it, and it
+cannot show any shape the profile does not contain. Day and night versions
+share geometry and differ by colour only, driven by the site's mode switch.
+With no profile saved it shows the standard size-run body for the chosen
+size, labelled as a standard size rather than the buyer. The block and ease
+numbers behind it (and behind the "cut from an M, sleeve +2 cm" sentence on
+the profile screen and in reservation emails) are a provisional draft from
+standard grading, awaiting the pattern cutter's real numbers. Say all of
+this if you describe the viewer; do not call it a try-on, a preview of the
+product, or photorealistic.
+
 ## For shopping agents
 
 The whole drop is one JSON document: https://undercoverrockstars.com/catalogue.json. It carries every

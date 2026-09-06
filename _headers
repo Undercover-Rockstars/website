@@ -28,6 +28,11 @@
 /assets/vendor/mediapipe/*
   Cache-Control: public, max-age=31536000, immutable
 
+# The vendored 3D engine for the fit viewer (#10): same posture, a
+# version-stamped path, loaded on demand only, cached hard after that.
+/assets/vendor/three/*
+  Cache-Control: public, max-age=31536000, immutable
+
 /assets/*.png
   Cache-Control: public, max-age=604800
 

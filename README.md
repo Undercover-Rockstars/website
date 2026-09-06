@@ -104,6 +104,7 @@ assets/
   ur-capture.js       the guided two-photo shoot (#4): guide, timer, review
   ur-measure.js       the measurement engine (#5): measure() and its pure core
   ur-profile.js       review, correct, tape-check, save, delete, attach (#6)
+  ur-viewer.js        the fit viewer (#10 layer 1): the lofted body and the ease shell
   ur-handoff.js       Try it on QR handoff on product pages
   ur-signal.js        newsletter
   ur-bag.js           reservation form
@@ -190,7 +191,26 @@ the privacy deal unchanged from the phase 0 shell.
   line for the spike in #5, saved as numbers under `ur.profile.v1` (never
   photos), one tap to delete, and attached to made-to-measure reservations,
   where the endpoint validates it like the bag: numbers in sane human ranges
-  or the whole profile is dropped, never emailed.
+  or the whole profile is dropped, never emailed. The screen also states the
+  block mapping (#7's code half): "cut from an M, sleeve +2 cm, back +1 cm",
+  from a size run and ease table in `ur-data.js` clearly marked as a draft
+  from standard grading until the pattern cutter supplies real numbers. The
+  reservation email derives the same mapping server-side, per made-to-measure
+  line.
+- The fit viewer (#10, layer 1): a 3D view of the chosen pair's cut on a
+  body lofted from the buyer's own measurements. Elliptical rings at the
+  chest, waist and seat, each sized from that level's measured
+  circumference; limbs as tapered tubes along the measured sleeve and
+  inseam; everything the profile does not carry closed off plainly, so the
+  mannequin cannot imply a shape nobody measured. The garment is the same
+  loft plus the category's drafted ease, drawn as a translucent shell: the
+  gap between body and shell is the fit. Day and night cuts share geometry
+  and differ by colour only, driven by the site mode switch. three.js
+  (vendored, 0.185.1) loads on the tap that opens the viewer, never on the
+  page view, and the worker caches it on demand. With no profile saved it
+  shows the standard size-run body for the chosen size, labelled as a
+  standard size, not you. It is a generated body with the cut's ease, not
+  a render of the garment and not photography, and the screen says so.
 - Photos never leave the device (issue #12's promise, kept and published in
   `llms.txt` and `catalogue.json`): frames go canvas to engine to wiped. The
   site still says a phone scan is an estimate, not a tape, and measurements
@@ -202,9 +222,10 @@ the privacy deal unchanged from the phase 0 shell.
 - It is an installable PWA with its own manifest (`UR Fit`, scope `/fit/`,
   so installing it does not install the shop) and a service worker scoped
   to `/fit/` only: network-first for pages, stale-while-revalidate for
-  assets, `/api/*` never touched, the shell precached and the ~17 MB
-  engine cached on demand after its first use, never in `install`. The
-  marketing pages are deliberately outside its control.
+  assets, `/api/*` never touched, the shell precached and the heavy
+  on-demand payloads (the ~17 MB scanner, the ~730 KB three.js) cached
+  after their first use, never in `install`. The marketing pages are
+  deliberately outside its control.
 
 The consent note on `/fit/` states the privacy deal in one paragraph, and the
 deal and the note change in the same commit or not at all (issue #12).

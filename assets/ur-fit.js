@@ -88,6 +88,71 @@
     } catch (e) { /* the page works without it; the next visit can retry */ }
   }
 
+  /* ------------------------------------------------- the fit viewer */
+
+  // #10 layer 1. three.js and the viewer module load on this tap, never
+  // on the page view, exactly like the pose engine. The worker caches
+  // them on demand after the first load.
+  var viewerSection = document.getElementById('fit-viewer');
+  var viewerStage = document.getElementById('vw-stage');
+  var viewerOpenBtn = document.getElementById('vw-open');
+  var viewerStatus = document.getElementById('vw-status');
+
+  if (viewerSection && viewerOpenBtn) {
+    viewerOpenBtn.addEventListener('click', function () {
+      if (viewerStage) viewerStage.hidden = false;
+      viewerOpenBtn.disabled = true;
+      if (viewerStatus) viewerStatus.textContent = 'Loading the viewer library, about 730 KB, once.';
+      import('/assets/ur-viewer.js').then(function (m) {
+        var ctl = m.open(viewerSection, { category: pair().cat, size: 'M' });
+        if (!ctl || ctl.error) {
+          if (viewerStatus) viewerStatus.textContent = 'The viewer could not start here. Every number it would show is on your profile screen.';
+          viewerOpenBtn.disabled = false;
+          return;
+        }
+        viewerCtl = ctl;
+        wireViewerChips();
+      }).catch(function () {
+        viewerOpenBtn.disabled = false;
+        if (viewerStatus) viewerStatus.textContent = 'The viewer library could not load. It needs the network once, then it is cached; try again.';
+      });
+    });
+  }
+
+  function wireViewerChips() {
+    viewerSection.querySelectorAll('[data-vw-size]').forEach(function (b) {
+      b.addEventListener('click', function () {
+        viewerSection.querySelectorAll('[data-vw-size]').forEach(function (o) {
+          o.setAttribute('aria-pressed', String(o === b));
+        });
+        viewerCtl.setSize(b.dataset.vwSize);
+      });
+    });
+    var modeChips = viewerSection.querySelectorAll('[data-vw-mode]');
+    function syncModeChips() {
+      var mode = document.documentElement.getAttribute('data-mode') === 'day' ? 'day' : 'night';
+      modeChips.forEach(function (b) {
+        b.setAttribute('aria-pressed', String(b.dataset.vwMode === mode));
+      });
+    }
+    modeChips.forEach(function (b) {
+      b.addEventListener('click', function () {
+        if (window.URMode) window.URMode.set(b.dataset.vwMode);
+        syncModeChips();
+      });
+    });
+    syncModeChips();
+    new MutationObserver(syncModeChips).observe(document.documentElement, {
+      attributes: true, attributeFilter: ['data-mode']
+    });
+    var reloadBtn = document.getElementById('vw-reload');
+    if (reloadBtn) {
+      reloadBtn.addEventListener('click', function () {
+        if (viewerCtl) viewerCtl.reload();
+      });
+    }
+  }
+
   /* ------------------------------------------------------- the scan flow */
 
   var consent = document.getElementById('fit-consent');
@@ -275,6 +340,8 @@
     screens.forEach(function (s) { s.hidden = true; });
     document.getElementById('fit-profile').hidden = false;
     document.getElementById('fit-profile').scrollIntoView({ behavior: 'smooth', block: 'start' });
+    // If the viewer is open below, it can now draw the shape it just watched get measured.
+    if (viewerCtl && viewerCtl.reload) viewerCtl.reload();
   }
 
   function discard(canvas) {

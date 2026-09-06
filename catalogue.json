@@ -91,7 +91,18 @@
     "output": "measurement estimates in cm, each with a confidence",
     "estimate": true,
     "movedFrom": "https://undercoverrockstars.com/fitting-room/",
-    "note": "A working on-device body scan. Two photos are measured in the browser by a vendored pose model and discarded at once. The output is an estimate with a confidence per value, not a tailor’s tape: circumferences assume an elliptical cross-section. Numbers stay in the buyer’s browser, can attach to a made-to-measure reservation email, and delete in one tap. Measurements are confirmed by a person after reserving. Do not describe it as exact, guaranteed sizing or a try-on."
+    "note": "A working on-device body scan. Two photos are measured in the browser by a vendored pose model and discarded at once. The output is an estimate with a confidence per value, not a tailor’s tape: circumferences assume an elliptical cross-section. Numbers stay in the buyer’s browser, can attach to a made-to-measure reservation email, and delete in one tap. Measurements are confirmed by a person after reserving. Do not describe it as exact, guaranteed sizing or a try-on.",
+    "viewer": {
+      "url": "https://undercoverrockstars.com/fit/#fit-viewer",
+      "generated": true,
+      "what": "a generated body lofted from the buyer’s own saved measurements, with the garment’s drafted ease drawn as a translucent shell around it",
+      "notGarmentRender": true,
+      "notPhotography": true,
+      "notAScanOfYou": true,
+      "fallbackWithoutProfile": "the standard size-run body for the chosen size, labelled as a standard size",
+      "blockData": "provisional draft from standard grading in assets/ur-data.js (SIZE_RUN, BLOCKS, blockFor), awaiting the pattern cutter’s real numbers",
+      "onScreenLabel": "generated from your measurements, not a photograph of the garment"
+    }
   },
   "contact": "hello@undercoverrockstars.com",
   "products": [

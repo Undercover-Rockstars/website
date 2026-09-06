@@ -235,6 +235,45 @@
       </div>
     </div>
   </div>
+
+  <section class="section" id="fit-viewer">
+    <div class="grid12" style="margin-bottom:40px">
+      <p class="eyebrow col-1-3">UR/V · the fit viewer</p>
+      <div class="col-4-9">
+        <h2 class="h-display" style="margin-bottom:20px">See where<br><span class="acc">the cut sits.</span></h2>
+        <p class="lede" style="max-width:58ch">A body generated from your own measurements, with the garment's ease drawn as a shell around it. The gap between the two is the fit, and it is what made to measure buys. Generated from your measurements: not a photograph of the garment, not a scan of you, and nothing your profile does not contain is drawn, because nothing beyond it was measured.</p>
+      </div>
+    </div>
+    <div class="code" id="viewer-panel">
+      <div class="vw-controls">
+        <div class="vw-chips" role="group" aria-label="Day or night version of the cut">
+          <button type="button" data-vw-mode="day">Day cut</button>
+          <button type="button" data-vw-mode="night" aria-pressed="true">Night cut</button>
+        </div>
+        <div class="vw-chips" role="group" aria-label="Camera view">
+          <button type="button" data-vw-preset="full" aria-pressed="true">Full</button>
+          <button type="button" data-vw-preset="torso" aria-pressed="false">Torso</button>
+          <button type="button" data-vw-preset="detail" aria-pressed="false">Detail</button>
+        </div>
+        <div class="vw-chips" role="group" aria-label="Standard size for the size-run body" id="vw-sizes" hidden>
+          <button type="button" data-vw-size="XS" aria-pressed="false">XS</button>
+          <button type="button" data-vw-size="S" aria-pressed="false">S</button>
+          <button type="button" data-vw-size="M" aria-pressed="true">M</button>
+          <button type="button" data-vw-size="L" aria-pressed="false">L</button>
+          <button type="button" data-vw-size="XL" aria-pressed="false">XL</button>
+        </div>
+      </div>
+      <div class="vw-stage" id="vw-stage" hidden></div>
+      <div class="cap-controls" id="vw-open-row">
+        <button type="button" class="btn" id="vw-open"><span>Open the fit viewer</span><span aria-hidden="true">→</span></button>
+        <button type="button" class="btn btn--ghost" id="vw-reload" hidden><span>Use my saved measurements</span><span aria-hidden="true">↺</span></button>
+      </div>
+      <p class="fit-note" id="vw-status">The viewer loads only when you open it, about 730 KB once, then cached like the scanner. Nothing about your profile leaves this browser to draw it.</p>
+      <p class="fit-note" id="vw-source"></p>
+      <p class="fit-note" id="vw-ease"></p>
+      <p class="fit-note">Drag to turn, pinch or scroll to zoom; left alone it turns slowly by itself. Day and night cuts share every seam of the geometry, like the garments themselves: the switch changes colour and finish only. If no profile is saved here, the viewer shows the standard size-run body for the size you pick, labelled as a standard size, not you.</p>
+    </div>
+  </section>
 </main>
 <footer class="site-footer">
   <div class="footer-cols">
