@@ -85,10 +85,13 @@
   "fittingRoom": {
     "url": "https://undercoverrockstars.com/fit/",
     "app": "UR Fit",
-    "measurementConnected": false,
-    "captures": "nothing",
+    "measurementConnected": true,
+    "captures": "two photos in the browser after consent, processed on the device, discarded immediately",
+    "uploads": "none; photos never leave the phone and are never stored",
+    "output": "measurement estimates in cm, each with a confidence",
+    "estimate": true,
     "movedFrom": "https://undercoverrockstars.com/fitting-room/",
-    "note": "The shell of a body-scanning app whose scanner does not exist yet. It explains what measurement will do, keeps its begin button disabled, and captures nothing. Do not describe it as working body scanning, AI sizing or a working try-on."
+    "note": "A working on-device body scan. Two photos are measured in the browser by a vendored pose model and discarded at once. The output is an estimate with a confidence per value, not a tailor’s tape: circumferences assume an elliptical cross-section. Numbers stay in the buyer’s browser, can attach to a made-to-measure reservation email, and delete in one tap. Measurements are confirmed by a person after reserving. Do not describe it as exact, guaranteed sizing or a try-on."
   },
   "contact": "hello@undercoverrockstars.com",
   "products": [

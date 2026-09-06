@@ -367,7 +367,7 @@ ${SIZES.map(z => `        <button type="button" data-size="${z}" aria-pressed="f
         <p class="eyebrow" style="margin:0">Send this pair to your phone</p>
         <div class="handoff-qr" id="handoff-qr" role="img" aria-label="QR code that opens UR Fit with ${esc(p.name)} selected"></div>
         <p class="fit-note" style="max-width:46ch">Scan with a phone to open UR Fit with ${esc(p.name)} already selected. Finish on your phone: the bag and the reservation live on the device you started on, and nothing needs to sync.</p>
-        <p class="fit-note" style="max-width:46ch">UR Fit explains made-to-measure and asks for no permissions. Measurement is not connected yet, so it captures nothing today.</p>
+        <p class="fit-note" style="max-width:46ch">UR Fit scans on the phone: two photos, measured on the device, never uploaded. The numbers are estimates with a confidence, and one tap deletes them.</p>
         <div class="handoff-url">
           <label class="sr-only" for="handoff-url">Link to UR Fit for this pair</label>
           <input id="handoff-url" readonly>
@@ -434,17 +434,19 @@ console.log('collection, products, thesis done');
 
 /* ------------------------------------------------------------------- fit */
 
-/* Phase 0 of the fitting room v2 epic (#1): /fit/ is the honest shell of a
-   body-scanning app whose scanner does not exist yet (#3), with the consent
-   copy spelled out before any camera would ever open (#12). Nothing on this
-   page may imply measurement works: no progress bar, no capture, and a
-   disabled primary button that says why, the same posture as the waitlist's
-   "Not open yet". */
+/* Phase 1 of the fitting room v2 epic (#1): the scanner is in. #4 captures
+   two guided stills, #5 measures them on the device behind the measure()
+   hook, #6 turns them into a reviewable profile. The page keeps its phase 0
+   virtues: nothing large loads until consent is given and Begin is tapped
+   (the model and wasm load then, and only then), the photos never leave the
+   device, and the copy never calls the output exact. The numbers are
+   estimates with a confidence each, the tape is still the truth, and
+   measurements are confirmed after the reservation, with or without a scan. */
 
 write('fit/index.html', head({
   slug: 'fit',
   title: `UR Fit · ${BRAND}`,
-  description: 'The fit app: two photos, your measurements, a made-to-measure pair cut from them. Measurement is not connected yet, so nothing is captured.',
+  description: 'The fit app: two photos, measured on your phone and never uploaded. An estimate with a confidence per value, not a tailor\u2019s tape.',
   canonical: '/fit/',
   og: 'og-fit.png',
   manifest: '/fit/manifest.webmanifest',
@@ -457,10 +459,10 @@ write('fit/index.html', head({
 <main id="main" class="page-pad">
   <div class="grid12 collection-head">
     <div class="col-1-8">
-      <p class="eyebrow" style="margin-bottom:20px">UR/FIT · body scan · <span class="acc">measurement not connected</span></p>
+      <p class="eyebrow" style="margin-bottom:20px">UR/FIT · body scan · <span class="acc">on device · an estimate, not a tape</span></p>
       <h1 class="h-page">Cut from<br><span class="acc">you.</span></h1>
     </div>
-    <p class="lede col-9-4" style="font-size:15px">Two photos, taken here on your phone. Your measurements, read on the device. A made-to-measure pair cut from the numbers. That is what this app becomes once measurement is connected. It is not connected yet, so today this page captures nothing.</p>
+    <p class="lede col-9-4" style="font-size:15px">Two photos, taken here on your phone. Your measurements, read on this device by a pose engine that never uploads a pixel. The output is an estimate, with a confidence on every number: good enough to pick a size block and start a made-to-measure order, and no substitute for the tape. Measurements are still confirmed after you reserve.</p>
   </div>
 
   <div class="grid12" style="gap:48px var(--gap)">
@@ -468,20 +470,93 @@ write('fit/index.html', head({
       <div class="codes codes--tight">
 ${[
   { n: '01', h: 'Two photos', p: 'Front and side, in tight clothing or underwear. Photograph whatever you are comfortable with: the measurements need your shape, not your face or your room.' },
-  { n: '02', h: 'Read on this phone', p: 'The measurement engine runs on this device. The camera is only asked for after you read the consent note below and accept it, never on arrival.' },
+  { n: '02', h: 'Read on this phone', p: 'The measurement engine runs on this device and nothing is uploaded. It loads after you read the consent note and begin, never on arrival, so this page stays fast to read.' },
   { n: '03', h: 'Numbers, not photos', p: 'Your measurements are kept in this browser and travel with your reservation. The photos are discarded the moment they have been read, and one tap deletes the numbers, any time.' }
 ].map(s => `        <div class="code"><span class="eyebrow acc">${s.n}</span><h3>${esc(s.h)}</h3><p style="font-size:15px;color:var(--fg);line-height:1.6">${esc(s.p)}</p></div>`).join('\n')}
       </div>
 
-      <div class="fit-consent">
+      <div class="fit-consent" id="fit-consent">
         <p class="eyebrow">Consent, before anything captures</p>
-        <p>When measurement is connected and you choose to begin, the camera takes two photos of you, front and side. They are processed on this device and never uploaded anywhere. They are thrown away as soon as your measurements have been read; only the numbers are kept, in this browser, and deleting them is one tap. Nothing is stored on a server, and a reservation email carries numbers, never images. If any of that ever changes, this note changes in the same commit. This app is for adults.</p>
+        <p>When you choose to begin, the camera takes two photos of you, front and side. They are processed on this device and never uploaded anywhere. They are thrown away as soon as your measurements have been read; only the numbers are kept, in this browser, and deleting them is one tap. Nothing is stored on a server, and a reservation email carries numbers, never images. If any of that ever changes, this note changes in the same commit. This app is for adults.</p>
+        <label class="consent-check">
+          <input type="checkbox" id="fit-consent-check">
+          <span>I have read this, I want the scan, and I am 18 or older.</span>
+        </label>
+        <button type="button" class="btn btn--lg" id="fit-begin" disabled><span>Begin the scan</span><span aria-hidden="true">→</span></button>
+        <p class="fit-note">The scanner is about 17 MB and loads once, only now. It is cached after that, so the next scan works on venue wifi or worse.</p>
       </div>
 
-      <div class="fit-empty">
-        <button type="button" class="btn btn--lg" disabled><span>Measurement is not connected yet</span><span aria-hidden="true">◎</span></button>
-        <p class="fit-note">There is no scanner behind this button today, so it stays here, disabled. No camera is requested, nothing is captured, and no progress bar pretends otherwise. Reserve in the bag as usual: measurements are taken after you reserve, with or without the scan.</p>
+      <div class="code" id="fit-setup" hidden style="min-height:0">
+        <span class="eyebrow acc">Before the first photo</span>
+        <h3 style="margin:0;font-weight:700;text-transform:uppercase;font-size:18px;letter-spacing:.01em">Set the room, not the pose</h3>
+        <ol class="cap-note" style="display:grid;gap:10px;margin:14px 0 0;padding-left:20px">
+          <li>Prop the phone upright at roughly hip height, 2 to 3 metres away. A shelf, a ledge, a chair back.</li>
+          <li>Plain background, even light. No window at your back, no mirror beside you.</li>
+          <li>Tight clothing or underwear, hair up, shoes off. The scan reads your shape.</li>
+          <li>Portrait only. Landscape is not supported; the guide assumes an upright phone.</li>
+        </ol>
+        <p class="fit-note" style="margin-top:14px">Front camera by default so you can see yourself. Flip to the rear camera if someone else is shooting; it is the better lens.</p>
+        <div class="cap-controls">
+          <button type="button" class="btn" id="fit-setup-next"><span>Continue</span><span aria-hidden="true">→</span></button>
+          <button type="button" class="btn btn--ghost" data-fit-cancel><span>Stop</span><span aria-hidden="true">×</span></button>
+        </div>
       </div>
+
+      <div class="code cap-height-wrap" id="fit-height" hidden style="min-height:0">
+        <span class="eyebrow acc">Your height</span>
+        <h3 style="margin:0;font-weight:700;text-transform:uppercase;font-size:18px;letter-spacing:.01em">The scale of every number</h3>
+        <p class="fit-note" style="margin-top:10px">Stand straight, without shoes, and enter your height. The scan turns proportions into centimetres by dividing your height by your pixel height, so this is the one number that must be honest.</p>
+        <div class="cap-height">
+          <div class="units" role="group" aria-label="Units">
+            <button type="button" id="fit-unit-cm" aria-pressed="true">cm</button>
+            <button type="button" id="fit-unit-ft" aria-pressed="false">ft / in</button>
+          </div>
+          <div class="fields" id="fit-fields-cm">
+            <input id="fit-height-cm" type="number" inputmode="decimal" min="100" max="250" step="0.5" placeholder="178" autocomplete="off">
+            <span class="fit-note">cm</span>
+          </div>
+          <div class="fields" id="fit-fields-ft" hidden>
+            <input id="fit-height-ft" type="number" inputmode="numeric" min="3" max="8" placeholder="5" autocomplete="off" style="width:70px">
+            <span class="fit-note">ft</span>
+            <input id="fit-height-in" type="number" inputmode="decimal" min="0" max="11" step="0.5" placeholder="10" autocomplete="off">
+            <span class="fit-note">in</span>
+          </div>
+          <p class="fit-note" id="fit-height-err" hidden style="color:var(--acc)"></p>
+          <div class="cap-controls">
+            <button type="button" class="btn" id="fit-height-next"><span>Open the camera</span><span aria-hidden="true">→</span></button>
+            <button type="button" class="btn btn--ghost" data-fit-cancel><span>Stop</span><span aria-hidden="true">×</span></button>
+          </div>
+        </div>
+        <p class="fit-note" style="margin-top:12px">Kept in this browser only, next to the measurements, and gone when they are.</p>
+      </div>
+
+      <div class="code" id="fit-camera" hidden style="min-height:0">
+        <span class="eyebrow acc" id="cap-view-label">Front photo</span>
+        <p class="fit-note" id="cap-view-note" style="margin-top:8px">Face the camera, arms slightly out from your body, feet a little apart.</p>
+        <div class="cap-stage" id="cap-stage"></div>
+        <p class="cap-feedback" id="cap-feedback" role="status" aria-live="polite">Starting the camera…</p>
+        <div class="cap-controls" id="cap-controls"></div>
+      </div>
+
+      <div class="code" id="fit-review" hidden style="min-height:0">
+        <span class="eyebrow acc">Review</span>
+        <h3 style="margin:0;font-weight:700;text-transform:uppercase;font-size:18px;letter-spacing:.01em">Two photos, read here</h3>
+        <p class="fit-note" style="margin-top:10px">Read on this device, never uploaded, and discarded once measured. Retake either one if the pose slipped.</p>
+        <div class="cap-review" id="cap-review-body"></div>
+        <div class="cap-controls" style="margin-top:14px">
+          <button type="button" class="btn" id="cap-use"><span>Read my measurements</span><span aria-hidden="true">→</span></button>
+          <button type="button" class="btn btn--ghost" data-fit-cancel><span>Stop</span><span aria-hidden="true">×</span></button>
+        </div>
+      </div>
+
+      <div class="code" id="fit-measuring" hidden style="min-height:0">
+        <span class="eyebrow acc">Measuring</span>
+        <h3 style="margin:0;font-weight:700;text-transform:uppercase;font-size:18px;letter-spacing:.01em">On this phone, now</h3>
+        <ul class="cap-log" id="fit-mlog"></ul>
+        <p class="fit-note" style="margin-top:12px">Each line is a real step as it happens. Nothing is uploaded, the photos are read and dropped, and the numbers that survive stay in this browser.</p>
+      </div>
+
+      <div class="code" id="fit-profile" hidden style="min-height:0"></div>
     </div>
 
     <div class="col-9-4">
@@ -493,12 +568,12 @@ ${[
 ${PRODUCTS.map((p, i) => `          <button type="button" data-fit-product="${p.id}" aria-pressed="${i === 0}"><span>UR/${p.code} ${esc(p.name)}</span><span class="p">${format(p.price)}</span></button>`).join('\n')}
         </div>
         <p class="fit-note" style="margin-top:12px"><span id="fit-pair-name">${esc(PRODUCTS[0].name)}</span><br><span id="fit-pair-price"></span></p>
-        <p class="fit-note">Every pair is cut to measure for 30% more than the listed price. Pick the size closest to you when you reserve; measurements are taken after you reserve, and the scan will be the start of that, not the end of it.</p>
+        <p class="fit-note">Every pair is cut to measure for 30% more than the listed price. Pick the size closest to you when you reserve; the scan starts that conversation, and measurements are confirmed after you reserve.</p>
       </div>
 
       <div class="code" id="fit-from" hidden style="min-height:0">
         <span class="eyebrow acc">Sent from a product page</span>
-        <p class="fit-note">The bag and the reservation live on the device you started on, and nothing needs to sync. You can also reserve this pair right here: the bag works on any device.</p>
+        <p class="fit-note">The bag and the reservation live on the device you started on, and nothing needs to sync. You can also reserve this pair right here: the bag works on any device, and a saved profile attaches itself.</p>
         <div style="display:grid;gap:8px;margin-top:12px">
           <a class="btn btn--ghost" id="fit-from-links" href="/product/${PRODUCTS[0].id}/"><span>Open the pair on this phone</span><span aria-hidden="true">→</span></a>
           <a class="btn btn--ghost" href="/bag/"><span>Reserve in the bag</span><span aria-hidden="true">→</span></a>
@@ -507,21 +582,21 @@ ${PRODUCTS.map((p, i) => `          <button type="button" data-fit-product="${p.
 
       <div class="code" style="min-height:0">
         <span class="eyebrow acc">Installable</span>
-        <p class="fit-note">Add this page to your home screen and UR Fit opens as its own app, separate from the shop. Once it has loaded here it opens again even with no signal. It asks for no permissions today.</p>
+        <p class="fit-note">Add this page to your home screen and UR Fit opens as its own app, separate from the shop. Once it has loaded here it opens again even with no signal, scanner included, because the engine is cached after its first load. The camera is asked for only when you begin a scan.</p>
       </div>
     </div>
   </div>
 </main>
-` + footer() + foot(['/assets/ur-fit.js']));
+` + footer() + foot(['/assets/ur-capture.js', '/assets/ur-measure.js', '/assets/ur-profile.js', '/assets/ur-fit.js']));
 
 console.log('fit app done');
 
-/* The fit app gets its own manifest (#3): its own scope and start URL and its
+/* The fit app gets its own manifest (#3): its own scope and start URL and
    own name, so installing UR Fit does not install the whole shop. */
 write('fit/manifest.webmanifest', JSON.stringify({
   name: 'UR Fit',
   short_name: 'UR Fit',
-  description: 'The Undercover Rockstars fit app. Two photos, your measurements, a made-to-measure pair cut from them. Measurement is not connected yet.',
+  description: 'The Undercover Rockstars fit app. Two photos, measured on the device, never uploaded. An estimate, not a tape.',
   start_url: '/fit/',
   scope: '/fit/',
   display: 'standalone',
@@ -537,7 +612,12 @@ write('fit/manifest.webmanifest', JSON.stringify({
 /* The service worker lives at /fit/sw.js so its scope is /fit/ and nothing
    else, and it is registered only by the fit page (#3, #8 in the brief's
    constraint list). It caches the app shell for a second visit with no
-   signal and never touches /api/*. Bump SHELL_VERSION to retire old caches. */
+   signal and never touches /api/*. Bump SHELL_VERSION to retire old caches.
+   The scanner's engine files (the pose model and the wasm runtime under
+   /assets/vendor/mediapipe/) are deliberately NOT precached: they are
+   ~17 MB, they load only after consent and Begin, and the worker's
+   stale-while-revalidate caches them on demand, so the first visit stays
+   light and the second works offline. */
 write('fit/sw.js', `/* UR Fit service worker. Generated by tools/pages.js, do not edit by hand.
  *
  * Scope is /fit/ only, because the file sits at /fit/sw.js. The marketing
@@ -547,11 +627,12 @@ write('fit/sw.js', `/* UR Fit service worker. Generated by tools/pages.js, do no
  *
  * Network-first for navigations with the cached shell as the offline
  * fallback; stale-while-revalidate for same-origin assets; the API is never
- * cached or intercepted.
+ * cached or intercepted. The engine files (model, wasm) are cached on demand
+ * by the asset strategy, never in install.
  */
 'use strict';
 
-const SHELL_VERSION = 'v1';
+const SHELL_VERSION = 'v2';
 const SHELL_CACHE = 'ur-fit-' + SHELL_VERSION;
 const NAV_FALLBACK = '/fit/';
 const SHELL_ASSETS = [
@@ -560,6 +641,9 @@ const SHELL_ASSETS = [
   '/assets/ur.css',
   '/assets/ur-data.js',
   '/assets/ur-common.js',
+  '/assets/ur-capture.js',
+  '/assets/ur-measure.js',
+  '/assets/ur-profile.js',
   '/assets/ur-fit.js'
 ];
 
@@ -737,6 +821,7 @@ write('bag/index.html', head({
         <p class="signal-ok" id="rv-ok" hidden>Reserved. We'll be in touch before the drop opens.</p>
         <p class="fit-note" id="rv-err" hidden></p>
         <p class="fit-note">No card details are collected anywhere on this site.</p>
+        <p class="fit-note">A made-to-measure line sends the measurements saved by <a href="/fit/">UR Fit</a> in this browser, if any: numbers with a confidence, never photos, and one tap in the fit app deletes them. A standard reservation sends nothing of the kind.</p>
         <p class="fit-note">Reserving is free and does not hold a place in the queue. A <a href="/waitlist/">${WAITLIST.formatted} waitlist place</a> is served first when the drop opens.</p>
       </div>
     </div>
@@ -857,13 +942,8 @@ piece recovery as something a reader can use today.
 
 ## The fit app
 
-${ORIGIN}/fit/ is the shell of a body-scanning app, and the scanner does not
-exist yet. The page explains what measurement will do when connected: two
-photos taken on your phone, processed on the device and never uploaded, photos
-discarded once the numbers are read, numbers kept in the browser and deletable
-in one tap, adults only. It shows a disabled begin button that says measurement
-is not connected, it captures nothing and it requests no camera permission.
-Do not describe it as working body scanning, AI sizing or a working try-on.
+${ORIGIN}/fit/ carries a working on-device body scan. Two photos are taken in the browser, front and side, measured on the phone by a vendored pose model, and discarded the moment they are read: they are never uploaded, never stored, never sent anywhere. What survives is a measurement profile of numbers, kept in the buyer's browser, deletable in one tap, attachable to a made-to-measure reservation email, and stored nowhere else. The output is an estimate with a confidence per value, not a tailor's tape: circumferences assume an elliptical cross-section, which real torsos are not, and the app says so in its own copy. Measurements are confirmed by a person after the reservation either way. Consent is asked before the camera opens, the engine loads only after it, and the app is for adults.
+Do not describe the scan as exact, as guaranteed sizing, or as a try-on. It is an estimating tool, and it calls itself one.
 Product pages hand off to it as ${ORIGIN}/fit/?pair=<pair id>&fit=tailored&from=product.
 The old /fitting-room/ try-on page is retired and redirects here.
 
@@ -899,7 +979,7 @@ that is published: complimentary worldwide, 3 to 5 days in transit.
 - [Home](${ORIGIN}/): the thesis in brief, the eight pairs, the day-to-night shift, the codes.
 - [Drop 01](${ORIGIN}/collection/): all ${PRODUCTS.length} pairs with filters by category.
 - [Thesis](${ORIGIN}/thesis/): six lines on why clothing should come in pairs.
-- [UR Fit](${ORIGIN}/fit/): the fit app. Body-scan shell, measurement not connected, captures nothing.
+- [UR Fit](${ORIGIN}/fit/): the fit app. On-device body scan: two photos, measured on the phone, never uploaded. Estimates with a confidence, not exact sizing.
 - [Waitlist](${ORIGIN}/waitlist/): ${WAITLIST.formatted} for a numbered place in the queue for Drop 01.
 - [Catalogue](${ORIGIN}/catalogue.json): the whole drop as JSON, for agents and feeds.
 
@@ -962,9 +1042,13 @@ write('catalogue.json', JSON.stringify({
     live: false,
     note: 'Tags travel with the garments. Drop 01 has not shipped, there is no verification URL yet, and nothing is in circulation to tap.'
   },
-  fittingRoom: { url: ORIGIN + '/fit/', app: 'UR Fit', measurementConnected: false, captures: 'nothing',
+  fittingRoom: { url: ORIGIN + '/fit/', app: 'UR Fit', measurementConnected: true,
+    captures: 'two photos in the browser after consent, processed on the device, discarded immediately',
+    uploads: 'none; photos never leave the phone and are never stored',
+    output: 'measurement estimates in cm, each with a confidence',
+    estimate: true,
     movedFrom: ORIGIN + '/fitting-room/',
-    note: 'The shell of a body-scanning app whose scanner does not exist yet. It explains what measurement will do, keeps its begin button disabled, and captures nothing. Do not describe it as working body scanning, AI sizing or a working try-on.' },
+    note: 'A working on-device body scan. Two photos are measured in the browser by a vendored pose model and discarded at once. The output is an estimate with a confidence per value, not a tailor\u2019s tape: circumferences assume an elliptical cross-section. Numbers stay in the buyer\u2019s browser, can attach to a made-to-measure reservation email, and delete in one tap. Measurements are confirmed by a person after reserving. Do not describe it as exact, guaranteed sizing or a try-on.' },
   contact: 'hello@undercoverrockstars.com',
   products: PRODUCTS.map(p => ({
     id: p.id,

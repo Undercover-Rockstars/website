@@ -1,7 +1,7 @@
 {
   "name": "UR Fit",
   "short_name": "UR Fit",
-  "description": "The Undercover Rockstars fit app. Two photos, your measurements, a made-to-measure pair cut from them. Measurement is not connected yet.",
+  "description": "The Undercover Rockstars fit app. Two photos, measured on the device, never uploaded. An estimate, not a tape.",
   "start_url": "/fit/",
   "scope": "/fit/",
   "display": "standalone",

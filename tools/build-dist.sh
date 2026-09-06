@@ -22,7 +22,7 @@ find dist -name '.DS_Store' -delete
 # Cache busting. Asset filenames are not content-hashed in the repo, so a deploy
 # alone cannot invalidate a cached CSS/JS file and visitors keep running the old
 # one. Stamp each reference with a short content hash.
-for f in ur.css ur-data.js ur-common.js ur-collection.js ur-product.js ur-signal.js ur-bag.js ur-waitlist.js ur-fit.js ur-handoff.js vendor/qrcode-generator/qrcode.js; do
+for f in ur.css ur-data.js ur-common.js ur-collection.js ur-product.js ur-signal.js ur-bag.js ur-waitlist.js ur-fit.js ur-handoff.js ur-capture.js ur-measure.js ur-profile.js vendor/qrcode-generator/qrcode.js; do
   [ -f "dist/assets/$f" ] || continue
   h=$(shasum -a 256 "dist/assets/$f" | cut -c1-8)
   find dist -name '*.html' -exec sed -i '' "s|/assets/$f\"|/assets/$f?v=$h\"|g" {} +

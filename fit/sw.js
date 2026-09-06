@@ -7,11 +7,12 @@
  *
  * Network-first for navigations with the cached shell as the offline
  * fallback; stale-while-revalidate for same-origin assets; the API is never
- * cached or intercepted.
+ * cached or intercepted. The engine files (model, wasm) are cached on demand
+ * by the asset strategy, never in install.
  */
 'use strict';
 
-const SHELL_VERSION = 'v1';
+const SHELL_VERSION = 'v2';
 const SHELL_CACHE = 'ur-fit-' + SHELL_VERSION;
 const NAV_FALLBACK = '/fit/';
 const SHELL_ASSETS = [
@@ -20,6 +21,9 @@ const SHELL_ASSETS = [
   '/assets/ur.css',
   '/assets/ur-data.js',
   '/assets/ur-common.js',
+  '/assets/ur-capture.js',
+  '/assets/ur-measure.js',
+  '/assets/ur-profile.js',
   '/assets/ur-fit.js'
 ];
 

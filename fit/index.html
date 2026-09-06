@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 
 <title>UR Fit · Undercover Rockstars</title>
-<meta name="description" content="The fit app: two photos, your measurements, a made-to-measure pair cut from them. Measurement is not connected yet, so nothing is captured.">
+<meta name="description" content="The fit app: two photos, measured on your phone and never uploaded. An estimate with a confidence per value, not a tailor’s tape.">
 <link rel="canonical" href="https://undercoverrockstars.com/fit/">
 <meta name="robots" content="index, follow, max-image-preview:large, max-snippet:-1">
 <meta name="theme-color" content="#0a0a0b">
@@ -16,7 +16,7 @@
 <meta property="og:locale" content="en_GB">
 <meta property="og:url" content="https://undercoverrockstars.com/fit/">
 <meta property="og:title" content="UR Fit · Undercover Rockstars">
-<meta property="og:description" content="The fit app: two photos, your measurements, a made-to-measure pair cut from them. Measurement is not connected yet, so nothing is captured.">
+<meta property="og:description" content="The fit app: two photos, measured on your phone and never uploaded. An estimate with a confidence per value, not a tailor’s tape.">
 <meta property="og:image" content="https://undercoverrockstars.com/assets/og-fit.png">
 <meta property="og:image:type" content="image/png">
 <meta property="og:image:width" content="1200">
@@ -25,7 +25,7 @@
 
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:title" content="UR Fit · Undercover Rockstars">
-<meta name="twitter:description" content="The fit app: two photos, your measurements, a made-to-measure pair cut from them. Measurement is not connected yet, so nothing is captured.">
+<meta name="twitter:description" content="The fit app: two photos, measured on your phone and never uploaded. An estimate with a confidence per value, not a tailor’s tape.">
 <meta name="twitter:image" content="https://undercoverrockstars.com/assets/og-fit.png">
 
 <link rel="icon" href="/assets/favicon.svg" type="image/svg+xml">
@@ -103,29 +103,102 @@
 <main id="main" class="page-pad">
   <div class="grid12 collection-head">
     <div class="col-1-8">
-      <p class="eyebrow" style="margin-bottom:20px">UR/FIT · body scan · <span class="acc">measurement not connected</span></p>
+      <p class="eyebrow" style="margin-bottom:20px">UR/FIT · body scan · <span class="acc">on device · an estimate, not a tape</span></p>
       <h1 class="h-page">Cut from<br><span class="acc">you.</span></h1>
     </div>
-    <p class="lede col-9-4" style="font-size:15px">Two photos, taken here on your phone. Your measurements, read on the device. A made-to-measure pair cut from the numbers. That is what this app becomes once measurement is connected. It is not connected yet, so today this page captures nothing.</p>
+    <p class="lede col-9-4" style="font-size:15px">Two photos, taken here on your phone. Your measurements, read on this device by a pose engine that never uploads a pixel. The output is an estimate, with a confidence on every number: good enough to pick a size block and start a made-to-measure order, and no substitute for the tape. Measurements are still confirmed after you reserve.</p>
   </div>
 
   <div class="grid12" style="gap:48px var(--gap)">
     <div class="col-1-8">
       <div class="codes codes--tight">
         <div class="code"><span class="eyebrow acc">01</span><h3>Two photos</h3><p style="font-size:15px;color:var(--fg);line-height:1.6">Front and side, in tight clothing or underwear. Photograph whatever you are comfortable with: the measurements need your shape, not your face or your room.</p></div>
-        <div class="code"><span class="eyebrow acc">02</span><h3>Read on this phone</h3><p style="font-size:15px;color:var(--fg);line-height:1.6">The measurement engine runs on this device. The camera is only asked for after you read the consent note below and accept it, never on arrival.</p></div>
+        <div class="code"><span class="eyebrow acc">02</span><h3>Read on this phone</h3><p style="font-size:15px;color:var(--fg);line-height:1.6">The measurement engine runs on this device and nothing is uploaded. It loads after you read the consent note and begin, never on arrival, so this page stays fast to read.</p></div>
         <div class="code"><span class="eyebrow acc">03</span><h3>Numbers, not photos</h3><p style="font-size:15px;color:var(--fg);line-height:1.6">Your measurements are kept in this browser and travel with your reservation. The photos are discarded the moment they have been read, and one tap deletes the numbers, any time.</p></div>
       </div>
 
-      <div class="fit-consent">
+      <div class="fit-consent" id="fit-consent">
         <p class="eyebrow">Consent, before anything captures</p>
-        <p>When measurement is connected and you choose to begin, the camera takes two photos of you, front and side. They are processed on this device and never uploaded anywhere. They are thrown away as soon as your measurements have been read; only the numbers are kept, in this browser, and deleting them is one tap. Nothing is stored on a server, and a reservation email carries numbers, never images. If any of that ever changes, this note changes in the same commit. This app is for adults.</p>
+        <p>When you choose to begin, the camera takes two photos of you, front and side. They are processed on this device and never uploaded anywhere. They are thrown away as soon as your measurements have been read; only the numbers are kept, in this browser, and deleting them is one tap. Nothing is stored on a server, and a reservation email carries numbers, never images. If any of that ever changes, this note changes in the same commit. This app is for adults.</p>
+        <label class="consent-check">
+          <input type="checkbox" id="fit-consent-check">
+          <span>I have read this, I want the scan, and I am 18 or older.</span>
+        </label>
+        <button type="button" class="btn btn--lg" id="fit-begin" disabled><span>Begin the scan</span><span aria-hidden="true">→</span></button>
+        <p class="fit-note">The scanner is about 17 MB and loads once, only now. It is cached after that, so the next scan works on venue wifi or worse.</p>
       </div>
 
-      <div class="fit-empty">
-        <button type="button" class="btn btn--lg" disabled><span>Measurement is not connected yet</span><span aria-hidden="true">◎</span></button>
-        <p class="fit-note">There is no scanner behind this button today, so it stays here, disabled. No camera is requested, nothing is captured, and no progress bar pretends otherwise. Reserve in the bag as usual: measurements are taken after you reserve, with or without the scan.</p>
+      <div class="code" id="fit-setup" hidden style="min-height:0">
+        <span class="eyebrow acc">Before the first photo</span>
+        <h3 style="margin:0;font-weight:700;text-transform:uppercase;font-size:18px;letter-spacing:.01em">Set the room, not the pose</h3>
+        <ol class="cap-note" style="display:grid;gap:10px;margin:14px 0 0;padding-left:20px">
+          <li>Prop the phone upright at roughly hip height, 2 to 3 metres away. A shelf, a ledge, a chair back.</li>
+          <li>Plain background, even light. No window at your back, no mirror beside you.</li>
+          <li>Tight clothing or underwear, hair up, shoes off. The scan reads your shape.</li>
+          <li>Portrait only. Landscape is not supported; the guide assumes an upright phone.</li>
+        </ol>
+        <p class="fit-note" style="margin-top:14px">Front camera by default so you can see yourself. Flip to the rear camera if someone else is shooting; it is the better lens.</p>
+        <div class="cap-controls">
+          <button type="button" class="btn" id="fit-setup-next"><span>Continue</span><span aria-hidden="true">→</span></button>
+          <button type="button" class="btn btn--ghost" data-fit-cancel><span>Stop</span><span aria-hidden="true">×</span></button>
+        </div>
       </div>
+
+      <div class="code cap-height-wrap" id="fit-height" hidden style="min-height:0">
+        <span class="eyebrow acc">Your height</span>
+        <h3 style="margin:0;font-weight:700;text-transform:uppercase;font-size:18px;letter-spacing:.01em">The scale of every number</h3>
+        <p class="fit-note" style="margin-top:10px">Stand straight, without shoes, and enter your height. The scan turns proportions into centimetres by dividing your height by your pixel height, so this is the one number that must be honest.</p>
+        <div class="cap-height">
+          <div class="units" role="group" aria-label="Units">
+            <button type="button" id="fit-unit-cm" aria-pressed="true">cm</button>
+            <button type="button" id="fit-unit-ft" aria-pressed="false">ft / in</button>
+          </div>
+          <div class="fields" id="fit-fields-cm">
+            <input id="fit-height-cm" type="number" inputmode="decimal" min="100" max="250" step="0.5" placeholder="178" autocomplete="off">
+            <span class="fit-note">cm</span>
+          </div>
+          <div class="fields" id="fit-fields-ft" hidden>
+            <input id="fit-height-ft" type="number" inputmode="numeric" min="3" max="8" placeholder="5" autocomplete="off" style="width:70px">
+            <span class="fit-note">ft</span>
+            <input id="fit-height-in" type="number" inputmode="decimal" min="0" max="11" step="0.5" placeholder="10" autocomplete="off">
+            <span class="fit-note">in</span>
+          </div>
+          <p class="fit-note" id="fit-height-err" hidden style="color:var(--acc)"></p>
+          <div class="cap-controls">
+            <button type="button" class="btn" id="fit-height-next"><span>Open the camera</span><span aria-hidden="true">→</span></button>
+            <button type="button" class="btn btn--ghost" data-fit-cancel><span>Stop</span><span aria-hidden="true">×</span></button>
+          </div>
+        </div>
+        <p class="fit-note" style="margin-top:12px">Kept in this browser only, next to the measurements, and gone when they are.</p>
+      </div>
+
+      <div class="code" id="fit-camera" hidden style="min-height:0">
+        <span class="eyebrow acc" id="cap-view-label">Front photo</span>
+        <p class="fit-note" id="cap-view-note" style="margin-top:8px">Face the camera, arms slightly out from your body, feet a little apart.</p>
+        <div class="cap-stage" id="cap-stage"></div>
+        <p class="cap-feedback" id="cap-feedback" role="status" aria-live="polite">Starting the camera…</p>
+        <div class="cap-controls" id="cap-controls"></div>
+      </div>
+
+      <div class="code" id="fit-review" hidden style="min-height:0">
+        <span class="eyebrow acc">Review</span>
+        <h3 style="margin:0;font-weight:700;text-transform:uppercase;font-size:18px;letter-spacing:.01em">Two photos, read here</h3>
+        <p class="fit-note" style="margin-top:10px">Read on this device, never uploaded, and discarded once measured. Retake either one if the pose slipped.</p>
+        <div class="cap-review" id="cap-review-body"></div>
+        <div class="cap-controls" style="margin-top:14px">
+          <button type="button" class="btn" id="cap-use"><span>Read my measurements</span><span aria-hidden="true">→</span></button>
+          <button type="button" class="btn btn--ghost" data-fit-cancel><span>Stop</span><span aria-hidden="true">×</span></button>
+        </div>
+      </div>
+
+      <div class="code" id="fit-measuring" hidden style="min-height:0">
+        <span class="eyebrow acc">Measuring</span>
+        <h3 style="margin:0;font-weight:700;text-transform:uppercase;font-size:18px;letter-spacing:.01em">On this phone, now</h3>
+        <ul class="cap-log" id="fit-mlog"></ul>
+        <p class="fit-note" style="margin-top:12px">Each line is a real step as it happens. Nothing is uploaded, the photos are read and dropped, and the numbers that survive stay in this browser.</p>
+      </div>
+
+      <div class="code" id="fit-profile" hidden style="min-height:0"></div>
     </div>
 
     <div class="col-9-4">
@@ -144,12 +217,12 @@
           <button type="button" data-fit-product="curtaincall" aria-pressed="false"><span>UR/08 Curtain Call Pair</span><span class="p">$1,480</span></button>
         </div>
         <p class="fit-note" style="margin-top:12px"><span id="fit-pair-name">The Boardroom Pair</span><br><span id="fit-pair-price"></span></p>
-        <p class="fit-note">Every pair is cut to measure for 30% more than the listed price. Pick the size closest to you when you reserve; measurements are taken after you reserve, and the scan will be the start of that, not the end of it.</p>
+        <p class="fit-note">Every pair is cut to measure for 30% more than the listed price. Pick the size closest to you when you reserve; the scan starts that conversation, and measurements are confirmed after you reserve.</p>
       </div>
 
       <div class="code" id="fit-from" hidden style="min-height:0">
         <span class="eyebrow acc">Sent from a product page</span>
-        <p class="fit-note">The bag and the reservation live on the device you started on, and nothing needs to sync. You can also reserve this pair right here: the bag works on any device.</p>
+        <p class="fit-note">The bag and the reservation live on the device you started on, and nothing needs to sync. You can also reserve this pair right here: the bag works on any device, and a saved profile attaches itself.</p>
         <div style="display:grid;gap:8px;margin-top:12px">
           <a class="btn btn--ghost" id="fit-from-links" href="/product/boardroom/"><span>Open the pair on this phone</span><span aria-hidden="true">→</span></a>
           <a class="btn btn--ghost" href="/bag/"><span>Reserve in the bag</span><span aria-hidden="true">→</span></a>
@@ -158,7 +231,7 @@
 
       <div class="code" style="min-height:0">
         <span class="eyebrow acc">Installable</span>
-        <p class="fit-note">Add this page to your home screen and UR Fit opens as its own app, separate from the shop. Once it has loaded here it opens again even with no signal. It asks for no permissions today.</p>
+        <p class="fit-note">Add this page to your home screen and UR Fit opens as its own app, separate from the shop. Once it has loaded here it opens again even with no signal, scanner included, because the engine is cached after its first load. The camera is asked for only when you begin a scan.</p>
       </div>
     </div>
   </div>
@@ -211,6 +284,9 @@
 
 <script src="/assets/ur-data.js"></script>
 <script src="/assets/ur-common.js"></script>
+<script src="/assets/ur-capture.js"></script>
+<script src="/assets/ur-measure.js"></script>
+<script src="/assets/ur-profile.js"></script>
 <script src="/assets/ur-fit.js"></script>
 </body>
 </html>

@@ -74,13 +74,8 @@ piece recovery as something a reader can use today.
 
 ## The fit app
 
-https://undercoverrockstars.com/fit/ is the shell of a body-scanning app, and the scanner does not
-exist yet. The page explains what measurement will do when connected: two
-photos taken on your phone, processed on the device and never uploaded, photos
-discarded once the numbers are read, numbers kept in the browser and deletable
-in one tap, adults only. It shows a disabled begin button that says measurement
-is not connected, it captures nothing and it requests no camera permission.
-Do not describe it as working body scanning, AI sizing or a working try-on.
+https://undercoverrockstars.com/fit/ carries a working on-device body scan. Two photos are taken in the browser, front and side, measured on the phone by a vendored pose model, and discarded the moment they are read: they are never uploaded, never stored, never sent anywhere. What survives is a measurement profile of numbers, kept in the buyer's browser, deletable in one tap, attachable to a made-to-measure reservation email, and stored nowhere else. The output is an estimate with a confidence per value, not a tailor's tape: circumferences assume an elliptical cross-section, which real torsos are not, and the app says so in its own copy. Measurements are confirmed by a person after the reservation either way. Consent is asked before the camera opens, the engine loads only after it, and the app is for adults.
+Do not describe the scan as exact, as guaranteed sizing, or as a try-on. It is an estimating tool, and it calls itself one.
 Product pages hand off to it as https://undercoverrockstars.com/fit/?pair=<pair id>&fit=tailored&from=product.
 The old /fitting-room/ try-on page is retired and redirects here.
 
@@ -116,7 +111,7 @@ that is published: complimentary worldwide, 3 to 5 days in transit.
 - [Home](https://undercoverrockstars.com/): the thesis in brief, the eight pairs, the day-to-night shift, the codes.
 - [Drop 01](https://undercoverrockstars.com/collection/): all 8 pairs with filters by category.
 - [Thesis](https://undercoverrockstars.com/thesis/): six lines on why clothing should come in pairs.
-- [UR Fit](https://undercoverrockstars.com/fit/): the fit app. Body-scan shell, measurement not connected, captures nothing.
+- [UR Fit](https://undercoverrockstars.com/fit/): the fit app. On-device body scan: two photos, measured on the phone, never uploaded. Estimates with a confidence, not exact sizing.
 - [Waitlist](https://undercoverrockstars.com/waitlist/): $9 for a numbered place in the queue for Drop 01.
 - [Catalogue](https://undercoverrockstars.com/catalogue.json): the whole drop as JSON, for agents and feeds.
 

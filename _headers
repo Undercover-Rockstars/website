@@ -6,16 +6,26 @@
   X-Content-Type-Options: nosniff
   Referrer-Policy: strict-origin-when-cross-origin
   X-Frame-Options: SAMEORIGIN
-  # Camera stays disabled site-wide. That is correct for phase 0 of the fit
-  # app, which captures nothing and asks for no permission. The phase that
-  # wires the camera (#4) must scope a camera exception for /fit/ into this
-  # policy in the same commit, or getUserMedia will be blocked there.
+  # Camera stays disabled site-wide. The one exception is the fit app,
+  # which captures two photos on the device after explicit consent (#4,
+  # #12); the /fit/ block below re-enables it there, and nowhere else.
   Permissions-Policy: geolocation=(), microphone=(), camera=(), interest-cohort=()
+
+# The fit app captures on the device (#4). Same-origin camera only, never
+# in an embed, and every other permission stays off even there.
+/fit/*
+  Permissions-Policy: geolocation=(), microphone=(), camera=(self), interest-cohort=()
 
 /assets/*.css
   Cache-Control: public, max-age=31536000, immutable
 
 /assets/*.js
+  Cache-Control: public, max-age=31536000, immutable
+
+# The vendored scanner (#5): the pose model, the wasm runtime and the ES
+# module. Their paths carry the version, so the content at a path never
+# changes; a new version is a new path. Cache hard, like stamped assets.
+/assets/vendor/mediapipe/*
   Cache-Control: public, max-age=31536000, immutable
 
 /assets/*.png
