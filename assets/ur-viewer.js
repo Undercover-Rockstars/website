@@ -302,12 +302,19 @@ export function open(section, opts) {
     reload() {
       state.profile = readProfile();
       rebuild();
+      say(statusFor());
     },
     close() {
       state.open = false;
       if (api) { api.dispose(); api = null; }
     }
   };
+
+  function statusFor() {
+    return state.profile
+      ? 'Your body, as measured. Drag to turn, pinch or scroll to zoom.'
+      : 'The size-run body. Drag to turn, pinch or scroll to zoom.';
+  }
 
   say('Loading the viewer library, about 730 KB, once.');
   import(/* webpackIgnore: true */ THREE_PATH).then(THREE => {
@@ -321,9 +328,7 @@ export function open(section, opts) {
     }
     state.profile = readProfile();
     rebuild();
-    say(state.profile
-      ? 'Your body, as measured. Drag to turn, pinch or scroll to zoom.'
-      : 'The size-run body. Drag to turn, pinch or scroll to zoom.');
+    say(statusFor());
   }).catch(err => {
     console.warn('three.js failed to load', err);
     say('The viewer library could not load. It needs the network once, then it is cached; try again.');
@@ -481,22 +486,27 @@ function buildScene(THREE, stage, D, say, section) {
     }
     // cap both ends: shoulder end is hidden inside the torso, wrist and
     // floor ends are closed plainly
-    const ringCap = (ringIdx, flip) => {
+    // The centre vertex has to be indexed by where it landed, not by the
+    // vertex count after it landed: pos.length/3 is one past it. Indexing one
+    // past the end invalidates the whole index buffer, and a limb whose buffer
+    // is invalid does not draw at all, which is why arms and legs were missing
+    // while the torso beside them was fine.
+    const ringCap = (ringIdx, flip, centre) => {
       const base = ringIdx * radial;
       for (let j = 0; j < radial; j++) {
         const j2 = (j + 1) % radial;
-        if (flip) idx.push(base + j, base + j2, pos.length / 3);
-        else idx.push(base + j2, base + j, pos.length / 3);
+        if (flip) idx.push(base + j, base + j2, centre);
+        else idx.push(base + j2, base + j, centre);
       }
     };
     const capPoint = (ringIdx) => {
       const w = rings[ringIdx];
+      const centre = pos.length / 3;
       pos.push(spec.from.x + dx * w.y, spec.from.y + dy * w.y, spec.from.z + dz * w.y);
+      return centre;
     };
-    capPoint(0);
-    ringCap(0, true);
-    capPoint(rings.length - 1);
-    ringCap(rings.length - 1, false);
+    ringCap(0, true, capPoint(0));
+    ringCap(rings.length - 1, false, capPoint(rings.length - 1));
     const geo = new THREE.BufferGeometry();
     geo.setAttribute('position', new THREE.Float32BufferAttribute(pos, 3));
     geo.setIndex(idx);
@@ -572,11 +582,13 @@ function buildScene(THREE, stage, D, say, section) {
   const PALETTES = {
     day: {
       body: 0xc9c5bd, shell: 0x8e8b84, shellOpacity: 0.34, shellRough: 0.9,
-      line: 0xd6402a, hem: 0x6f6c66
+      line: 0xd6402a, hem: 0x6f6c66,
+      key: 1.9, rim: 0.8, hemi: 0.75
     },
     night: {
-      body: 0x514e48, shell: 0x0c0c0e, shellOpacity: 0.5, shellRough: 0.32,
-      line: 0xff5a36, hem: 0x2a2926
+      body: 0x94908a, shell: 0x0c0c0e, shellOpacity: 0.5, shellRough: 0.32,
+      line: 0xff5a36, hem: 0x2a2926,
+      key: 5, rim: 2, hemi: 2
     }
   };
   function applyMode(mode) {
@@ -586,6 +598,12 @@ function buildScene(THREE, stage, D, say, section) {
     shellMat.opacity = p.shellOpacity;
     shellMat.roughness = p.shellRough;
     lineMat.color.setHex(p.line);
+    /* the night stage is near black, so the same light that reads fine by
+       day leaves the body a silhouette: night lights the mannequin harder,
+       day keeps the flat catalogue light. Colour and finish only. */
+    key.intensity = p.key;
+    rim.intensity = p.rim;
+    amb.intensity = p.hemi;
   }
   const modeObserver = new MutationObserver(() => {
     applyMode(document.documentElement.getAttribute('data-mode'));
