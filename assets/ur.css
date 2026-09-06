@@ -1292,6 +1292,16 @@ main, footer, .site-header { position: relative; z-index: 1; }
   color: inherit;
 }
 .fz-credit a:hover { color: var(--acc); }
+/* The source link sits at the same weight as the Factory Zero credit: present
+   for anyone looking for it, quiet from ten metres. */
+.gh-credit a {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  color: inherit;
+}
+.gh-credit a:hover { color: var(--acc); }
+.gh-credit svg { flex: none; opacity: .85; }
 .fz-ring {
   flex: none;
   transform-origin: 50% 50%;
