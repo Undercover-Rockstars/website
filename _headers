@@ -6,6 +6,10 @@
   X-Content-Type-Options: nosniff
   Referrer-Policy: strict-origin-when-cross-origin
   X-Frame-Options: SAMEORIGIN
+  # Camera stays disabled site-wide. That is correct for phase 0 of the fit
+  # app, which captures nothing and asks for no permission. The phase that
+  # wires the camera (#4) must scope a camera exception for /fit/ into this
+  # policy in the same commit, or getUserMedia will be blocked there.
   Permissions-Policy: geolocation=(), microphone=(), camera=(), interest-cohort=()
 
 /assets/*.css
@@ -45,6 +49,13 @@
 
 /product/*
   Link: </catalogue.json>; rel="alternate"; type="application/json"; title="Product catalogue"
+
+# The fit app's service worker must always be revalidated, never served from
+# a stale HTTP cache, or /fit/ would lag behind deploys. Browsers already
+# bypass the HTTP cache for worker scripts by default; this makes it explicit.
+
+/fit/sw.js
+  Cache-Control: no-cache
 
 /.well-known/security.txt
   Content-Type: text/plain; charset=utf-8

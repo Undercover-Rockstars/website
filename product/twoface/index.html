@@ -147,7 +147,7 @@
   <nav class="site-nav" aria-label="Primary">
     <a href="/collection/" aria-current="page">Drop 01</a>
     <a href="/thesis/">Thesis</a>
-    <a href="/fitting-room/">Fitting room</a>
+    <a href="/fit/">Fit app</a>
     <a href="/waitlist/" style="color:var(--acc)">Waitlist</a>
     <a href="/#signal">Signal</a>
   </nav>
@@ -204,7 +204,20 @@
     </div>
     <div style="display:grid;gap:8px">
       <button type="button" class="btn btn--lg" id="add-to-bag" disabled><span id="add-label">Select a size</span><span aria-hidden="true">→</span></button>
-      <a class="btn btn--ghost" href="/fitting-room/?pair=twoface"><span>Try it on</span><span aria-hidden="true">◎</span></a>
+      <a class="btn btn--ghost" id="tryon" href="/fit/?pair=twoface&fit=tailored&from=product"><span>Try it on</span><span aria-hidden="true">◎</span></a>
+      <button type="button" class="handoff-reveal" id="handoff-reveal" hidden>Show the code anyway</button>
+      <div class="handoff-panel" id="handoff-panel" hidden>
+        <p class="eyebrow" style="margin:0">Send this pair to your phone</p>
+        <div class="handoff-qr" id="handoff-qr" role="img" aria-label="QR code that opens UR Fit with Two-Face Pair selected"></div>
+        <p class="fit-note" style="max-width:46ch">Scan with a phone to open UR Fit with Two-Face Pair already selected. Finish on your phone: the bag and the reservation live on the device you started on, and nothing needs to sync.</p>
+        <p class="fit-note" style="max-width:46ch">UR Fit explains made-to-measure and asks for no permissions. Measurement is not connected yet, so it captures nothing today.</p>
+        <div class="handoff-url">
+          <label class="sr-only" for="handoff-url">Link to UR Fit for this pair</label>
+          <input id="handoff-url" readonly>
+          <button type="button" id="handoff-copy">Copy</button>
+        </div>
+        <a class="handoff-open" id="handoff-open" href="/fit/?pair=twoface&fit=tailored&from=product">Open on this device →</a>
+      </div>
     </div>
     <dl class="spec-table">
       <div><dt>Contents</dt><dd>1 day + 1 night</dd></div>
@@ -236,7 +249,7 @@
     <nav aria-label="House">
       <span class="mute">House</span>
       <a href="/thesis/">Thesis</a>
-      <a href="/fitting-room/">Fitting room</a>
+      <a href="/fit/">Fit app</a>
       <a href="/waitlist/">Waitlist</a>
       <a href="/#signal">Signal</a>
     </nav>
@@ -271,5 +284,7 @@
 <script src="/assets/ur-data.js"></script>
 <script src="/assets/ur-common.js"></script>
 <script src="/assets/ur-product.js"></script>
+<script src="/assets/vendor/qrcode-generator/qrcode.js"></script>
+<script src="/assets/ur-handoff.js"></script>
 </body>
 </html>

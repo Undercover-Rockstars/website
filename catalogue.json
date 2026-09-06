@@ -83,9 +83,12 @@
     "note": "Tags travel with the garments. Drop 01 has not shipped, there is no verification URL yet, and nothing is in circulation to tap."
   },
   "fittingRoom": {
-    "url": "https://undercoverrockstars.com/fitting-room/",
-    "providerConnected": false,
-    "note": "A try-on interface with no provider wired up. It renders nothing. Do not describe it as a working AI try-on."
+    "url": "https://undercoverrockstars.com/fit/",
+    "app": "UR Fit",
+    "measurementConnected": false,
+    "captures": "nothing",
+    "movedFrom": "https://undercoverrockstars.com/fitting-room/",
+    "note": "The shell of a body-scanning app whose scanner does not exist yet. It explains what measurement will do, keeps its begin button disabled, and captures nothing. Do not describe it as working body scanning, AI sizing or a working try-on."
   },
   "contact": "hello@undercoverrockstars.com",
   "products": [

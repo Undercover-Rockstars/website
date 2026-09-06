@@ -28,14 +28,14 @@ const esc = s => String(s == null ? '' : s)
 const NAV = [
   { href: '/collection/',   label: 'Drop 01', key: 'collection' },
   { href: '/thesis/',       label: 'Thesis',  key: 'thesis' },
-  { href: '/fitting-room/', label: 'Fitting room', key: 'fitting' },
+  { href: '/fit/',          label: 'Fit app', key: 'fit' },
   { href: '/waitlist/',     label: 'Waitlist', key: 'waitlist', accent: true },
   { href: '/#signal',       label: 'Signal',  key: 'signal' },
 ];
 
 /* ------------------------------------------------------------------ head */
 
-function head({ slug, title, description, canonical, og, jsonld, scripts = [], noindex = false }) {
+function head({ slug, title, description, canonical, og, jsonld, scripts = [], noindex = false, manifest = '/site.webmanifest' }) {
   const url = ORIGIN + canonical;
   const image = ORIGIN + '/assets/' + (og || 'og.png');
   const ld = jsonld
@@ -72,7 +72,7 @@ function head({ slug, title, description, canonical, og, jsonld, scripts = [], n
 
 <link rel="icon" href="/assets/favicon.svg" type="image/svg+xml">
 <link rel="apple-touch-icon" href="/assets/apple-touch-icon.png">
-<link rel="manifest" href="/site.webmanifest">
+<link rel="manifest" href="${manifest}">
 <link rel="alternate" type="text/plain" href="/llms.txt" title="llms.txt">
 <link rel="alternate" type="application/json" href="/catalogue.json" title="Product catalogue">
 
@@ -132,7 +132,7 @@ function footer() {
     <nav aria-label="House">
       <span class="mute">House</span>
       <a href="/thesis/">Thesis</a>
-      <a href="/fitting-room/">Fitting room</a>
+      <a href="/fit/">Fit app</a>
       <a href="/waitlist/">Waitlist</a>
       <a href="/#signal">Signal</a>
     </nav>
@@ -172,7 +172,7 @@ function bagDrawer() {
 
 function foot(scripts = []) {
   const tags = ['/assets/ur-data.js', '/assets/ur-common.js', ...scripts]
-    .map(s => `<script src="${s}"${s.endsWith('ur-fitting.js') ? ' type="module"' : ''}></script>`).join('\n');
+    .map(s => `<script src="${s}"></script>`).join('\n');
   return bagDrawer() + '\n' + tags + '\n</body>\n</html>\n';
 }
 

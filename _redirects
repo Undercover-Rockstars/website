@@ -1,0 +1,6 @@
+# Cloudflare Pages redirects.
+#
+# The old try-on page is retired (#2): its URL lands on the fit app so
+# indexed links keep working. Query strings, including the old ?pair=
+# handoff, are preserved through the redirect by Cloudflare Pages.
+/fitting-room/ /fit/ 301

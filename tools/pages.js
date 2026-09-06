@@ -361,7 +361,20 @@ ${SIZES.map(z => `        <button type="button" data-size="${z}" aria-pressed="f
     </div>
     <div style="display:grid;gap:8px">
       <button type="button" class="btn btn--lg" id="add-to-bag" disabled><span id="add-label">Select a size</span><span aria-hidden="true">→</span></button>
-      <a class="btn btn--ghost" href="/fitting-room/?pair=${p.id}"><span>Try it on</span><span aria-hidden="true">◎</span></a>
+      <a class="btn btn--ghost" id="tryon" href="/fit/?pair=${p.id}&fit=tailored&from=product"><span>Try it on</span><span aria-hidden="true">◎</span></a>
+      <button type="button" class="handoff-reveal" id="handoff-reveal" hidden>Show the code anyway</button>
+      <div class="handoff-panel" id="handoff-panel" hidden>
+        <p class="eyebrow" style="margin:0">Send this pair to your phone</p>
+        <div class="handoff-qr" id="handoff-qr" role="img" aria-label="QR code that opens UR Fit with ${esc(p.name)} selected"></div>
+        <p class="fit-note" style="max-width:46ch">Scan with a phone to open UR Fit with ${esc(p.name)} already selected. Finish on your phone: the bag and the reservation live on the device you started on, and nothing needs to sync.</p>
+        <p class="fit-note" style="max-width:46ch">UR Fit explains made-to-measure and asks for no permissions. Measurement is not connected yet, so it captures nothing today.</p>
+        <div class="handoff-url">
+          <label class="sr-only" for="handoff-url">Link to UR Fit for this pair</label>
+          <input id="handoff-url" readonly>
+          <button type="button" id="handoff-copy">Copy</button>
+        </div>
+        <a class="handoff-open" id="handoff-open" href="/fit/?pair=${p.id}&fit=tailored&from=product">Open on this device →</a>
+      </div>
     </div>
     <dl class="spec-table">
       <div><dt>Contents</dt><dd>1 day + 1 night</dd></div>
@@ -379,7 +392,7 @@ ${SIZES.map(z => `        <button type="button" data-size="${z}" aria-pressed="f
     </p>
   </div>
 </main>
-` + footer() + foot(['/assets/ur-product.js']));
+` + footer() + foot(['/assets/ur-product.js', '/assets/vendor/qrcode-generator/qrcode.js', '/assets/ur-handoff.js']));
 });
 
 /* ----------------------------------------------------------------- thesis */
@@ -419,90 +432,201 @@ ${MANIFESTO.map(m => `        <div style="display:grid;grid-template-columns:80p
 
 console.log('collection, products, thesis done');
 
-/* ----------------------------------------------------------- fitting room */
+/* ------------------------------------------------------------------- fit */
 
-write('fitting-room/index.html', head({
-  slug: 'fitting',
-  title: `Fitting room · ${BRAND}`,
-  description: 'One photo, both versions. See the day piece and the night piece before either arrives. Your photo is read in the browser and is not uploaded.',
-  canonical: '/fitting-room/',
-  og: 'og-fitting.png',
+/* Phase 0 of the fitting room v2 epic (#1): /fit/ is the honest shell of a
+   body-scanning app whose scanner does not exist yet (#3), with the consent
+   copy spelled out before any camera would ever open (#12). Nothing on this
+   page may imply measurement works: no progress bar, no capture, and a
+   disabled primary button that says why, the same posture as the waitlist's
+   "Not open yet". */
+
+write('fit/index.html', head({
+  slug: 'fit',
+  title: `UR Fit · ${BRAND}`,
+  description: 'The fit app: two photos, your measurements, a made-to-measure pair cut from them. Measurement is not connected yet, so nothing is captured.',
+  canonical: '/fit/',
+  og: 'og-fit.png',
+  manifest: '/fit/manifest.webmanifest',
   jsonld: { '@context': 'https://schema.org', '@graph': [
-    { '@type': 'WebPage', '@id': ORIGIN + '/fitting-room/#webpage', url: ORIGIN + '/fitting-room/',
-      name: `Fitting room · ${BRAND}`, isPartOf: { '@id': ORIGIN + '/#website' }, inLanguage: 'en' },
-    crumbs([{ name: BRAND, path: '/' }, { name: 'Fitting room', path: '/fitting-room/' }])
+    { '@type': 'WebPage', '@id': ORIGIN + '/fit/#webpage', url: ORIGIN + '/fit/',
+      name: `UR Fit · ${BRAND}`, isPartOf: { '@id': ORIGIN + '/#website' }, inLanguage: 'en' },
+    crumbs([{ name: BRAND, path: '/' }, { name: 'UR Fit', path: '/fit/' }])
   ] }
-}) + header('fitting') + `
-<main id="main" class="page-pad" data-initial-product="${PRODUCTS[0].id}">
+}) + header('fit') + `
+<main id="main" class="page-pad">
   <div class="grid12 collection-head">
     <div class="col-1-8">
-      <p class="eyebrow" style="margin-bottom:20px">UR/FIT · try-on · <span class="acc">provider not connected</span></p>
-      <h1 class="h-page">Fitting<br>room</h1>
+      <p class="eyebrow" style="margin-bottom:20px">UR/FIT · body scan · <span class="acc">measurement not connected</span></p>
+      <h1 class="h-page">Cut from<br><span class="acc">you.</span></h1>
     </div>
-    <p class="lede col-9-4" style="font-size:15px">One photo. Both versions. See the day piece and the night piece on you before either arrives.</p>
+    <p class="lede col-9-4" style="font-size:15px">Two photos, taken here on your phone. Your measurements, read on the device. A made-to-measure pair cut from the numbers. That is what this app becomes once measurement is connected. It is not connected yet, so today this page captures nothing.</p>
   </div>
 
-  <div id="fitting" class="fit-shell" data-initial-product="${PRODUCTS[0].id}">
-    <div class="fit-controls">
-      <div class="fit-block">
-        <p class="step">01 / Your photo</p>
-        <label class="fit-drop">
-          <img id="fit-drop-img" alt="" hidden>
-          <span id="fit-drop-label">[ drop or choose a photo ]</span>
-          <input id="fit-file" type="file" accept="image/*">
-        </label>
-        <p class="fit-note">Full body, plain background, arms relaxed. Your photo is read in this browser and is not uploaded anywhere.</p>
+  <div class="grid12" style="gap:48px var(--gap)">
+    <div class="col-1-8">
+      <div class="codes codes--tight">
+${[
+  { n: '01', h: 'Two photos', p: 'Front and side, in tight clothing or underwear. Photograph whatever you are comfortable with: the measurements need your shape, not your face or your room.' },
+  { n: '02', h: 'Read on this phone', p: 'The measurement engine runs on this device. The camera is only asked for after you read the consent note below and accept it, never on arrival.' },
+  { n: '03', h: 'Numbers, not photos', p: 'Your measurements are kept in this browser and travel with your reservation. The photos are discarded the moment they have been read, and one tap deletes the numbers, any time.' }
+].map(s => `        <div class="code"><span class="eyebrow acc">${s.n}</span><h3>${esc(s.h)}</h3><p style="font-size:15px;color:var(--fg);line-height:1.6">${esc(s.p)}</p></div>`).join('\n')}
       </div>
-      <div class="fit-block">
-        <p class="step">02 / Pair</p>
+
+      <div class="fit-consent">
+        <p class="eyebrow">Consent, before anything captures</p>
+        <p>When measurement is connected and you choose to begin, the camera takes two photos of you, front and side. They are processed on this device and never uploaded anywhere. They are thrown away as soon as your measurements have been read; only the numbers are kept, in this browser, and deleting them is one tap. Nothing is stored on a server, and a reservation email carries numbers, never images. If any of that ever changes, this note changes in the same commit. This app is for adults.</p>
+      </div>
+
+      <div class="fit-empty">
+        <button type="button" class="btn btn--lg" disabled><span>Measurement is not connected yet</span><span aria-hidden="true">◎</span></button>
+        <p class="fit-note">There is no scanner behind this button today, so it stays here, disabled. No camera is requested, nothing is captured, and no progress bar pretends otherwise. Reserve in the bag as usual: measurements are taken after you reserve, with or without the scan.</p>
+      </div>
+    </div>
+
+    <div class="col-9-4">
+      <div class="code" id="fit-app" style="min-height:0">
+        <span class="eyebrow acc">The pair</span>
+        <h2 style="margin:0;font-weight:700;text-transform:uppercase;font-size:18px;letter-spacing:.01em">Made to measure</h2>
+        <p class="fit-note" id="fit-mode-chip" hidden>Measurement mode · opened from a product page with made to measure selected.</p>
         <div class="fit-pairs" role="group" aria-label="Choose a pair">
 ${PRODUCTS.map((p, i) => `          <button type="button" data-fit-product="${p.id}" aria-pressed="${i === 0}"><span>UR/${p.code} ${esc(p.name)}</span><span class="p">${format(p.price)}</span></button>`).join('\n')}
         </div>
+        <p class="fit-note" style="margin-top:12px"><span id="fit-pair-name">${esc(PRODUCTS[0].name)}</span><br><span id="fit-pair-price"></span></p>
+        <p class="fit-note">Every pair is cut to measure for 30% more than the listed price. Pick the size closest to you when you reserve; measurements are taken after you reserve, and the scan will be the start of that, not the end of it.</p>
       </div>
-      <div class="fit-block">
-        <p class="step">03 / Version</p>
-        <div class="fit-toggle" role="group" aria-label="Choose a version">
-          <button type="button" data-fit-mode="day" aria-pressed="true">Day</button>
-          <button type="button" data-fit-mode="night" aria-pressed="false">Night</button>
-        </div>
-      </div>
-      <div class="fit-block">
-        <button type="button" class="btn btn--lg" id="fit-run" disabled><span id="fit-run-label">Add a photo first</span><span aria-hidden="true">◎</span></button>
-        <p class="fit-note">Renders both pieces from one pattern once a provider is connected.</p>
-      </div>
-    </div>
 
-    <div class="fit-stage">
-      <div class="fit-pane fit-pane--in">
-        <span class="fit-tag">Input</span>
-        <img id="fit-in-img" alt="The photo you chose" hidden>
-        <span class="fit-idle" id="fit-in-label">[ your photo appears here ]</span>
+      <div class="code" id="fit-from" hidden style="min-height:0">
+        <span class="eyebrow acc">Sent from a product page</span>
+        <p class="fit-note">The bag and the reservation live on the device you started on, and nothing needs to sync. You can also reserve this pair right here: the bag works on any device.</p>
+        <div style="display:grid;gap:8px;margin-top:12px">
+          <a class="btn btn--ghost" id="fit-from-links" href="/product/${PRODUCTS[0].id}/"><span>Open the pair on this phone</span><span aria-hidden="true">→</span></a>
+          <a class="btn btn--ghost" href="/bag/"><span>Reserve in the bag</span><span aria-hidden="true">→</span></a>
+        </div>
       </div>
-      <div class="fit-pane fit-pane--out" id="fit-out">
-        <span class="fit-tag">Render · <span id="fit-mode-tag">day</span></span>
-        <img id="fit-result" alt="Try-on render" hidden>
-        <div class="fit-idle" id="fit-idle">
-          <span class="star" aria-hidden="true">★</span>
-          <span>Output</span>
-          <span id="fit-hint">Waiting for a photo</span>
-        </div>
-        <div class="fit-idle" id="fit-busy" hidden>
-          <span class="fit-scan" aria-hidden="true"></span>
-          <span class="acc">● Rendering</span>
-          <span id="fit-step">Connecting</span>
-        </div>
-        <div class="fit-idle" id="fit-notice" hidden role="status">
-          <span class="star" aria-hidden="true">◎</span>
-          <span class="acc">No provider connected</span>
-          <span style="max-width:30ch;line-height:1.8">The try-on engine is not wired up yet, so there is nothing to show you. We are not going to hand your own photo back and call it a render.</span>
-          <a class="btn btn--ghost btn--inline" style="margin-top:8px" href="/collection/"><span>See the pairs instead</span><span aria-hidden="true">→</span></a>
-        </div>
+
+      <div class="code" style="min-height:0">
+        <span class="eyebrow acc">Installable</span>
+        <p class="fit-note">Add this page to your home screen and UR Fit opens as its own app, separate from the shop. Once it has loaded here it opens again even with no signal. It asks for no permissions today.</p>
       </div>
     </div>
   </div>
-  <p class="fit-provider">Provider hook: <code>assets/tryon.js</code> · renderTryOn({ photo, productId, mode }) · returns nothing until a try-on API is connected. Your photo never leaves the browser in this state.</p>
 </main>
-` + footer() + foot(['/assets/ur-fitting.js']));
+` + footer() + foot(['/assets/ur-fit.js']));
+
+console.log('fit app done');
+
+/* The fit app gets its own manifest (#3): its own scope and start URL and its
+   own name, so installing UR Fit does not install the whole shop. */
+write('fit/manifest.webmanifest', JSON.stringify({
+  name: 'UR Fit',
+  short_name: 'UR Fit',
+  description: 'The Undercover Rockstars fit app. Two photos, your measurements, a made-to-measure pair cut from them. Measurement is not connected yet.',
+  start_url: '/fit/',
+  scope: '/fit/',
+  display: 'standalone',
+  background_color: '#0a0a0b',
+  theme_color: '#0a0a0b',
+  icons: [
+    { src: '/assets/favicon.svg', sizes: 'any', type: 'image/svg+xml', purpose: 'any' },
+    { src: '/assets/apple-touch-icon.png', sizes: '180x180', type: 'image/png' },
+    { src: '/assets/icon-512.png', sizes: '512x512', type: 'image/png' }
+  ]
+}, null, 2) + '\n');
+
+/* The service worker lives at /fit/sw.js so its scope is /fit/ and nothing
+   else, and it is registered only by the fit page (#3, #8 in the brief's
+   constraint list). It caches the app shell for a second visit with no
+   signal and never touches /api/*. Bump SHELL_VERSION to retire old caches. */
+write('fit/sw.js', `/* UR Fit service worker. Generated by tools/pages.js, do not edit by hand.
+ *
+ * Scope is /fit/ only, because the file sits at /fit/sw.js. The marketing
+ * pages are not controlled or cached by this worker on purpose: they change
+ * with every deploy and are cache-busted by tools/build-dist.sh, and a worker
+ * that wedged the shop would be a worse outcome than no worker.
+ *
+ * Network-first for navigations with the cached shell as the offline
+ * fallback; stale-while-revalidate for same-origin assets; the API is never
+ * cached or intercepted.
+ */
+'use strict';
+
+const SHELL_VERSION = 'v1';
+const SHELL_CACHE = 'ur-fit-' + SHELL_VERSION;
+const NAV_FALLBACK = '/fit/';
+const SHELL_ASSETS = [
+  '/fit/',
+  '/fit/manifest.webmanifest',
+  '/assets/ur.css',
+  '/assets/ur-data.js',
+  '/assets/ur-common.js',
+  '/assets/ur-fit.js'
+];
+
+self.addEventListener('install', function (event) {
+  event.waitUntil(
+    caches.open(SHELL_CACHE)
+      .then(function (cache) { return cache.addAll(SHELL_ASSETS); })
+      .then(function () { return self.skipWaiting(); })
+  );
+});
+
+self.addEventListener('activate', function (event) {
+  event.waitUntil((async function () {
+    var keys = await caches.keys();
+    await Promise.all(keys.map(function (k) {
+      return k === SHELL_CACHE ? null : caches.delete(k);
+    }));
+    await self.clients.claim();
+  })());
+});
+
+self.addEventListener('fetch', function (event) {
+  var request = event.request;
+  if (request.method !== 'GET') return;
+  var url = new URL(request.url);
+  if (url.origin !== self.location.origin) return;
+  // Reservations and the waitlist must always reach the network or fail
+  // loudly. Never cached, never synthesized from a cache.
+  if (url.pathname.indexOf('/api/') === 0) return;
+
+  if (request.mode === 'navigate') {
+    event.respondWith(networkFirst(request));
+  } else {
+    event.respondWith(staleWhileRevalidate(request));
+  }
+});
+
+async function networkFirst(request) {
+  var cache = await caches.open(SHELL_CACHE);
+  try {
+    var fresh = await fetch(request);
+    if (fresh && fresh.ok) cache.put(request, fresh.clone());
+    return fresh;
+  } catch (err) {
+    // Offline: fall back to the cached shell, ignoring any ?pair= query.
+    var hit = await cache.match(request, { ignoreSearch: true });
+    if (hit) return hit;
+    var shell = await cache.match(NAV_FALLBACK);
+    if (shell) return shell;
+    throw err;
+  }
+}
+
+async function staleWhileRevalidate(request) {
+  var cache = await caches.open(SHELL_CACHE);
+  // The dist build stamps assets with ?v=, so match on the path alone.
+  var hit = await cache.match(request, { ignoreSearch: true });
+  var refresh = fetch(request).then(function (response) {
+    if (response && response.ok) cache.put(request, response.clone());
+    return response;
+  }).catch(function () { return null; });
+  if (hit) return hit;
+  var fresh = await refresh;
+  if (fresh) return fresh;
+  return new Response('offline', { status: 503, statusText: 'Offline' });
+}
+`);
 
 /* --------------------------------------------------------------- waitlist */
 
@@ -638,7 +762,7 @@ write('404.html', head({
 </main>
 ` + footer() + foot());
 
-console.log('fitting room, bag, 404 done');
+console.log('waitlist, bag, 404 done');
 
 /* -------------------------------------------------------------- seo files */
 
@@ -648,7 +772,7 @@ const urls = [
   { loc: '/collection/', pri: '0.9', freq: 'weekly' },
   ...PRODUCTS.map(p => ({ loc: `/product/${p.id}/`, pri: '0.8', freq: 'monthly' })),
   { loc: '/thesis/', pri: '0.7', freq: 'monthly' },
-  { loc: '/fitting-room/', pri: '0.6', freq: 'monthly' },
+  { loc: '/fit/', pri: '0.6', freq: 'monthly' },
   { loc: '/waitlist/', pri: '0.8', freq: 'monthly' }
 ];
 write('sitemap.xml', `<?xml version="1.0" encoding="UTF-8"?>
@@ -731,11 +855,17 @@ details. **No tags are in circulation yet**, because Drop 01 has not shipped and
 there is no verification page live. Do not describe tag verification or lost
 piece recovery as something a reader can use today.
 
-## The fitting room
+## The fit app
 
-${ORIGIN}/fitting-room/ is a try-on interface with **no provider connected yet**.
-It reads a photo in the browser, does not upload it anywhere, and says plainly
-that it has nothing to render. Do not describe it as a working AI try-on.
+${ORIGIN}/fit/ is the shell of a body-scanning app, and the scanner does not
+exist yet. The page explains what measurement will do when connected: two
+photos taken on your phone, processed on the device and never uploaded, photos
+discarded once the numbers are read, numbers kept in the browser and deletable
+in one tap, adults only. It shows a disabled begin button that says measurement
+is not connected, it captures nothing and it requests no camera permission.
+Do not describe it as working body scanning, AI sizing or a working try-on.
+Product pages hand off to it as ${ORIGIN}/fit/?pair=<pair id>&fit=tailored&from=product.
+The old /fitting-room/ try-on page is retired and redirects here.
 
 ## For shopping agents
 
@@ -749,8 +879,11 @@ ${ORIGIN}/collection/ carries the same eight products inside one \`ItemList\`,
 so a single fetch answers most questions without crawling.
 
 What an agent can do here: quote pairs, prices, sizes, fabrics and materials;
-say what a pair contains; explain that the piece carries an NFC tag; and hand
-the buyer ${ORIGIN}/bag/ or hello@undercoverrockstars.com.
+say what a pair contains; explain that the piece carries an NFC tag; point a
+buyer at the fit app with a pair preselected
+(\`${ORIGIN}/fit/?pair=<pair id>&fit=tailored&from=product\`), which describes
+made-to-measure honestly; and hand the buyer ${ORIGIN}/bag/ or
+hello@undercoverrockstars.com.
 
 What an agent cannot do here: **buy a garment.** There is no checkout for the
 pairs, no cart API and no order status. The only payable item is the
@@ -766,7 +899,7 @@ that is published: complimentary worldwide, 3 to 5 days in transit.
 - [Home](${ORIGIN}/): the thesis in brief, the eight pairs, the day-to-night shift, the codes.
 - [Drop 01](${ORIGIN}/collection/): all ${PRODUCTS.length} pairs with filters by category.
 - [Thesis](${ORIGIN}/thesis/): six lines on why clothing should come in pairs.
-- [Fitting room](${ORIGIN}/fitting-room/): try-on interface, provider not connected.
+- [UR Fit](${ORIGIN}/fit/): the fit app. Body-scan shell, measurement not connected, captures nothing.
 - [Waitlist](${ORIGIN}/waitlist/): ${WAITLIST.formatted} for a numbered place in the queue for Drop 01.
 - [Catalogue](${ORIGIN}/catalogue.json): the whole drop as JSON, for agents and feeds.
 
@@ -829,8 +962,9 @@ write('catalogue.json', JSON.stringify({
     live: false,
     note: 'Tags travel with the garments. Drop 01 has not shipped, there is no verification URL yet, and nothing is in circulation to tap.'
   },
-  fittingRoom: { url: ORIGIN + '/fitting-room/', providerConnected: false,
-    note: 'A try-on interface with no provider wired up. It renders nothing. Do not describe it as a working AI try-on.' },
+  fittingRoom: { url: ORIGIN + '/fit/', app: 'UR Fit', measurementConnected: false, captures: 'nothing',
+    movedFrom: ORIGIN + '/fitting-room/',
+    note: 'The shell of a body-scanning app whose scanner does not exist yet. It explains what measurement will do, keeps its begin button disabled, and captures nothing. Do not describe it as working body scanning, AI sizing or a working try-on.' },
   contact: 'hello@undercoverrockstars.com',
   products: PRODUCTS.map(p => ({
     id: p.id,

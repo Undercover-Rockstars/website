@@ -33,8 +33,8 @@ card og-thesis.png 'The day is the <span class="acc">disguise.</span>' 'Thesis �
 card og-waitlist.png 'Hold your <span class="acc">place.</span>' 'UR/01 · waitlist · $9' \
   '$9 holds a numbered place in the queue for Drop 01. Paid places are served first.'
 
-card og-fitting.png 'Fitting <span class="acc">room</span>' 'UR/FIT · try-on' \
-  'One photo, both versions. Your photo is read in the browser and is not uploaded.'
+card og-fit.png 'Cut from <span class="acc">you.</span>' 'UR/FIT · fit app' \
+  'Two photos, your measurements, a made-to-measure pair cut from them. Measurement is not connected yet.'
 
 # one card per pair, driven by the same data the site uses
 node -e '

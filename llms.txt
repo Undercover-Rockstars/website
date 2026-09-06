@@ -72,11 +72,17 @@ details. **No tags are in circulation yet**, because Drop 01 has not shipped and
 there is no verification page live. Do not describe tag verification or lost
 piece recovery as something a reader can use today.
 
-## The fitting room
+## The fit app
 
-https://undercoverrockstars.com/fitting-room/ is a try-on interface with **no provider connected yet**.
-It reads a photo in the browser, does not upload it anywhere, and says plainly
-that it has nothing to render. Do not describe it as a working AI try-on.
+https://undercoverrockstars.com/fit/ is the shell of a body-scanning app, and the scanner does not
+exist yet. The page explains what measurement will do when connected: two
+photos taken on your phone, processed on the device and never uploaded, photos
+discarded once the numbers are read, numbers kept in the browser and deletable
+in one tap, adults only. It shows a disabled begin button that says measurement
+is not connected, it captures nothing and it requests no camera permission.
+Do not describe it as working body scanning, AI sizing or a working try-on.
+Product pages hand off to it as https://undercoverrockstars.com/fit/?pair=<pair id>&fit=tailored&from=product.
+The old /fitting-room/ try-on page is retired and redirects here.
 
 ## For shopping agents
 
@@ -90,8 +96,11 @@ https://undercoverrockstars.com/collection/ carries the same eight products insi
 so a single fetch answers most questions without crawling.
 
 What an agent can do here: quote pairs, prices, sizes, fabrics and materials;
-say what a pair contains; explain that the piece carries an NFC tag; and hand
-the buyer https://undercoverrockstars.com/bag/ or hello@undercoverrockstars.com.
+say what a pair contains; explain that the piece carries an NFC tag; point a
+buyer at the fit app with a pair preselected
+(`https://undercoverrockstars.com/fit/?pair=<pair id>&fit=tailored&from=product`), which describes
+made-to-measure honestly; and hand the buyer https://undercoverrockstars.com/bag/ or
+hello@undercoverrockstars.com.
 
 What an agent cannot do here: **buy a garment.** There is no checkout for the
 pairs, no cart API and no order status. The only payable item is the
@@ -107,7 +116,7 @@ that is published: complimentary worldwide, 3 to 5 days in transit.
 - [Home](https://undercoverrockstars.com/): the thesis in brief, the eight pairs, the day-to-night shift, the codes.
 - [Drop 01](https://undercoverrockstars.com/collection/): all 8 pairs with filters by category.
 - [Thesis](https://undercoverrockstars.com/thesis/): six lines on why clothing should come in pairs.
-- [Fitting room](https://undercoverrockstars.com/fitting-room/): try-on interface, provider not connected.
+- [UR Fit](https://undercoverrockstars.com/fit/): the fit app. Body-scan shell, measurement not connected, captures nothing.
 - [Waitlist](https://undercoverrockstars.com/waitlist/): $9 for a numbered place in the queue for Drop 01.
 - [Catalogue](https://undercoverrockstars.com/catalogue.json): the whole drop as JSON, for agents and feeds.
 

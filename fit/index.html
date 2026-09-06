@@ -4,9 +4,9 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 
-<title>Fitting room · Undercover Rockstars</title>
-<meta name="description" content="One photo, both versions. See the day piece and the night piece before either arrives. Your photo is read in the browser and is not uploaded.">
-<link rel="canonical" href="https://undercoverrockstars.com/fitting-room/">
+<title>UR Fit · Undercover Rockstars</title>
+<meta name="description" content="The fit app: two photos, your measurements, a made-to-measure pair cut from them. Measurement is not connected yet, so nothing is captured.">
+<link rel="canonical" href="https://undercoverrockstars.com/fit/">
 <meta name="robots" content="index, follow, max-image-preview:large, max-snippet:-1">
 <meta name="theme-color" content="#0a0a0b">
 <meta name="color-scheme" content="dark light">
@@ -14,23 +14,23 @@
 <meta property="og:type" content="website">
 <meta property="og:site_name" content="Undercover Rockstars">
 <meta property="og:locale" content="en_GB">
-<meta property="og:url" content="https://undercoverrockstars.com/fitting-room/">
-<meta property="og:title" content="Fitting room · Undercover Rockstars">
-<meta property="og:description" content="One photo, both versions. See the day piece and the night piece before either arrives. Your photo is read in the browser and is not uploaded.">
-<meta property="og:image" content="https://undercoverrockstars.com/assets/og-fitting.png">
+<meta property="og:url" content="https://undercoverrockstars.com/fit/">
+<meta property="og:title" content="UR Fit · Undercover Rockstars">
+<meta property="og:description" content="The fit app: two photos, your measurements, a made-to-measure pair cut from them. Measurement is not connected yet, so nothing is captured.">
+<meta property="og:image" content="https://undercoverrockstars.com/assets/og-fit.png">
 <meta property="og:image:type" content="image/png">
 <meta property="og:image:width" content="1200">
 <meta property="og:image:height" content="630">
-<meta property="og:image:alt" content="Fitting room · Undercover Rockstars">
+<meta property="og:image:alt" content="UR Fit · Undercover Rockstars">
 
 <meta name="twitter:card" content="summary_large_image">
-<meta name="twitter:title" content="Fitting room · Undercover Rockstars">
-<meta name="twitter:description" content="One photo, both versions. See the day piece and the night piece before either arrives. Your photo is read in the browser and is not uploaded.">
-<meta name="twitter:image" content="https://undercoverrockstars.com/assets/og-fitting.png">
+<meta name="twitter:title" content="UR Fit · Undercover Rockstars">
+<meta name="twitter:description" content="The fit app: two photos, your measurements, a made-to-measure pair cut from them. Measurement is not connected yet, so nothing is captured.">
+<meta name="twitter:image" content="https://undercoverrockstars.com/assets/og-fit.png">
 
 <link rel="icon" href="/assets/favicon.svg" type="image/svg+xml">
 <link rel="apple-touch-icon" href="/assets/apple-touch-icon.png">
-<link rel="manifest" href="/site.webmanifest">
+<link rel="manifest" href="/fit/manifest.webmanifest">
 <link rel="alternate" type="text/plain" href="/llms.txt" title="llms.txt">
 <link rel="alternate" type="application/json" href="/catalogue.json" title="Product catalogue">
 
@@ -46,9 +46,9 @@
   "@graph": [
     {
       "@type": "WebPage",
-      "@id": "https://undercoverrockstars.com/fitting-room/#webpage",
-      "url": "https://undercoverrockstars.com/fitting-room/",
-      "name": "Fitting room · Undercover Rockstars",
+      "@id": "https://undercoverrockstars.com/fit/#webpage",
+      "url": "https://undercoverrockstars.com/fit/",
+      "name": "UR Fit · Undercover Rockstars",
       "isPartOf": {
         "@id": "https://undercoverrockstars.com/#website"
       },
@@ -66,8 +66,8 @@
         {
           "@type": "ListItem",
           "position": 2,
-          "name": "Fitting room",
-          "item": "https://undercoverrockstars.com/fitting-room/"
+          "name": "UR Fit",
+          "item": "https://undercoverrockstars.com/fit/"
         }
       ]
     }
@@ -84,7 +84,7 @@
   <nav class="site-nav" aria-label="Primary">
     <a href="/collection/">Drop 01</a>
     <a href="/thesis/">Thesis</a>
-    <a href="/fitting-room/" aria-current="page">Fitting room</a>
+    <a href="/fit/" aria-current="page">Fit app</a>
     <a href="/waitlist/" style="color:var(--acc)">Waitlist</a>
     <a href="/#signal">Signal</a>
   </nav>
@@ -100,28 +100,39 @@
   </div>
 </header>
 
-<main id="main" class="page-pad" data-initial-product="boardroom">
+<main id="main" class="page-pad">
   <div class="grid12 collection-head">
     <div class="col-1-8">
-      <p class="eyebrow" style="margin-bottom:20px">UR/FIT · try-on · <span class="acc">provider not connected</span></p>
-      <h1 class="h-page">Fitting<br>room</h1>
+      <p class="eyebrow" style="margin-bottom:20px">UR/FIT · body scan · <span class="acc">measurement not connected</span></p>
+      <h1 class="h-page">Cut from<br><span class="acc">you.</span></h1>
     </div>
-    <p class="lede col-9-4" style="font-size:15px">One photo. Both versions. See the day piece and the night piece on you before either arrives.</p>
+    <p class="lede col-9-4" style="font-size:15px">Two photos, taken here on your phone. Your measurements, read on the device. A made-to-measure pair cut from the numbers. That is what this app becomes once measurement is connected. It is not connected yet, so today this page captures nothing.</p>
   </div>
 
-  <div id="fitting" class="fit-shell" data-initial-product="boardroom">
-    <div class="fit-controls">
-      <div class="fit-block">
-        <p class="step">01 / Your photo</p>
-        <label class="fit-drop">
-          <img id="fit-drop-img" alt="" hidden>
-          <span id="fit-drop-label">[ drop or choose a photo ]</span>
-          <input id="fit-file" type="file" accept="image/*">
-        </label>
-        <p class="fit-note">Full body, plain background, arms relaxed. Your photo is read in this browser and is not uploaded anywhere.</p>
+  <div class="grid12" style="gap:48px var(--gap)">
+    <div class="col-1-8">
+      <div class="codes codes--tight">
+        <div class="code"><span class="eyebrow acc">01</span><h3>Two photos</h3><p style="font-size:15px;color:var(--fg);line-height:1.6">Front and side, in tight clothing or underwear. Photograph whatever you are comfortable with: the measurements need your shape, not your face or your room.</p></div>
+        <div class="code"><span class="eyebrow acc">02</span><h3>Read on this phone</h3><p style="font-size:15px;color:var(--fg);line-height:1.6">The measurement engine runs on this device. The camera is only asked for after you read the consent note below and accept it, never on arrival.</p></div>
+        <div class="code"><span class="eyebrow acc">03</span><h3>Numbers, not photos</h3><p style="font-size:15px;color:var(--fg);line-height:1.6">Your measurements are kept in this browser and travel with your reservation. The photos are discarded the moment they have been read, and one tap deletes the numbers, any time.</p></div>
       </div>
-      <div class="fit-block">
-        <p class="step">02 / Pair</p>
+
+      <div class="fit-consent">
+        <p class="eyebrow">Consent, before anything captures</p>
+        <p>When measurement is connected and you choose to begin, the camera takes two photos of you, front and side. They are processed on this device and never uploaded anywhere. They are thrown away as soon as your measurements have been read; only the numbers are kept, in this browser, and deleting them is one tap. Nothing is stored on a server, and a reservation email carries numbers, never images. If any of that ever changes, this note changes in the same commit. This app is for adults.</p>
+      </div>
+
+      <div class="fit-empty">
+        <button type="button" class="btn btn--lg" disabled><span>Measurement is not connected yet</span><span aria-hidden="true">◎</span></button>
+        <p class="fit-note">There is no scanner behind this button today, so it stays here, disabled. No camera is requested, nothing is captured, and no progress bar pretends otherwise. Reserve in the bag as usual: measurements are taken after you reserve, with or without the scan.</p>
+      </div>
+    </div>
+
+    <div class="col-9-4">
+      <div class="code" id="fit-app" style="min-height:0">
+        <span class="eyebrow acc">The pair</span>
+        <h2 style="margin:0;font-weight:700;text-transform:uppercase;font-size:18px;letter-spacing:.01em">Made to measure</h2>
+        <p class="fit-note" id="fit-mode-chip" hidden>Measurement mode · opened from a product page with made to measure selected.</p>
         <div class="fit-pairs" role="group" aria-label="Choose a pair">
           <button type="button" data-fit-product="boardroom" aria-pressed="true"><span>UR/01 The Boardroom Pair</span><span class="p">$2,290</span></button>
           <button type="button" data-fit-product="afterhours" aria-pressed="false"><span>UR/02 After Hours Pair</span><span class="p">$2,850</span></button>
@@ -132,49 +143,25 @@
           <button type="button" data-fit-product="quietriot" aria-pressed="false"><span>UR/07 Quiet Riot Pair</span><span class="p">$1,120</span></button>
           <button type="button" data-fit-product="curtaincall" aria-pressed="false"><span>UR/08 Curtain Call Pair</span><span class="p">$1,480</span></button>
         </div>
+        <p class="fit-note" style="margin-top:12px"><span id="fit-pair-name">The Boardroom Pair</span><br><span id="fit-pair-price"></span></p>
+        <p class="fit-note">Every pair is cut to measure for 30% more than the listed price. Pick the size closest to you when you reserve; measurements are taken after you reserve, and the scan will be the start of that, not the end of it.</p>
       </div>
-      <div class="fit-block">
-        <p class="step">03 / Version</p>
-        <div class="fit-toggle" role="group" aria-label="Choose a version">
-          <button type="button" data-fit-mode="day" aria-pressed="true">Day</button>
-          <button type="button" data-fit-mode="night" aria-pressed="false">Night</button>
-        </div>
-      </div>
-      <div class="fit-block">
-        <button type="button" class="btn btn--lg" id="fit-run" disabled><span id="fit-run-label">Add a photo first</span><span aria-hidden="true">◎</span></button>
-        <p class="fit-note">Renders both pieces from one pattern once a provider is connected.</p>
-      </div>
-    </div>
 
-    <div class="fit-stage">
-      <div class="fit-pane fit-pane--in">
-        <span class="fit-tag">Input</span>
-        <img id="fit-in-img" alt="The photo you chose" hidden>
-        <span class="fit-idle" id="fit-in-label">[ your photo appears here ]</span>
+      <div class="code" id="fit-from" hidden style="min-height:0">
+        <span class="eyebrow acc">Sent from a product page</span>
+        <p class="fit-note">The bag and the reservation live on the device you started on, and nothing needs to sync. You can also reserve this pair right here: the bag works on any device.</p>
+        <div style="display:grid;gap:8px;margin-top:12px">
+          <a class="btn btn--ghost" id="fit-from-links" href="/product/boardroom/"><span>Open the pair on this phone</span><span aria-hidden="true">→</span></a>
+          <a class="btn btn--ghost" href="/bag/"><span>Reserve in the bag</span><span aria-hidden="true">→</span></a>
+        </div>
       </div>
-      <div class="fit-pane fit-pane--out" id="fit-out">
-        <span class="fit-tag">Render · <span id="fit-mode-tag">day</span></span>
-        <img id="fit-result" alt="Try-on render" hidden>
-        <div class="fit-idle" id="fit-idle">
-          <span class="star" aria-hidden="true">★</span>
-          <span>Output</span>
-          <span id="fit-hint">Waiting for a photo</span>
-        </div>
-        <div class="fit-idle" id="fit-busy" hidden>
-          <span class="fit-scan" aria-hidden="true"></span>
-          <span class="acc">● Rendering</span>
-          <span id="fit-step">Connecting</span>
-        </div>
-        <div class="fit-idle" id="fit-notice" hidden role="status">
-          <span class="star" aria-hidden="true">◎</span>
-          <span class="acc">No provider connected</span>
-          <span style="max-width:30ch;line-height:1.8">The try-on engine is not wired up yet, so there is nothing to show you. We are not going to hand your own photo back and call it a render.</span>
-          <a class="btn btn--ghost btn--inline" style="margin-top:8px" href="/collection/"><span>See the pairs instead</span><span aria-hidden="true">→</span></a>
-        </div>
+
+      <div class="code" style="min-height:0">
+        <span class="eyebrow acc">Installable</span>
+        <p class="fit-note">Add this page to your home screen and UR Fit opens as its own app, separate from the shop. Once it has loaded here it opens again even with no signal. It asks for no permissions today.</p>
       </div>
     </div>
   </div>
-  <p class="fit-provider">Provider hook: <code>assets/tryon.js</code> · renderTryOn({ photo, productId, mode }) · returns nothing until a try-on API is connected. Your photo never leaves the browser in this state.</p>
 </main>
 <footer class="site-footer">
   <div class="footer-cols">
@@ -190,7 +177,7 @@
     <nav aria-label="House">
       <span class="mute">House</span>
       <a href="/thesis/">Thesis</a>
-      <a href="/fitting-room/">Fitting room</a>
+      <a href="/fit/">Fit app</a>
       <a href="/waitlist/">Waitlist</a>
       <a href="/#signal">Signal</a>
     </nav>
@@ -224,6 +211,6 @@
 
 <script src="/assets/ur-data.js"></script>
 <script src="/assets/ur-common.js"></script>
-<script src="/assets/ur-fitting.js" type="module"></script>
+<script src="/assets/ur-fit.js"></script>
 </body>
 </html>
