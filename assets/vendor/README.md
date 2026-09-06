@@ -33,3 +33,48 @@ The module includes UTF-8 support; the URLs it encodes here are ASCII.
 If this is ever replaced or upgraded, regenerate the QR decodes in the phase 0
 verification steps before shipping: a code that scans on one phone and fails
 on another is worse than no code.
+
+## mediapipe/tasks-vision
+
+| | |
+| :--- | :--- |
+| Files | `mediapipe/tasks-vision-1.0.1/vision_bundle.mjs` and the six files in `mediapipe/tasks-vision-1.0.1/wasm/` (`vision_wasm_internal.{js,wasm}`, `vision_wasm_nosimd_internal.{js,wasm}`, `vision_wasm_module_internal.{js,wasm}`) |
+| Upstream | https://www.npmjs.com/package/@mediapipe/tasks-vision (npm tarball, `npm pack @mediapipe/tasks-vision@1.0.1`) |
+| Version | 1.0.1, only the vision task runtime taken: the ES module bundle and the WASM loader pairs. The `.cjs`, UMD and `.map` files in the package are not vendored. |
+| Licence | Apache-2.0 (see `mediapipe/LICENSE`, the licence text from the MediaPipe repository; the npm tarball itself carries only the SPDX id) |
+| SHA-256 | `vision_bundle.mjs` `d885630c297c0b20b1fe86096cb06291c4c8080876f27852e724f24ac603713f` |
+| | `wasm/vision_wasm_internal.js` `e170ee67dd4e16c1a6fcd8840a206687e5a59b22c20e4a902bc445b095454d73` |
+| | `wasm/vision_wasm_internal.wasm` `8da277a733926eacd0474b8704b36742d6ec3231c57a860c5b889dff8f1df886` |
+| | `wasm/vision_wasm_nosimd_internal.js` `e81d715a3d42cc3373602eb2f7aff795d164934db680e32496b65dab537f9658` |
+| | `wasm/vision_wasm_nosimd_internal.wasm` `a28483cd42e74e855bf5ebdb6b40d9b66a5b49e35e95020bc97669e6822a3192` |
+| | `wasm/vision_wasm_module_internal.js` `da8934057f147b622e82cfb4c0dbd85461c598e268588b5a8ba9ca963a8ff82d` |
+| | `wasm/vision_wasm_module_internal.wasm` `2dabd8e23c60984628beb7bb338764c81a08e6837145273f59578684b5d53c1b` |
+| Used by | `assets/ur-measure.js` and `assets/ur-capture.js`, the on-device measurement engine (#5) |
+| Global | none; loaded with a dynamic `import()` of the `.mjs` after the user consents and begins, so nothing large loads on page load |
+
+At runtime `FilesetResolver.forVisionTasks('/assets/vendor/mediapipe/tasks-vision-1.0.1/wasm')`
+fetches exactly one of the three loader pairs: the SIMD one on modern phones,
+the no-SIMD one on old ones, and the module variant only if the caller opts
+into module loading (we do not). All three pairs are vendored so no reachable
+branch 404s on a phone with no signal. Loaded over venue wifi this costs about
+one 11 MB wasm fetch plus the model below, which is why `lite` was chosen.
+
+Chosen in #3's dependency decision: no build step is needed, the bundle is a
+finished ES module that runs from static files.
+
+## pose_landmarker_lite (MediaPipe Pose Landmarker, lite)
+
+| | |
+| :--- | :--- |
+| File | `mediapipe/pose_landmarker_lite.task` (5.8 MB) |
+| Upstream | https://storage.googleapis.com/mediapipe-models/pose_landmarker/pose_landmarker_lite/float16/1/pose_landmarker_lite.task |
+| Version | float16 revision 1 of `pose_landmarker_lite` |
+| Licence | Apache-2.0 (see `mediapipe/LICENSE`) |
+| SHA-256 | `59929e1d1ee95287735ddd833b19cf4ac46d29bc7afddbbf6753c459690d574a` |
+| Used by | `assets/ur-measure.js` (via `PoseLandmarker.createFromOptions`), the on-device pose + silhouette engine (#5) |
+
+`lite`, not `full` (9 MB) or `heavy` (29 MB): this runs on a phone over venue
+wifi, and the spike in #5 is about whether a small on-device model is good
+enough to pick a made-to-measure block, not about squeezing the last
+landmark. The model is fetched only after consent, and the fit service worker
+caches it on demand, never in `install`.
