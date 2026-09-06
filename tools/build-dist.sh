@@ -26,6 +26,18 @@ for f in ur.css ur-data.js ur-common.js ur-collection.js ur-product.js ur-signal
   [ -f "dist/assets/$f" ] || continue
   h=$(shasum -a 256 "dist/assets/$f" | cut -c1-8)
   find dist -name '*.html' -exec sed -i '' "s|/assets/$f\"|/assets/$f?v=$h\"|g" {} +
+  # The fit service worker precaches the same assets, in single quotes. Its keys
+  # have to carry the same stamp or the precache never matches what the page
+  # requests, and the app is only offline-capable by accident of the runtime
+  # cache.
+  [ -f dist/fit/sw.js ] && sed -i '' "s|'/assets/$f'|'/assets/$f?v=$h'|g" dist/fit/sw.js
 done
+
+# Rotate the shell cache whenever any stamped shell asset changes, so a deploy
+# evicts the previous entries instead of accumulating them forever under one key.
+if [ -f dist/fit/sw.js ]; then
+  sh=$(shasum -a 256 dist/fit/sw.js | cut -c1-8)
+  sed -i '' "s|SHELL_VERSION = 'v1'|SHELL_VERSION = 'v1-$sh'|" dist/fit/sw.js
+fi
 
 echo "dist/: $(find dist -type f | wc -l | tr -d ' ') files, $(find dist -name '*.html' | wc -l | tr -d ' ') pages"
