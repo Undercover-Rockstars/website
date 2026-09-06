@@ -76,3 +76,22 @@ wifi, and the spike in #5 is about whether a small on-device model is good
 enough to pick a made-to-measure block, not about squeezing the last
 landmark. The model is fetched only after consent, and the fit service worker
 caches it on demand, never in `install`.
+
+## three
+
+| | |
+| :--- | :--- |
+| Files | `three/0.185.1/three.module.min.js` and `three/0.185.1/three.core.min.js` (the module build is a pair since r167: the module file re-exports from the core file, so both ship side by side and the relative import resolves unchanged) |
+| Upstream | https://www.npmjs.com/package/three (npm tarball, `npm pack three@0.185.1`) |
+| Version | 0.185.1, only the minified ES module build taken. The `.cjs`, webgpu, TSL and non-minified variants in the package are not vendored. No addons are vendored: the viewer uses a purpose-built turntable controller instead of `OrbitControls`, so nothing has to be rewritten to drop its bare `three` specifier. |
+| Licence | MIT (see `three/LICENSE`) |
+| SHA-256 | `three.module.min.js` `86bcee248b64f44bcfc23c331ae74619061957d59cab040171dcb6fb5900beb6` |
+| | `three.core.min.js` `05b2609338c76cd65daf74f3ac515bc9a5045e1b3b33edc07d8c9bd55250fa90` |
+| Used by | `assets/ur-viewer.js`, the layer 1 fit viewer (#10) |
+| Global | none; `ur-viewer.js` is an ES module that imports it with a dynamic `import()` only when the buyer opens the viewer, so nothing loads on the `/fit/` page view |
+
+Chosen in #3's dependency decision, like everything here. About 730 KB
+minified arrives on first open, cached afterwards by the fit service
+worker's asset strategy on demand, never in `install`, exactly like the
+pose engine. The version is in the path, so a bump is a new directory
+and old caches simply expire.
