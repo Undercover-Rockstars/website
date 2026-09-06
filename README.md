@@ -7,7 +7,7 @@
   <img src="https://img.shields.io/badge/PAIRS-08-ECEBE6?style=flat-square&labelColor=0A0A0B" alt="8 pairs">
   <img src="https://img.shields.io/badge/PAGES-15-ECEBE6?style=flat-square&labelColor=0A0A0B" alt="15 pages">
   <img src="https://img.shields.io/badge/BUILD%20STEP-NONE-ECEBE6?style=flat-square&labelColor=0A0A0B" alt="No build step">
-  <img src="https://img.shields.io/badge/DEPENDENCIES-ZERO-FF3B30?style=flat-square&labelColor=0A0A0B" alt="Zero dependencies">
+  <img src="https://img.shields.io/badge/DEPS-VENDORED%20%C2%B7%20NO%20CDN-ECEBE6?style=flat-square&labelColor=0A0A0B" alt="Dependencies vendored, no CDN">
 </p>
 
 <p align="center"><b>undercoverrockstars.com</b> · UR/01</p>
@@ -58,7 +58,12 @@ money.
 # The site
 
 Static HTML, CSS and vanilla JavaScript. **No build step to develop, no
-framework, no dependencies.** Serve the repo root and it runs.
+framework, nothing loaded from a CDN.** Serve the repo root and it runs.
+When a problem genuinely needs a library (the QR encoder in the fit-app
+handoff is the first), the file is vendored into `assets/vendor/` with its
+version, licence and checksum recorded in `assets/vendor/README.md`. That
+posture was decided once, in #3, so dependencies do not drift in one script
+tag at a time.
 
 Implemented from the Claude Design source `Undercover Rockstars v3.dc.html`,
 which targets the `dc-runtime` preview environment (`<x-dc>` templates, `{{ }}`
@@ -76,7 +81,7 @@ indexable and there is no URL for a product. This is a real multi-page site:
 /collection/          Drop 01, filterable
 /product/<id>/        one page per pair, ×8
 /thesis/              the manifesto
-/fitting-room/        try-on interface
+/fit/                 UR Fit, the fit app (installable, /fit/ scope)
 /waitlist/            the $9 place in the queue
 /bag/                 bag and reservation (noindex)
 ```
@@ -94,12 +99,17 @@ assets/
   ur-common.js        theme, wordmark collapse, bag, drawer, toast
   ur-collection.js    category filters
   ur-product.js       size selection, add to bag
-  ur-fitting.js       fitting room
+  ur-fit.js           /fit/ app shell: pair preselect, service worker
+  ur-handoff.js       Try it on QR handoff on product pages
   ur-signal.js        newsletter
   ur-bag.js           reservation form
   ur-waitlist.js      waitlist checkout hand-off
-  tryon.js            try-on provider hook (nothing connected yet)
+  vendor/             vendored dependencies (version + licence + checksum)
   og*.png             one Open Graph card per page (generated)
+fit/
+  index.html          the fit app (generated)
+  manifest.webmanifest its own manifest, UR Fit, scoped to /fit/ (generated)
+  sw.js               service worker, /fit/ scope only (generated)
 functions/api/
   contact.js          reservations and signups
   waitlist.js         Stripe Checkout Session for the $9 place
@@ -149,19 +159,40 @@ The source's `tryon.js` waited through six fake progress steps and then returned
 the input photo unchanged. A visitor would reasonably believe they were seeing
 themselves in the garment.
 
-The provider hook is kept with the same signature, but until something real is
-connected it returns nothing and the UI says *"No provider connected — we are
-not going to hand your own photo back and call it a render."* The photo is read
-with `FileReader` and never leaves the browser in this state; if you connect a
-provider that uploads it, the copy on that page has to change.
+The honest version shipped first as a fitting room that read the photo in the
+browser and said *"No provider connected — we are not going to hand your own
+photo back and call it a render."* That page is now retired (the old
+`/fitting-room/` URL 301s to `/fit/`), and its successor is **UR Fit**, the
+shell of the body-scanning app the fitting room is becoming (issue #1):
+
+- `/fit/` explains what it will do when measurement exists: two photos on
+  your phone, processed on the device, photos discarded, numbers kept in the
+  browser and deletable in one tap, adults only.
+- It says **measurement is not connected yet**, in the same words and the
+  same posture as the waitlist's *Not open yet*, with a disabled primary
+  button rather than a hidden one. No camera is requested, nothing is
+  captured, and there is no progress bar pretending otherwise.
+- "Try it on" on a product page hands off to the phone: a QR code on a
+  desktop (rendered client-side as SVG by a vendored encoder, so the URL
+  never leaves the page), a plain link on a phone, chosen by capability
+  rather than a user-agent string, with "show the code anyway" so no device
+  is trapped in the wrong branch.
+- It is an installable PWA with its own manifest (`UR Fit`, scope `/fit/`,
+  so installing it does not install the shop) and a service worker scoped
+  to `/fit/` only. The worker precaches the shell, is network-first for
+  pages and stale-while-revalidate for assets, never touches `/api/*`, and
+  cleans up its old caches on activate. The marketing pages are deliberately
+  outside its control: they change every deploy, and a worker that wedged
+  the shop would cost more than offline fit pages are worth.
+
+The consent note on `/fit/` states the privacy deal in one paragraph, and the
+deal and the note change in the same commit or not at all (issue #12).
 
 ### Other deviations from the source
 
 - **`style-hover`** — the source sets `style-hover="..."` on tiles, buttons and
   links, but `dc-runtime` implements no such attribute, so none of those hovers
   ever fired. Reimplemented as real CSS `:hover`.
-- **`ur-scan`** — the fitting-room scan line animated to `translateY(100vh)`,
-  which is the viewport rather than its container. Now `100%`.
 - **Responsive** — the source is desktop-only (12-column grids, four-across
   tiles, 7fr/5fr splits). Added breakpoints at 1100, 900 and 700px.
 
@@ -220,7 +251,7 @@ each has a field:
   by `tools/pages.js` like every page, so the two cannot drift. Per pair: sku,
   url, price, currency, sizes, category, fabric, contents, country of origin,
   the NFC tag and `purchasable`. Alongside them: shipping, the buying status,
-  the tag, the fitting room and a `returnPolicy` that says *no policy is
+  the tag, the fit app and a `returnPolicy` that says *no policy is
   published, do not state one*, because the alternative is an agent inventing
   one.
 - **Discovery** without reading this file: every page carries
@@ -256,8 +287,8 @@ Every page carries a unique title, description, canonical, its own generated
 1200×630 card, and JSON-LD: `Organization` / `WebSite` on the home page,
 `CollectionPage` with an `ItemList` on the collection, a full `Product` with
 `Offer` on each pair, and a `BreadcrumbList` throughout. `llms.txt` states
-plainly that the drop is not on sale and that the fitting room has no provider,
-so answer engines do not claim otherwise.
+plainly that the drop is not on sale and that the fit app's measurement is not
+connected, so answer engines do not claim otherwise.
 
 ### Deployment
 
