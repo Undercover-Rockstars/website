@@ -70,6 +70,143 @@
     return Math.round(product.price * (1 + fitOf(fit).premium));
   }
 
+  /* =======================================================================
+   * PROVISIONAL BLOCK DATA. DRAFT, NOT A DECISION (#7).
+   *
+   * Everything from here to the end of blockFor/blockLine is drafted by an
+   * engineer from standard published grading and drafting practice (metric
+   * size runs for a unisex XS to XL chest; classic ease ranges per
+   * garment category). It exists so the machinery that reads it,
+   * blockFor(), the profile screen, the reservation email and the fit
+   * viewer, can be built and tested before a pattern cutter delivers real
+   * numbers. When they do, ONLY THIS TABLE CHANGES. Until then nothing
+   * downstream is a promise about a cut: measurements are still confirmed
+   * with a tape after the reservation, by a person.
+   *
+   * Two parts:
+   *
+   *  SIZE_RUN  the body measurements each standard size assumes, in cm.
+   *            The same body run backs every category: a knit and a blazer
+   *            of one size are cut for the same body and differ only in
+   *            the ease their category adds.
+   *  BLOCKS    per category, the ease that category's cut adds over the
+   *            body at chest, waist and hip, how far below the seat line
+   *            the hem of that cut sits, what the cutter still needs by
+   *            tape, and the largest delta a block can absorb before the
+   *            pattern has to be re-drafted rather than graded.
+   * ===================================================================== */
+
+  var SIZE_RUN = {
+    XS: { chest: 84,  waist: 70, hip: 89,  shoulder: 41.5, sleeve: 58,   back: 40.5, height: 168 },
+    S:  { chest: 90,  waist: 76, hip: 95,  shoulder: 43,   sleeve: 59.5, back: 42,   height: 171 },
+    M:  { chest: 96,  waist: 82, hip: 101, shoulder: 44.5, sleeve: 61,   back: 43.5, height: 174 },
+    L:  { chest: 104, waist: 90, hip: 109, shoulder: 46.5, sleeve: 62.5, back: 45,   height: 177 },
+    XL: { chest: 112, waist: 98, hip: 117, shoulder: 48.5, sleeve: 64,   back: 46.5, height: 180 }
+  };
+  var SIZES = ['XS', 'S', 'M', 'L', 'XL'];
+
+  var BLOCKS = {
+    Blazer: {
+      ease: { chest: 11, waist: 9, hip: 9 }, hemBelowSeat: 24,
+      needsByTape: 'half back, bicep, and a posture note',
+      note: 'Classic tailored jacket drafting: roughly 10 to 12 cm over the chest.'
+    },
+    Jacket: {
+      ease: { chest: 10, waist: 8, hip: 8.5 }, hemBelowSeat: 18,
+      needsByTape: 'none beyond the scanned set',
+      note: 'A slightly closer cut than the blazer, unstructured.'
+    },
+    Shirt: {
+      ease: { chest: 13, waist: 12, hip: 10 }, hemBelowSeat: 14,
+      needsByTape: 'neck and cuff',
+      note: 'A shirt moves more, so it carries more room.'
+    },
+    Knit: {
+      ease: { chest: 6, waist: 5, hip: 5 }, hemBelowSeat: 12,
+      needsByTape: 'none beyond the scanned set',
+      note: 'Knits are worn close; the fabric stretches where the cut does not.'
+    }
+  };
+
+  /* The largest delta from the nearest size a block can absorb by grading
+     alone, in cm. Beyond this the pattern is re-drafted, which is the
+     human step in #8, and the profile is flagged rather than quietly
+     forced onto a block it does not fit. Drafted, like everything here. */
+  var BLOCK_TOLERANCE = { girth: 8, length: 4 };
+  var BLOCK_GIRTHS = ['chest', 'waist', 'hip'];
+  var BLOCK_LENGTHS = ['shoulder', 'sleeve', 'back'];
+  var BLOCK_ORDER = BLOCK_GIRTHS.concat(BLOCK_LENGTHS);
+  var BLOCK_LABELS = { chest: 'chest', waist: 'waist', hip: 'seat', shoulder: 'shoulder', sleeve: 'sleeve', back: 'back' };
+
+  function cmOf(v) {
+    if (v && typeof v === 'object' && typeof v.cm === 'number') return v.cm;
+    return typeof v === 'number' ? v : null;
+  }
+
+  /* blockFor(profile, category) -> how a saved measurement profile maps
+     onto a standard block. The nearest size is picked by the primary
+     measurement, the chest, exactly as #7 specifies; the rest of the
+     profile is expressed as deltas from that size; any delta beyond the
+     tolerance is flagged, which is the signal for #8's human step.
+     Unknown categories or a profile without a chest return null: no
+     mapping is better than a made-up one. */
+  function blockFor(profile, category) {
+    var block = BLOCKS[category];
+    var values = profile && profile.values;
+    if (!block || !values) return null;
+    var chest = cmOf(values.chest);
+    if (chest == null) return null;
+
+    var size = null, best = Infinity;
+    SIZES.forEach(function (z) {
+      var d = Math.abs(chest - SIZE_RUN[z].chest);
+      if (d < best) { best = d; size = z; }
+    });
+
+    var deltas = {}, missing = [], flagged = [];
+    BLOCK_ORDER.forEach(function (m) {
+      var v = cmOf(values[m]);
+      if (v == null) { deltas[m] = null; missing.push(m); return; }
+      var d = Math.round((v - SIZE_RUN[size][m]) * 10) / 10;
+      deltas[m] = d;
+      var tol = BLOCK_GIRTHS.indexOf(m) !== -1 ? BLOCK_TOLERANCE.girth : BLOCK_TOLERANCE.length;
+      if (Math.abs(d) > tol) flagged.push(m);
+    });
+
+    return {
+      category: category,
+      size: size,
+      deltas: deltas,
+      flagged: flagged,
+      beyond: flagged.length > 0,
+      ease: block.ease,
+      hemBelowSeat: block.hemBelowSeat,
+      needsByTape: block.needsByTape,
+      provisional: true
+    };
+  }
+
+  /* The one-line human form, the same sentence on the profile screen and
+     in the reservation email: "cut from an M, sleeve +2 cm, back +1 cm".
+     Deltas under half a centimetre are left out; they are noise a phone
+     scan cannot stand behind. */
+  function blockLine(r) {
+    if (!r) return '';
+    var parts = [];
+    BLOCK_ORDER.forEach(function (m) {
+      var d = r.deltas[m];
+      if (d == null || Math.abs(d) < 0.5) return;
+      parts.push(BLOCK_LABELS[m] + ' ' + (d > 0 ? '+' : '') + (Math.round(d * 10) / 10) + ' cm');
+    });
+    var line = 'cut from an ' + r.size + (parts.length ? ', ' + parts.join(', ') : '');
+    if (r.beyond) {
+      line += '. Outside the ' + r.size + ' block on ' +
+        r.flagged.map(function (m) { return BLOCK_LABELS[m]; }).join(' and ') +
+        ': the cutter checks this one with you';
+    }
+    return line;
+  }
+
   /* The waitlist is the one thing on this site that takes money, and it is the
      only paid item until a real checkout exists. Amount, currency and every
      promise made about it live here, so the page, the feed, llms.txt and the
@@ -96,10 +233,17 @@
     PRODUCTS: PRODUCTS,
     WAITLIST: WAITLIST,
     CATEGORIES: ['All', 'Blazer', 'Jacket', 'Shirt', 'Knit'],
-    SIZES: ['XS', 'S', 'M', 'L', 'XL'],
+    SIZES: SIZES,
     FITS: FITS,
     fitOf: fitOf,
     priceOf: priceOf,
+    SIZE_RUN: SIZE_RUN,
+    BLOCKS: BLOCKS,
+    BLOCK_TOLERANCE: BLOCK_TOLERANCE,
+    BLOCK_ORDER: BLOCK_ORDER,
+    BLOCK_LABELS: BLOCK_LABELS,
+    blockFor: blockFor,
+    blockLine: blockLine,
     CURRENCY: 'USD',
     // Prices are shown as whole dollars, formatted the way the design did.
     format: function (n) { return '$' + n.toLocaleString('en-US'); }
