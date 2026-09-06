@@ -27,8 +27,11 @@
  * origin when the viewer runs.
  *
  * Node: everything above the `open()` marker is pure maths, exported so
- * tools/test-blocks.js can prove the loft without a GPU. three.js and
- * the DOM are touched only inside open() and the functions it builds.
+ * tools/test-blocks.js and tools/test-geometry.js can prove the loft and
+ * every index buffer without a GPU. three.js and the DOM are touched only
+ * inside open() and the functions it builds; the geometry builders above
+ * the marker take THREE as an argument instead of closing over it, so
+ * they import and run on a stub.
  */
 
 export const PROFILE_KEY = 'ur.profile.v1';
@@ -191,6 +194,152 @@ export function legSpec(v, heightCm, side) {
       { t: 0.45, r: rK + 0.6 },
       { t: 1, r: rA }
     ]
+  };
+}
+
+/* Mesh resolutions, shared by the scene below and the geometry test in
+   tools/test-geometry.js so the two cannot drift: what the test proves
+   about the buffers is what the viewer actually draws. */
+export const MESH = {
+  bodyRadial: 28,      // ring resolution of the torso and shell lofts
+  bodySmooth: 34,      // rings interpolated between control rings, body
+  shellSmooth: 30,     // the same, shell
+  limbRadial: 10,      // arm and leg tube resolution
+  sleeveShellEase: 0.7 // how far the shell sleeve rides off the arm, cm
+};
+
+/* loft(rings, radial, smoothRings, capBottom): Catmull-Rom through the
+   control rings, sampled to smoothRings, triangulated as an open tube.
+   ~2k tris for a torso. THREE is an argument, not an import, so this
+   runs in node on a stub: it only ever calls BufferGeometry and
+   BufferAttribute. */
+export function loftGeometry(THREE, rings, radial, smoothRings, capBottom) {
+  const pts = [];
+  const cr = (p0, p1, p2, p3, t) => {
+    const t2 = t * t, t3 = t2 * t;
+    return 0.5 * ((2 * p1) + (-p0 + p2) * t + (2 * p0 - 5 * p1 + 4 * p2 - p3) * t2 + (-p0 + 3 * p1 - 3 * p2 + p3) * t3);
+  };
+  for (let i = 0; i < rings.length - 1; i++) {
+    const r0 = rings[Math.max(0, i - 1)], r1 = rings[i], r2 = rings[i + 1], r3 = rings[Math.min(rings.length - 1, i + 2)];
+    const steps = Math.max(2, Math.round(smoothRings / (rings.length - 1)));
+    for (let s = 0; s < steps; s++) {
+      const t = s / steps;
+      pts.push({ y: cr(r0.y, r1.y, r2.y, r3.y, t), a: cr(r0.a, r1.a, r2.a, r3.a, t), b: cr(r0.b, r1.b, r2.b, r3.b, t) });
+    }
+  }
+  pts.push(rings[rings.length - 1]);
+
+  const n = pts.length;
+  const pos = new Float32Array(n * radial * 3);
+  let k = 0;
+  for (let i = 0; i < n; i++) {
+    for (let j = 0; j < radial; j++) {
+      const th = (j / radial) * Math.PI * 2;
+      pos[k++] = pts[i].a * Math.sin(th);
+      pos[k++] = pts[i].y;
+      pos[k++] = pts[i].b * Math.cos(th);
+    }
+  }
+  const idx = [];
+  for (let i = 0; i < n - 1; i++) {
+    for (let j = 0; j < radial; j++) {
+      const j2 = (j + 1) % radial;
+      const a = i * radial + j, b = i * radial + j2, c = (i + 1) * radial + j, d = (i + 1) * radial + j2;
+      idx.push(a, c, b, b, c, d);
+    }
+  }
+  if (capBottom) {
+    const center = n * radial;
+    for (let j = 0; j < radial; j++) idx.push(center, j, (j + 1) % radial);
+  }
+  const geo = new THREE.BufferGeometry();
+  geo.setAttribute('position', new THREE.BufferAttribute(pos, 3));
+  if (capBottom) {
+    const withCenter = new Float32Array(pos.length + 3);
+    withCenter.set(pos);
+    withCenter[pos.length] = 0; withCenter[pos.length + 1] = pts[0].y; withCenter[pos.length + 2] = 0;
+    geo.setAttribute('position', new THREE.BufferAttribute(withCenter, 3));
+  }
+  geo.setIndex(idx);
+  geo.computeVertexNormals();
+  return geo;
+}
+
+/* A tapered tube along a straight axis, rings of given radii. Used
+   for arms and legs; the axis angle comes from the spec's endpoints.
+   THREE is an argument for the same reason as above. */
+export function tubeGeometry(THREE, spec, radial, sleeveEase) {
+  const dx = spec.to.x - spec.from.x, dy = spec.to.y - spec.from.y, dz = spec.to.z - spec.from.z;
+  const len = Math.hypot(dx, dy, dz) || 1;
+  const ux = dx / len, uy = dy / len, uz = dz / len;
+  // two unit vectors orthogonal to the axis
+  let px = -uy, py = ux, pz = 0;
+  let pl = Math.hypot(px, py, pz) || 1; px /= pl; py /= pl; pz /= pl;
+  const qx = uy * pz - uz * py, qy = uz * px - ux * pz, qz = ux * py - uy * px;
+  const rings = spec.radii.map(w => {
+    const r = w.r + (sleeveEase || 0);
+    return { y: w.t, r };
+  });
+  const pos = [], idx = [];
+  let vi = 0;
+  rings.forEach(w => {
+    const cx = spec.from.x + dx * w.y, cy = spec.from.y + dy * w.y, cz = spec.from.z + dz * w.y;
+    for (let j = 0; j < radial; j++) {
+      const th = (j / radial) * Math.PI * 2;
+      const c = Math.cos(th) * w.r, s = Math.sin(th) * w.r;
+      pos.push(cx + px * c + qx * s, cy + py * c + qy * s, cz + pz * c + qz * s);
+    }
+    vi++;
+  });
+  for (let i = 0; i < rings.length - 1; i++) {
+    for (let j = 0; j < radial; j++) {
+      const j2 = (j + 1) % radial;
+      const a = i * radial + j, b = i * radial + j2, c = (i + 1) * radial + j, d = (i + 1) * radial + j2;
+      idx.push(a, c, b, b, c, d);
+    }
+  }
+  // cap both ends: shoulder end is hidden inside the torso, wrist and
+  // floor ends are closed plainly
+  // The centre vertex has to be indexed by where it landed, not by the
+  // vertex count after it landed: pos.length/3 is one past it. Indexing one
+  // past the end invalidates the whole index buffer, and a limb whose buffer
+  // is invalid does not draw at all, which is why arms and legs were missing
+  // while the torso beside them was fine.
+  const ringCap = (ringIdx, flip, centre) => {
+    const base = ringIdx * radial;
+    for (let j = 0; j < radial; j++) {
+      const j2 = (j + 1) % radial;
+      if (flip) idx.push(base + j, base + j2, centre);
+      else idx.push(base + j2, base + j, centre);
+    }
+  };
+  const capPoint = (ringIdx) => {
+    const w = rings[ringIdx];
+    const centre = pos.length / 3;
+    pos.push(spec.from.x + dx * w.y, spec.from.y + dy * w.y, spec.from.z + dz * w.y);
+    return centre;
+  };
+  ringCap(0, true, capPoint(0));
+  ringCap(rings.length - 1, false, capPoint(rings.length - 1));
+  const geo = new THREE.BufferGeometry();
+  geo.setAttribute('position', new THREE.Float32BufferAttribute(pos, 3));
+  geo.setIndex(idx);
+  geo.computeVertexNormals();
+  return geo;
+}
+
+/* The head: a scaled unit sphere. Exported as a spec (centre plus
+   radii) rather than a mesh so node can assert where the head sits
+   without a geometry it would have to build itself; the scene applies
+   it verbatim below. */
+export function headSpec(v, heightCm) {
+  const L = levelsFor(v, heightCm);
+  const headH = Math.max(18, heightCm - L.neckY);
+  return {
+    x: 0, y: L.neckY + headH / 2, z: 0,
+    rx: Math.max(7.5, v.shoulder * 0.185),
+    ry: headH / 2,
+    rz: Math.max(9, v.shoulder * 0.21)
   };
 }
 
@@ -398,122 +547,6 @@ function buildScene(THREE, stage, D, say, section) {
     }
   }
 
-  /* loft(rings, radial): Catmull-Rom through the control rings, sampled
-     to smoothRings, triangulated as an open tube. ~2k tris for a torso. */
-  function loftGeometry(rings, radial, smoothRings, capBottom) {
-    const pts = [];
-    const cr = (p0, p1, p2, p3, t) => {
-      const t2 = t * t, t3 = t2 * t;
-      return 0.5 * ((2 * p1) + (-p0 + p2) * t + (2 * p0 - 5 * p1 + 4 * p2 - p3) * t2 + (-p0 + 3 * p1 - 3 * p2 + p3) * t3);
-    };
-    for (let i = 0; i < rings.length - 1; i++) {
-      const r0 = rings[Math.max(0, i - 1)], r1 = rings[i], r2 = rings[i + 1], r3 = rings[Math.min(rings.length - 1, i + 2)];
-      const steps = Math.max(2, Math.round(smoothRings / (rings.length - 1)));
-      for (let s = 0; s < steps; s++) {
-        const t = s / steps;
-        pts.push({ y: cr(r0.y, r1.y, r2.y, r3.y, t), a: cr(r0.a, r1.a, r2.a, r3.a, t), b: cr(r0.b, r1.b, r2.b, r3.b, t) });
-      }
-    }
-    pts.push(rings[rings.length - 1]);
-
-    const n = pts.length;
-    const pos = new Float32Array(n * radial * 3);
-    let k = 0;
-    for (let i = 0; i < n; i++) {
-      for (let j = 0; j < radial; j++) {
-        const th = (j / radial) * Math.PI * 2;
-        pos[k++] = pts[i].a * Math.sin(th);
-        pos[k++] = pts[i].y;
-        pos[k++] = pts[i].b * Math.cos(th);
-      }
-    }
-    const idx = [];
-    for (let i = 0; i < n - 1; i++) {
-      for (let j = 0; j < radial; j++) {
-        const j2 = (j + 1) % radial;
-        const a = i * radial + j, b = i * radial + j2, c = (i + 1) * radial + j, d = (i + 1) * radial + j2;
-        idx.push(a, c, b, b, c, d);
-      }
-    }
-    if (capBottom) {
-      const center = n * radial;
-      for (let j = 0; j < radial; j++) idx.push(center, j, (j + 1) % radial);
-    }
-    const geo = new THREE.BufferGeometry();
-    geo.setAttribute('position', new THREE.BufferAttribute(pos, 3));
-    if (capBottom) {
-      const withCenter = new Float32Array(pos.length + 3);
-      withCenter.set(pos);
-      withCenter[pos.length] = 0; withCenter[pos.length + 1] = pts[0].y; withCenter[pos.length + 2] = 0;
-      geo.setAttribute('position', new THREE.BufferAttribute(withCenter, 3));
-    }
-    geo.setIndex(idx);
-    geo.computeVertexNormals();
-    return geo;
-  }
-
-  /* A tapered tube along a straight axis, rings of given radii. Used
-     for arms and legs; the axis angle comes from the spec's endpoints. */
-  function tubeGeometry(spec, radial, sleeveEase) {
-    const dx = spec.to.x - spec.from.x, dy = spec.to.y - spec.from.y, dz = spec.to.z - spec.from.z;
-    const len = Math.hypot(dx, dy, dz) || 1;
-    const ux = dx / len, uy = dy / len, uz = dz / len;
-    // two unit vectors orthogonal to the axis
-    let px = -uy, py = ux, pz = 0;
-    let pl = Math.hypot(px, py, pz) || 1; px /= pl; py /= pl; pz /= pl;
-    const qx = uy * pz - uz * py, qy = uz * px - ux * pz, qz = ux * py - uy * px;
-    const rings = spec.radii.map(w => {
-      const r = w.r + (sleeveEase || 0);
-      return { y: w.t, r };
-    });
-    const pos = [], idx = [];
-    let vi = 0;
-    rings.forEach(w => {
-      const cx = spec.from.x + dx * w.y, cy = spec.from.y + dy * w.y, cz = spec.from.z + dz * w.y;
-      for (let j = 0; j < radial; j++) {
-        const th = (j / radial) * Math.PI * 2;
-        const c = Math.cos(th) * w.r, s = Math.sin(th) * w.r;
-        pos.push(cx + px * c + qx * s, cy + py * c + qy * s, cz + pz * c + qz * s);
-      }
-      vi++;
-    });
-    for (let i = 0; i < rings.length - 1; i++) {
-      for (let j = 0; j < radial; j++) {
-        const j2 = (j + 1) % radial;
-        const a = i * radial + j, b = i * radial + j2, c = (i + 1) * radial + j, d = (i + 1) * radial + j2;
-        idx.push(a, c, b, b, c, d);
-      }
-    }
-    // cap both ends: shoulder end is hidden inside the torso, wrist and
-    // floor ends are closed plainly
-    // The centre vertex has to be indexed by where it landed, not by the
-    // vertex count after it landed: pos.length/3 is one past it. Indexing one
-    // past the end invalidates the whole index buffer, and a limb whose buffer
-    // is invalid does not draw at all, which is why arms and legs were missing
-    // while the torso beside them was fine.
-    const ringCap = (ringIdx, flip, centre) => {
-      const base = ringIdx * radial;
-      for (let j = 0; j < radial; j++) {
-        const j2 = (j + 1) % radial;
-        if (flip) idx.push(base + j, base + j2, centre);
-        else idx.push(base + j2, base + j, centre);
-      }
-    };
-    const capPoint = (ringIdx) => {
-      const w = rings[ringIdx];
-      const centre = pos.length / 3;
-      pos.push(spec.from.x + dx * w.y, spec.from.y + dy * w.y, spec.from.z + dz * w.y);
-      return centre;
-    };
-    ringCap(0, true, capPoint(0));
-    ringCap(rings.length - 1, false, capPoint(rings.length - 1));
-    const geo = new THREE.BufferGeometry();
-    geo.setAttribute('position', new THREE.Float32BufferAttribute(pos, 3));
-    geo.setIndex(idx);
-    geo.computeVertexNormals();
-    return geo;
-  }
-
   function ringLine(y, a, b) {
     const pts = [];
     for (let j = 0; j <= 48; j++) {
@@ -532,15 +565,15 @@ function buildScene(THREE, stage, D, say, section) {
     clearGroup(bodyGroup);
     const body = bodyRings(values, heightCm);
     const L = body.levels;
-    bodyGroup.add(new THREE.Mesh(loftGeometry(body.rings, 28, 34, true), bodyMat));
+    bodyGroup.add(new THREE.Mesh(loftGeometry(THREE, body.rings, MESH.bodyRadial, MESH.bodySmooth, true), bodyMat));
     for (const side of [-1, 1]) {
-      bodyGroup.add(new THREE.Mesh(tubeGeometry(armSpec(values, heightCm, side), 10, 0), bodyMat));
-      bodyGroup.add(new THREE.Mesh(tubeGeometry(legSpec(values, heightCm, side), 10, 0), bodyMat));
+      bodyGroup.add(new THREE.Mesh(tubeGeometry(THREE, armSpec(values, heightCm, side), MESH.limbRadial, 0), bodyMat));
+      bodyGroup.add(new THREE.Mesh(tubeGeometry(THREE, legSpec(values, heightCm, side), MESH.limbRadial, 0), bodyMat));
     }
-    const headH = Math.max(18, H - L.neckY);
     const head = new THREE.Mesh(new THREE.SphereGeometry(1, 20, 14), bodyMat);
-    head.scale.set(Math.max(7.5, values.shoulder * 0.185), headH / 2, Math.max(9, values.shoulder * 0.21));
-    head.position.set(0, L.neckY + headH / 2, 0);
+    const hd = headSpec(values, heightCm);
+    head.scale.set(hd.rx, hd.ry, hd.rz);
+    head.position.set(hd.x, hd.y, hd.z);
     bodyGroup.add(head);
     // the three measured lines, drawn where they were taken
     const chestRing = body.rings[4];
@@ -553,9 +586,9 @@ function buildScene(THREE, stage, D, say, section) {
     clearGroup(shellGroup);
     const body = bodyRings(currentValuesCache, H);
     const rings = garmentRings(body, ease, hemBelowSeat);
-    shellGroup.add(new THREE.Mesh(loftGeometry(rings, 28, 30, false), shellMat));
+    shellGroup.add(new THREE.Mesh(loftGeometry(THREE, rings, MESH.bodyRadial, MESH.shellSmooth, false), shellMat));
     for (const side of [-1, 1]) {
-      shellGroup.add(new THREE.Mesh(tubeGeometry(armSpec(currentValuesCache, H, side), 10, 0.7), shellMat));
+      shellGroup.add(new THREE.Mesh(tubeGeometry(THREE, armSpec(currentValuesCache, H, side), MESH.limbRadial, MESH.sleeveShellEase), shellMat));
     }
   }
 
