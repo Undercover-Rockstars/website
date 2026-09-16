@@ -3,6 +3,10 @@
 # URLs change whenever the file does and they can be cached immutably.
 
 /*
+  # Cloudflare's 2026-09-16 scan flagged this hostname as HSTS-less. One year,
+  # no includeSubDomains: this file only speaks for what Pages serves, and the
+  # www redirect is a zone rule that never sees these headers.
+  Strict-Transport-Security: max-age=31536000
   X-Content-Type-Options: nosniff
   Referrer-Policy: strict-origin-when-cross-origin
   X-Frame-Options: SAMEORIGIN
