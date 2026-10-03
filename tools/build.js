@@ -154,6 +154,7 @@ function footer() {
     </a></span>
     <span><span data-mode-time>03:00</span> · <span data-mode-label>Night</span> mode</span>
   </p>
+  <!-- built-with:start --><!-- built-with:end -->
 </footer>
 `;
 }

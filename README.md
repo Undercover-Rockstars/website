@@ -125,6 +125,7 @@ tools/
   og-render.html      OG card and banner template
   render-og.sh        regenerates every raster asset
   build-dist.sh       assembles dist/ (allowlist + cache-bust stamping)
+  built-with.py       writes the footer's "Built with" line from built-with.json
 ```
 
 ### Editing the drop
@@ -322,6 +323,27 @@ origin and is gated by Turnstile; it is not an order API and the feed says so.
 When a processor is wired up, the fields to flip are `purchasable`,
 `status.forSale`, `status.checkoutUrl` and the `PreOrder` availability, in the
 feed and in the product JSON-LD together.
+
+### Built with
+
+The last line of the footer says what the site is built with: today it is
+hosted on Cloudflare (live), and deploys through Keep Shipping are planned and
+say so. It is generated, never hand-written: `tools/built-with.json` is a
+vendored copy of this venture's entry in the Factory Zero registry
+(`Factory-Zero/website`, `assets/fz-data.js`, published as
+`https://factory0.ventures/stack.json`), and `tools/built-with.py` writes it
+between the `<!-- built-with:start/end -->` markers that `tools/build.js` puts
+in every footer. `node tools/pages.js` runs it; nothing is fetched at runtime.
+To change the list, change the registry first, then:
+
+```sh
+python3 tools/built-with.py --pull     # refresh built-with.json from stack.json, rewrite the footers
+python3 tools/built-with.py --check    # fails if a footer is stale
+```
+
+The registry lists only what it can show is in use. The forms' Pages
+Functions call Resend and Stripe when their secrets are set, but the registry
+does not list either until that is confirmed.
 
 ### Search and answer engines
 

@@ -675,6 +675,24 @@ main, footer, .site-header { position: relative; z-index: 1; }
   color: var(--mute);
 }
 
+/* "Built with": sister ventures and third parties, from tools/built-with.json.
+   Planned ones say so in words. */
+.built-with {
+  margin: 0;
+  padding: 14px var(--gut) 20px;
+  border-top: 1px solid var(--line);
+  font-family: var(--mono);
+  font-size: 10px;
+  line-height: 1.8;
+  letter-spacing: .1em;
+  text-transform: uppercase;
+  color: var(--mute);
+  overflow-wrap: anywhere;
+}
+.built-with a { color: inherit; text-decoration: underline; text-underline-offset: 3px; }
+.built-with a:hover { color: var(--fg); }
+.built-with__planned { opacity: .75; }
+
 /* ------------------------------------------------------------ collection */
 
 .filters {
