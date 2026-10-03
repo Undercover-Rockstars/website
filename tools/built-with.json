@@ -1,0 +1,29 @@
+{
+  "id": "FZ-002",
+  "name": "Undercover Rockstars",
+  "site": "https://undercoverrockstars.com/",
+  "page": "https://factory0.ventures/ventures/undercover-rockstars/",
+  "uses": [
+    {
+      "id": "FZ-012",
+      "name": "Keep Shipping",
+      "kind": "factory-zero",
+      "url": "https://keepshipping.run/",
+      "role": "deploys",
+      "phrase": "Deploys by",
+      "status": "planned",
+      "note": "Every venture site and Worker deployed from the Keep Shipping console."
+    },
+    {
+      "id": "cloudflare",
+      "name": "Cloudflare",
+      "kind": "third-party",
+      "url": "https://www.cloudflare.com",
+      "role": "hosting",
+      "phrase": "Hosted on",
+      "status": "live",
+      "note": "The site and its forms."
+    }
+  ],
+  "source": "https://factory0.ventures/stack.json"
+}

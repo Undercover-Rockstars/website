@@ -1166,3 +1166,9 @@ write('site.webmanifest', JSON.stringify({
 }, null, 2) + '\n');
 
 console.log('seo files done');
+
+// The footer's "Built with" strip, from tools/built-with.json (a vendored copy of
+// this venture's entry in the Factory Zero registry's stack.json). The pages above
+// carry empty markers; this fills them, so a regenerated page is never left bare.
+const bw = require('child_process').spawnSync('python3', [path.join(__dirname, 'built-with.py')], { stdio: 'inherit' });
+if (bw.status !== 0) throw new Error('tools/built-with.py failed');
