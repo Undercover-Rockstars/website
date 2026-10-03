@@ -676,22 +676,53 @@ main, footer, .site-header { position: relative; z-index: 1; }
 }
 
 /* "Built with": sister ventures and third parties, from tools/built-with.json.
-   Planned ones say so in words. */
+   A row of square-cornered tags in the footer's mono caps. Live ones are ruled
+   solid with an accent square; planned ones are dashed, quieter, and say so in
+   words. The whole tag is the link's hit area. */
 .built-with {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
   margin: 0;
-  padding: 14px var(--gut) 20px;
+  padding: 16px var(--gut) 22px;
   border-top: 1px solid var(--line);
+  list-style: none;
   font-family: var(--mono);
   font-size: 10px;
-  line-height: 1.8;
+  line-height: 1.4;
   letter-spacing: .1em;
   text-transform: uppercase;
-  color: var(--mute);
-  overflow-wrap: anywhere;
+  --bw-mute: var(--mute);
 }
-.built-with a { color: inherit; text-decoration: underline; text-underline-offset: 3px; }
-.built-with a:hover { color: var(--fg); }
-.built-with__planned { opacity: .75; }
+/* day --mute is 4.45:1 on the paper; a touch darker so the small caps pass AA */
+[data-mode="day"] .built-with { --bw-mute: #5f5e58; }
+.bw {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 2px 8px;
+  min-height: 32px;
+  max-width: 100%;
+  padding: 6px 10px;
+  border: 1px solid var(--line);
+  transition: border-color .2s, color .2s;
+}
+.bw::before { content: ""; flex: none; width: 6px; height: 6px; background: var(--acc); }
+.bw__role { color: var(--bw-mute); }
+.built-with .bw__name { color: var(--fg); overflow-wrap: anywhere; }
+.built-with .bw__name::after { content: ""; position: absolute; inset: -1px; }
+.built-with .bw__name:focus-visible { outline: none; }
+.built-with .bw__name:focus-visible::after { outline: 2px solid var(--acc); outline-offset: 2px; }
+.bw:hover { border-color: var(--fg); }
+.built-with .bw:hover .bw__name { color: var(--acc); }
+.bw--planned { border-style: dashed; }
+.bw--planned::before { background: transparent; box-shadow: inset 0 0 0 1px var(--bw-mute); }
+.bw__tag { color: var(--bw-mute); border: 1px solid var(--line); padding: 1px 5px; }
+.bw__paren { display: none; }
+.bw--source { border-color: transparent; }
+.bw--source::before { display: none; }
+@media (prefers-reduced-motion: reduce) { .bw { transition: none; } }
 
 /* ------------------------------------------------------------ collection */
 
