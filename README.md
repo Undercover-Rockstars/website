@@ -342,7 +342,7 @@ python3 tools/built-with.py --check    # fails if a footer is stale
 ```
 
 The registry lists only what it can show is in use. The forms' Pages
-Functions call Resend and Stripe when their secrets are set, but the registry
+Functions call Owlpost and Stripe when their secrets are set, but the registry
 does not list either until that is confirmed.
 
 ### Search and answer engines
@@ -372,9 +372,10 @@ The reservation and signal forms need two Pages secrets, and neither belongs in
 this repo:
 
 ```sh
-npx wrangler pages secret put RESEND_API_KEY   --project-name undercover-rockstars
+npx wrangler pages secret put OWLPOST_API_KEY  --project-name undercover-rockstars
 npx wrangler pages secret put TURNSTILE_SECRET --project-name undercover-rockstars
 ```
 
-Verify the **subdomain** `send.undercoverrockstars.com` in Resend, not the apex,
+Mail goes through Owlpost (`api.owlpost.to`). `send.undercoverrockstars.com` is
+verified there on the Factory Zero account. Verify the **subdomain**, not the apex,
 so a sending MX record cannot displace inbound mail on the apex.
