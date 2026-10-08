@@ -4,8 +4,14 @@
  * Security posture (this is a public, unauthenticated endpoint):
  *  - The recipient is fixed server-side and never read from the request, so
  *    this cannot be used as an open relay.
- *  - RESEND_API_KEY and TURNSTILE_SECRET are Cloudflare Pages secrets. Neither
- *    reaches the browser.
+ *  - Mail goes through Owlpost (POST /v1/emails, a Resend-compatible body)
+ *    on the transactional stream, from send.undercoverrockstars.com, which is
+ *    verified in Owlpost. OWLPOST_API_KEY and TURNSTILE_SECRET are Cloudflare
+ *    Pages secrets; neither reaches the browser. OWLPOST_BASE_URL optionally
+ *    overrides https://api.owlpost.to.
+ *  - The send carries an Idempotency-Key derived from the submission, so a
+ *    retried or double-submitted form is mailed once (a 409
+ *    idempotency-conflict from Owlpost means it was already sent).
  *  - Turnstile is verified server-side when configured; a honeypot backs it up.
  *  - Everything that could reach a mail header is stripped of CR/LF/NUL.
  *  - `from` is always our own verified domain; the submitter goes in reply_to,
@@ -58,6 +64,17 @@ const json = (status, obj) =>
 
 const oneLine = (v, max) => String(v ?? '').replace(/[\r\n\0]+/g, ' ').trim().slice(0, max);
 const EMAIL_RE = /^[^@\s]+@[^@\s.]+\.[^@\s]+$/;
+const OWLPOST_DEFAULT = 'https://api.owlpost.to';
+
+const sha256Hex = async (s) => {
+  const d = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(s));
+  return [...new Uint8Array(d)].map((b) => b.toString(16).padStart(2, '0')).join('');
+};
+
+// 409 with this problem type means the key was already used: the form was
+// mailed before. Anything else non-2xx is a real failure.
+const isIdempotencyReplay = (status, body) =>
+  status === 409 && /idempotency-conflict/.test(body);
 
 /* Parses the profile or returns null. All or nothing: one out-of-range
    value drops the whole object, because half a profile is worse than none
@@ -199,7 +216,7 @@ export async function onRequest({ request, env }) {
     }
   }
 
-  if (!env.RESEND_API_KEY) return json(503, { error: 'not_configured' });
+  if (!env.OWLPOST_API_KEY) return json(503, { error: 'not_configured' });
 
   const to = env.CONTACT_TO || 'hello@undercoverrockstars.com';
   const from = env.CONTACT_FROM || 'Undercover Rockstars <noreply@send.undercoverrockstars.com>';
@@ -224,24 +241,39 @@ export async function onRequest({ request, env }) {
   lines.push('', '--', `Country: ${request.cf?.country || 'unknown'}`,
     'Sent by the undercoverrockstars.com site. No payment was taken.');
 
+  const base = (env.OWLPOST_BASE_URL || OWLPOST_DEFAULT).replace(/\/+$/, '');
+  // The country and footer lines vary per request, so the key covers what
+  // was submitted, not the whole mail.
+  const key = `ur-contact-${await sha256Hex(
+    [intent, email.toLowerCase(), name, message, JSON.stringify(bagLines)].join('\n'))}`;
+
   try {
-    const res = await fetch('https://api.resend.com/emails', {
+    const res = await fetch(`${base}/v1/emails`, {
       method: 'POST',
-      headers: { authorization: `Bearer ${env.RESEND_API_KEY}`, 'content-type': 'application/json' },
+      headers: {
+        authorization: `Bearer ${env.OWLPOST_API_KEY}`,
+        'content-type': 'application/json',
+        'idempotency-key': key,
+      },
       body: JSON.stringify({
         from,
         to: [to],              // fixed server-side
         reply_to: email,
         subject,
+        stream: 'transactional',
+        tags: [{ name: 'form', value: intent }],
         text: lines.join('\n'),
       }),
     });
     if (!res.ok) {
-      console.log('resend failed', res.status, await res.text());
-      return json(502, { error: 'send_failed' });
+      const detail = await res.text();
+      if (!isIdempotencyReplay(res.status, detail)) {
+        console.log('owlpost failed', res.status, detail);
+        return json(502, { error: 'send_failed' });
+      }
     }
   } catch (e) {
-    console.log('resend unreachable', e.message);
+    console.log('owlpost unreachable', e.message);
     return json(502, { error: 'send_failed' });
   }
 
