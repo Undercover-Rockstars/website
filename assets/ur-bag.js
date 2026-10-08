@@ -22,29 +22,45 @@
   }
 
 
-  function fail(html) {
+  var input = document.getElementById('rv-email');
+  var BAD = "That email address doesn't look right. Check it and try again.";
+  var CONTACT = 'Could not reserve right now. Try again in a moment, or write to <a href="mailto:hello@undercoverrockstars.com">hello@undercoverrockstars.com</a> and we will hold it by hand.';
+
+  function busy(on) {
+    btn.disabled = on;
+    if (on) btn.setAttribute('aria-busy', 'true'); else btn.removeAttribute('aria-busy');
+    if (label) label.textContent = on ? 'Reserving…' : 'Reserve this bag';
+  }
+  // Inline error. Fixed strings only: html is never built from input.
+  function fail(html, onEmail) {
     if (!err) return;
     err.innerHTML = html;
     err.hidden = false;
+    input.setAttribute('aria-invalid', onEmail ? 'true' : 'false');
+    if (onEmail) input.focus();
   }
+  input.addEventListener('input', function () {
+    if (input.getAttribute('aria-invalid') === 'true') { input.setAttribute('aria-invalid', 'false'); if (err) err.hidden = true; }
+  });
 
   form.addEventListener('submit', function (e) {
     e.preventDefault();
+    if (btn.disabled) return;
     if (err) err.hidden = true;
 
-    var email = (document.getElementById('rv-email').value || '').trim();
+    var email = (input.value || '').trim();
     if (!/^[^@\s]+@[^@\s.]+\.[^@\s]+$/.test(email)) {
-      fail('A valid email address is required.');
+      fail(BAD, true);
       return;
     }
+    input.setAttribute('aria-invalid', 'false');
     var lines = (window.URBag && window.URBag.lines()) || [];
     if (!lines.length) {
-      fail('Your bag is empty. Add a pair first.');
+      fail('Your bag is empty. Add a pair first.', false);
       return;
     }
 
-    btn.disabled = true;
-    if (label) label.textContent = 'Reserving…';
+    busy(true);
 
     // #6 attach: a made-to-measure line carries the profile saved by UR Fit
     // in this browser, numbers only, never photos. If nothing sane is
@@ -66,26 +82,32 @@
         profile: profile,
         turnstileToken: turnstileToken(form)
       })
-    }).then(function (r) { return r.json().then(function (d) { return { ok: r.ok && d.ok, d: d }; }); })
+    }).then(function (r) { return r.json().catch(function () { return {}; }).then(function (d) { return { ok: r.ok && d.ok, status: r.status, d: d }; }); })
       .then(function (r) {
-        btn.disabled = false;
-        if (label) label.textContent = 'Reserve this bag';
+        busy(false);
         if (r.ok) {
           form.hidden = true;
           if (ok) {
+            ok.querySelector('[data-done-email]').textContent = email;
+            var note = ok.querySelector('[data-done-profile]');
+            if (note) note.hidden = !profile;
             ok.hidden = false;
-            if (profile) {
-              ok.textContent = 'Reserved, with your saved measurements attached to the email. They are numbers only, still in this browser, and one tap in UR Fit deletes them.';
-            }
+            ok.focus();
           }
           return;
         }
-        fail('Could not reserve right now. Write to <a href="mailto:hello@undercoverrockstars.com">hello@undercoverrockstars.com</a> and we will hold it by hand.');
+        resetTurnstile();
+        var msg = (r.d && r.d.error) || '';
+        if (/email/i.test(msg)) fail(BAD, true);
+        else if (/bag is empty/i.test(msg)) fail('Your bag is empty. Add a pair first.', false);
+        else if (/verif/i.test(msg)) fail("The human check didn't go through. It's been reset — complete it again, then send.", false);
+        else if (r.status === 429) fail('Too many tries. Wait a minute, then try again.', false);
+        else fail(CONTACT, false);
       })
       .catch(function () {
-        btn.disabled = false;
-        if (label) label.textContent = 'Reserve this bag';
-        fail('Could not reserve right now. Write to <a href="mailto:hello@undercoverrockstars.com">hello@undercoverrockstars.com</a> and we will hold it by hand.');
+        busy(false);
+        resetTurnstile();
+        fail(CONTACT, false);
       });
   });
 })();

@@ -346,12 +346,16 @@
         <p class="lede" style="margin-bottom:32px">Drop 02 is not announced. Leave an address and we'll find you. One message per drop. Nothing else.</p>
         <form class="signal-form" id="signal-form" novalidate>
           <label class="sr-only" for="signal-email">Email address</label>
-          <input id="signal-email" name="email" type="email" required placeholder="you@somewhere.com" autocomplete="email">
-          <button type="submit">Join →</button>
+          <input id="signal-email" name="email" type="email" required placeholder="you@somewhere.com" autocomplete="email" aria-describedby="signal-err">
+          <button type="submit" id="signal-submit"><span class="ur-spin" aria-hidden="true"></span><span id="signal-label">Join →</span></button>
         </form>
-        <div class="cf-turnstile" data-sitekey="0x4AAAAAAEqQosRqYRl39i6l" data-theme="auto" data-size="flexible" data-action="signal" style="margin-top:12px"></div>
-        <p class="signal-ok" id="signal-ok" hidden>Signal received. See you at 00:00.</p>
-        <p class="signal-ok" id="signal-err" hidden style="border-color:var(--mute);color:var(--mute)"></p>
+        <div class="cf-turnstile" id="signal-human" data-sitekey="0x4AAAAAAEqQosRqYRl39i6l" data-theme="auto" data-size="flexible" data-action="signal" style="margin-top:12px"></div>
+        <div class="ur-done" id="signal-ok" role="status" aria-live="polite" tabindex="-1" hidden>
+          <p class="ur-done__h">Signal received. See you at 00:00.</p>
+          <p>We'll write to <strong data-done-email></strong> when the next drop is announced. One message per drop.</p>
+          <p class="ur-done__s">Signed up before? You're still on it. <button type="button" class="ur-again" data-again>Use a different email</button></p>
+        </div>
+        <p class="ur-err" id="signal-err" role="alert" hidden></p>
         <p class="fit-note" style="margin-top:14px">One email per drop. No sharing, unsubscribe any time.</p>
         <p class="fit-note" style="margin-top:10px">Or <a href="/waitlist/">hold a place in the queue for $9</a>. Paid places are served first when Drop 01 opens.</p>
       </div>

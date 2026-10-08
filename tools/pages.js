@@ -213,12 +213,16 @@ ${TAGS.map(t => `        <div class="code"><span class="eyebrow acc">${t.n}</spa
         <p class="lede" style="margin-bottom:32px">Drop 02 is not announced. Leave an address and we'll find you. One message per drop. Nothing else.</p>
         <form class="signal-form" id="signal-form" novalidate>
           <label class="sr-only" for="signal-email">Email address</label>
-          <input id="signal-email" name="email" type="email" required placeholder="you@somewhere.com" autocomplete="email">
-          <button type="submit">Join →</button>
+          <input id="signal-email" name="email" type="email" required placeholder="you@somewhere.com" autocomplete="email" aria-describedby="signal-err">
+          <button type="submit" id="signal-submit"><span class="ur-spin" aria-hidden="true"></span><span id="signal-label">Join →</span></button>
         </form>
-        <div class="cf-turnstile" data-sitekey="0x4AAAAAAEqQosRqYRl39i6l" data-theme="auto" data-size="flexible" data-action="signal" style="margin-top:12px"></div>
-        <p class="signal-ok" id="signal-ok" hidden>Signal received. See you at 00:00.</p>
-        <p class="signal-ok" id="signal-err" hidden style="border-color:var(--mute);color:var(--mute)"></p>
+        <div class="cf-turnstile" id="signal-human" data-sitekey="0x4AAAAAAEqQosRqYRl39i6l" data-theme="auto" data-size="flexible" data-action="signal" style="margin-top:12px"></div>
+        <div class="ur-done" id="signal-ok" role="status" aria-live="polite" tabindex="-1" hidden>
+          <p class="ur-done__h">Signal received. See you at 00:00.</p>
+          <p>We'll write to <strong data-done-email></strong> when the next drop is announced. One message per drop.</p>
+          <p class="ur-done__s">Signed up before? You're still on it. <button type="button" class="ur-again" data-again>Use a different email</button></p>
+        </div>
+        <p class="ur-err" id="signal-err" role="alert" hidden></p>
         <p class="fit-note" style="margin-top:14px">One email per drop. No sharing, unsubscribe any time.</p>
         <p class="fit-note" style="margin-top:10px">Or <a href="/waitlist/">hold a place in the queue for ${WAITLIST.formatted}</a>. Paid places are served first when Drop 01 opens.</p>
       </div>
@@ -851,15 +855,19 @@ write('bag/index.html', head({
           <label class="sr-only" for="rv-name">Name</label>
           <input id="rv-name" name="name" placeholder="Name" autocomplete="name" style="background:none;border:1px solid var(--line);outline:0;padding:14px 16px;color:var(--fg);font-size:15px">
           <label class="sr-only" for="rv-email">Email</label>
-          <input id="rv-email" name="email" type="email" required placeholder="Email" autocomplete="email" style="background:none;border:1px solid var(--line);outline:0;padding:14px 16px;color:var(--fg);font-size:15px">
+          <input id="rv-email" name="email" type="email" required placeholder="Email" autocomplete="email" aria-describedby="rv-err" style="background:none;border:1px solid var(--line);outline:0;padding:14px 16px;color:var(--fg);font-size:15px">
           <label class="sr-only" for="rv-note">Note</label>
           <textarea id="rv-note" name="note" rows="3" placeholder="Anything we should know?" style="background:none;border:1px solid var(--line);outline:0;padding:14px 16px;color:var(--fg);font-size:15px;resize:vertical"></textarea>
           <div class="hp" aria-hidden="true"><label>Company<input id="rv-company" name="company" tabindex="-1" autocomplete="off"></label></div>
           <div class="cf-turnstile" data-sitekey="0x4AAAAAAEqQosRqYRl39i6l" data-theme="auto" data-size="flexible" data-action="reserve"></div>
-          <button type="submit" class="btn" id="rv-submit"><span id="rv-label">Reserve this bag</span><span aria-hidden="true">→</span></button>
+          <button type="submit" class="btn" id="rv-submit"><span class="ur-spin" aria-hidden="true"></span><span id="rv-label">Reserve this bag</span><span aria-hidden="true">→</span></button>
+          <p class="ur-err" id="rv-err" role="alert" hidden></p>
         </form>
-        <p class="signal-ok" id="rv-ok" hidden>Reserved. We'll be in touch before the drop opens.</p>
-        <p class="fit-note" id="rv-err" hidden></p>
+        <div class="ur-done" id="rv-ok" role="status" aria-live="polite" tabindex="-1" hidden>
+          <p class="ur-done__h">Reserved. Nothing was charged.</p>
+          <p>We'll write to <strong data-done-email></strong> before the drop opens.</p>
+          <p class="ur-done__s" data-done-profile hidden>Your saved measurements went with it: numbers only, still in this browser, and one tap in UR Fit deletes them.</p>
+        </div>
         <p class="fit-note">No card details are collected anywhere on this site.</p>
         <p class="fit-note">A made-to-measure line sends the measurements saved by <a href="/fit/">UR Fit</a> in this browser, if any: numbers with a confidence, never photos, and one tap in the fit app deletes them. A standard reservation sends nothing of the kind.</p>
         <p class="fit-note">Reserving is free and does not hold a place in the queue. A <a href="/waitlist/">${WAITLIST.formatted} waitlist place</a> is served first when the drop opens.</p>

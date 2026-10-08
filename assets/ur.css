@@ -604,6 +604,24 @@ main, footer, .site-header { position: relative; z-index: 1; }
   text-transform: uppercase;
 }
 
+/* Form feedback: busy spinner, inline error, the success panel. */
+.signal-form button, #rv-submit { display: inline-flex; align-items: center; justify-content: center; gap: 10px; }
+.signal-form button[aria-busy="true"], #rv-submit[aria-busy="true"] { cursor: progress; opacity: .8; }
+.ur-spin { display: none; width: 12px; height: 12px; border: 2px solid currentColor; border-right-color: transparent; border-radius: 50%; animation: ur-spin .7s linear infinite; }
+[aria-busy="true"] > .ur-spin { display: inline-block; }
+@keyframes ur-spin { to { transform: rotate(360deg); } }
+@media (prefers-reduced-motion: reduce) { .ur-spin { animation: none; border-right-color: currentColor; opacity: .6; } }
+.signal-form:has(input[aria-invalid="true"]), #reserve-form input[aria-invalid="true"] { border-color: var(--acc) !important; }
+.ur-err { margin: 12px 0 0; font-family: var(--mono); font-size: 12px; line-height: 1.6; color: var(--acc); overflow-wrap: anywhere; }
+.ur-err a { color: inherit; }
+.ur-done { padding: 20px; border: 1px solid var(--acc); display: grid; gap: 10px; font-size: 15px; line-height: 1.55; color: var(--fg); }
+.ur-done:focus { outline: none; }
+.ur-done p { margin: 0; color: var(--fg); font-family: var(--sans); font-size: 15px; letter-spacing: 0; text-transform: none; line-height: 1.55; }
+.ur-done strong { font-weight: 600; overflow-wrap: anywhere; }
+.ur-done .ur-done__h { color: var(--acc); font-family: var(--mono); font-size: 11px; letter-spacing: .14em; text-transform: uppercase; }
+.ur-done .ur-done__s { color: var(--mute); font-size: 13px; }
+.ur-again { background: none; border: 0; padding: 0; font: inherit; color: var(--fg); text-decoration: underline; text-underline-offset: 3px; cursor: pointer; }
+
 .log {
   border: 1px solid var(--line);
   background: var(--panel);
