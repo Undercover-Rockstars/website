@@ -56,7 +56,7 @@ reservation: a name, an email, and the pair, size and fit wanted. Do not
 describe the site as accepting orders or payments for garments, and do not state
 a shipping date.
 
-The one payable item is the **$9 waitlist place** at
+The only planned paid item is the **$9 waitlist place** at
 https://undercoverrockstars.com/waitlist/: a numbered place in the queue for Drop 01, served first
 when it opens, credited against the first pair. It is not a pair, a size or a
 fit, and it is **not refundable**. Right now no payment
@@ -115,7 +115,7 @@ made-to-measure honestly; and hand the buyer https://undercoverrockstars.com/bag
 hello@undercoverrockstars.com.
 
 What an agent cannot do here: **buy a garment.** There is no checkout for the
-pairs, no cart API and no order status. The only payable item is the
+pairs, no cart API and no order status. The only planned paid item is the
 $9 waitlist place, and no processor is connected yet, so it cannot be charged today either.
 `POST /api/contact` (reservations) and `POST /api/waitlist` (the place) back the
 site's own forms, are locked to this origin and are gated by Turnstile: neither
@@ -129,7 +129,7 @@ that is published: complimentary worldwide, 3 to 5 days in transit.
 - [Drop 01](https://undercoverrockstars.com/collection/): all 8 pairs with filters by category.
 - [Thesis](https://undercoverrockstars.com/thesis/): six lines on why clothing should come in pairs.
 - [UR Fit](https://undercoverrockstars.com/fit/): the fit app. On-device body scan: two photos, measured on the phone, never uploaded. Estimates with a confidence, not exact sizing.
-- [Waitlist](https://undercoverrockstars.com/waitlist/): $9 for a numbered place in the queue for Drop 01.
+- [Waitlist](https://undercoverrockstars.com/waitlist/): free to join; a $9 queue place is planned, not charged yet.
 - [Catalogue](https://undercoverrockstars.com/catalogue.json): the whole drop as JSON, for agents and feeds.
 
 ## Contact

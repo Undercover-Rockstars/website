@@ -40,8 +40,8 @@ const CODES = [
   { n: 'Code 03', h: 'Black on black', p: 'Lyrics, marks and monograms stitched tone on tone. You have to be close to read them.' }
 ];
 const TAGS = [
-  { n: 'Tag 01', h: 'Proof it is real', p: 'Every garment is registered to its pair before it leaves Bali. One tap confirms the piece, the pair it was cut with and the drop it came from. A copy can borrow the look. It cannot borrow the tag.' },
-  { n: 'Tag 02', h: 'Lost at 4am', p: 'Jackets go missing at the rave. Whoever finds yours taps it, writes one line, and it reaches you. They see that the piece is spoken for. They never see your name, your number or your address.' }
+  { n: 'Tag 01', h: 'Proof it is real (planned)', p: 'Every garment is registered to its pair before it leaves Bali. One tap confirms the piece, the pair it was cut with and the drop it came from. A copy can borrow the look. It cannot borrow the tag.' },
+  { n: 'Tag 02', h: 'Lost at 4am (planned)', p: 'Jackets go missing at the rave. Whoever finds yours taps it, writes one line, and it reaches you. They see that the piece is spoken for. They never see your name, your number or your address.' }
 ];
 const MANIFESTO = [
   { n: '01', h: 'The suit is not the disguise.', p: 'The person in the meeting is real. So is the person at 2am. We stopped pretending one of them was the costume.' },
@@ -53,12 +53,12 @@ const MANIFESTO = [
 ];
 const TICKER_WORDS = ['Day', 'Night', 'Control', 'Rebellion', 'Business', 'Party', 'Undercover', 'Uncovered'];
 const LOG_LINES = [
-  'UR/01 — 8 pairs / 16 garments — live',
+  'UR/01 — 8 pairs / 16 garments — preview, not on sale',
   'UR/02 — initializing',
   'Mode — night — 03:00',
   'Identities — 02 active',
   'Packaging — unmarked',
-  'Tag — NFC — standing by',
+  'Tag — NFC — planned',
   'Signal — awaiting address'
 ];
 
@@ -92,7 +92,7 @@ write('index.html', head({
   <div class="statusbar">
     <div><span class="mute">Status</span><span class="live"><span class="dot" aria-hidden="true"></span>Undercover</span></div>
     <div><span class="mute">Local time</span><span><span data-mode-time>03:00</span> · <span data-mode-place>Backstage</span></span></div>
-    <div><span class="mute">Drop</span><span>UR/01 · 08 pairs live</span></div>
+    <div><span class="mute">Drop</span><span>UR/01 · Drop 01 preview · not on sale yet</span></div>
     <div><span class="mute">Identities</span><span>02 active</span></div>
   </div>
 
@@ -186,7 +186,7 @@ ${CODES.map(c => `        <div class="code"><span class="eyebrow acc">${c.n}</sp
     <p class="eyebrow col-1-3">06 / The tag</p>
     <div class="col-4-9">
       <h2 class="h-display" style="margin-bottom:20px">Every piece knows<br><span class="acc">who it belongs to.</span></h2>
-      <p class="lede" style="max-width:560px;margin-bottom:56px">An NFC tag sits in the seam of all sixteen garments. Hold a phone against it and the piece answers. No app to install, nothing to open, nothing printed on the outside.</p>
+      <p class="lede" style="max-width:560px;margin-bottom:56px">Planned: an NFC tag in the seam of all sixteen garments. Hold a phone against it and the piece answers. No app to install, nothing to open, nothing printed on the outside.</p>
       <div class="codes codes--2">
 ${TAGS.map(t => `        <div class="code"><span class="eyebrow acc">${t.n}</span><h3>${esc(t.h)}</h3><p>${esc(t.p)}</p></div>`).join('\n')}
       </div>
@@ -224,7 +224,7 @@ ${TAGS.map(t => `        <div class="code"><span class="eyebrow acc">${t.n}</spa
         </div>
         <p class="ur-err" id="signal-err" role="alert" hidden></p>
         <p class="fit-note" style="margin-top:14px">One email per drop. No sharing, unsubscribe any time.</p>
-        <p class="fit-note" style="margin-top:10px">Or <a href="/waitlist/">hold a place in the queue for ${WAITLIST.formatted}</a>. Paid places are served first when Drop 01 opens.</p>
+        <p class="fit-note" style="margin-top:10px">Or <a href="/waitlist/">join the Drop 01 waitlist</a>. Free to join. A ${WAITLIST.formatted} queue place is planned; nothing is charged yet.</p>
       </div>
       <div class="log">
         <div class="log-head"><span>UR/LOG</span><span class="rec">●</span></div>
@@ -277,7 +277,7 @@ write('collection/index.html', head({
       <p class="eyebrow" style="margin-bottom:20px">UR/01 · <span id="filter-count">08</span> pairs · <span data-mode-lower>night</span> mode</p>
       <h1 class="h-page">Drop 01</h1>
     </div>
-    <p class="lede col-9-4" style="font-size:15px">Eight pairs. Sixteen garments. Each pair is one pattern cut twice: once for the day, once for the night. Unisex. Cut in Bali. All sixteen carry an NFC tag in the seam, and every pair can be made to measure for 30% more.</p>
+    <p class="lede col-9-4" style="font-size:15px">Eight pairs. Sixteen garments. Each pair is one pattern cut twice: once for the day, once for the night. Unisex. Cut in Bali. All sixteen are planned to carry an NFC tag in the seam, and every pair can be made to measure for 30% more.</p>
   </div>
   <div class="filters" role="group" aria-label="Filter by category">
 ${CATEGORIES.map((c, i) => `    <button type="button" data-filter="${c}" aria-pressed="${i === 0}">${c}</button>`).join('\n')}
@@ -346,6 +346,7 @@ PRODUCTS.forEach((p, i) => {
     <a class="crumb" href="/collection/">← UR/01 / ${esc(p.cat)} / UR/${p.code}</a>
     <h1 class="h-page" style="font-size:clamp(32px,3.4vw,54px);line-height:.92;letter-spacing:-.03em">${esc(p.name)}</h1>
     <p class="product-price">${format(p.price)} <small>· Pair of 2 · one size for both</small></p>
+    <p class="fit-note">Drop 01 preview · not on sale yet. Price planned.</p>
     <div class="versions">
       <div class="v-day"><p class="label">Day version</p><p>${esc(p.day)}</p></div>
       <div class="v-night"><p class="label">Night version</p><p>${esc(p.night)}</p></div>
@@ -384,14 +385,14 @@ ${SIZES.map(z => `        <button type="button" data-size="${z}" aria-pressed="f
     </div>
     <dl class="spec-table">
       <div><dt>Contents</dt><dd>1 day + 1 night</dd></div>
-      <div><dt>Tag</dt><dd>NFC · both pieces</dd></div>
+      <div><dt>Tag</dt><dd>NFC · both pieces (planned)</dd></div>
       <div><dt>Made to measure</dt><dd>+30% · ${format(priceOf(p, 'tailored'))}</dd></div>
       <div><dt>Fabric</dt><dd>${esc(p.fabric)}</dd></div>
       <div><dt>Made in</dt><dd>Bali, Indonesia</dd></div>
       <div><dt>Shipping</dt><dd>Worldwide · 3–5 days</dd></div>
       <div><dt>Status</dt><dd>Drop 01 · reservations open</dd></div>
     </dl>
-    <p class="fit-note">Both pieces carry an NFC tag in the seam. Tap it to confirm the pair is genuine. If one goes missing at 4am, whoever finds it can reach you through the tag without ever seeing who you are.</p>
+    <p class="fit-note">Both pieces are planned to carry an NFC tag in the seam. Once tags ship, tapping it to confirm the pair is genuine. If one goes missing at 4am, whoever finds it can reach you through the tag without ever seeing who you are.</p>
     <p class="fit-note" style="display:flex;justify-content:space-between;gap:16px">
       <a href="/product/${prev.id}/">← ${esc(prev.name)}</a>
       <a href="/product/${next.id}/">${esc(next.name)} →</a>
@@ -759,7 +760,7 @@ async function staleWhileRevalidate(request) {
 write('waitlist/index.html', head({
   slug: 'waitlist',
   title: `Waitlist · ${BRAND}`,
-  description: `Drop 01 is not open yet. ${WAITLIST.formatted} holds a numbered place in the queue, paid places are served first, and it comes off your first pair.`,
+  description: `Drop 01 is not open yet. Join the waitlist for updates. A ${WAITLIST.formatted} queue place is planned; nothing is charged yet.`,
   canonical: '/waitlist/',
   og: 'og-waitlist.png',
   jsonld: { '@context': 'https://schema.org', '@graph': [
@@ -784,9 +785,9 @@ write('waitlist/index.html', head({
   <div class="grid12 collection-head">
     <div class="col-1-8">
       <p class="eyebrow" style="margin-bottom:20px">UR/01 · waitlist · ${WAITLIST.formatted}</p>
-      <h1 class="h-page">Hold your<br><span class="acc">place.</span></h1>
+      <h1 class="h-page">Join the<br><span class="acc">waitlist.</span></h1>
     </div>
-    <p class="lede col-9-4" style="font-size:15px">Drop 01 is eight pairs and sixteen garments, and it is not open yet. ${WAITLIST.formatted} holds a numbered place in the queue for it.</p>
+    <p class="lede col-9-4" style="font-size:15px">Drop 01 is eight pairs and sixteen garments, and it is not open yet. Join the list to hear when it opens. A ${WAITLIST.formatted} queue place is planned; nothing is charged yet.</p>
   </div>
 
   <div class="grid12" style="gap:48px var(--gap)">
@@ -795,7 +796,7 @@ write('waitlist/index.html', head({
 ${WAITLIST.perks.map((t, i) => `        <div class="code"><span class="eyebrow acc">${String(i + 1).padStart(2, '0')}</span><p style="font-size:15px;color:var(--fg);line-height:1.5">${esc(t)}</p></div>`).join('\n')}
       </div>
       <p class="fit-note" style="margin-top:20px;max-width:60ch">${esc(WAITLIST.terms)}</p>
-      <p class="fit-note" style="margin-top:10px;max-width:60ch">Payment is taken by Stripe on Stripe's own page. No card details are entered on this site, and none are stored here.</p>
+      <p class="fit-note" style="margin-top:10px;max-width:60ch">No payment is taken yet. When a processor is connected, Stripe's own page takes the card; no card details are entered on this site.</p>
     </div>
 
     <div class="col-9-4">
@@ -870,7 +871,7 @@ write('bag/index.html', head({
         </div>
         <p class="fit-note">No card details are collected anywhere on this site.</p>
         <p class="fit-note">A made-to-measure line sends the measurements saved by <a href="/fit/">UR Fit</a> in this browser, if any: numbers with a confidence, never photos, and one tap in the fit app deletes them. A standard reservation sends nothing of the kind.</p>
-        <p class="fit-note">Reserving is free and does not hold a place in the queue. A <a href="/waitlist/">${WAITLIST.formatted} waitlist place</a> is served first when the drop opens.</p>
+        <p class="fit-note">Reserving is free and does not hold a place in the queue. The <a href="/waitlist/">waitlist</a> is open; a ${WAITLIST.formatted} place is planned and nothing is charged yet.</p>
       </div>
     </div>
   </div>
@@ -973,7 +974,7 @@ reservation: a name, an email, and the pair, size and fit wanted. Do not
 describe the site as accepting orders or payments for garments, and do not state
 a shipping date.
 
-The one payable item is the **${WAITLIST.formatted} waitlist place** at
+The only planned paid item is the **${WAITLIST.formatted} waitlist place** at
 ${ORIGIN}/waitlist/: a numbered place in the queue for Drop 01, served first
 when it opens, credited against the first pair. It is not a pair, a size or a
 fit, and it is **not refundable**.${WAITLIST.live ? '' : ' Right now no payment\nprocessor is connected, so even this cannot be charged yet and the page says so.'}
@@ -1031,7 +1032,7 @@ made-to-measure honestly; and hand the buyer ${ORIGIN}/bag/ or
 hello@undercoverrockstars.com.
 
 What an agent cannot do here: **buy a garment.** There is no checkout for the
-pairs, no cart API and no order status. The only payable item is the
+pairs, no cart API and no order status. The only planned paid item is the
 ${WAITLIST.formatted} waitlist place${WAITLIST.live ? '' : ', and no processor is connected yet, so it cannot be charged today either'}.
 \`POST /api/contact\` (reservations) and \`POST /api/waitlist\` (the place) back the
 site's own forms, are locked to this origin and are gated by Turnstile: neither
@@ -1045,7 +1046,7 @@ that is published: complimentary worldwide, 3 to 5 days in transit.
 - [Drop 01](${ORIGIN}/collection/): all ${PRODUCTS.length} pairs with filters by category.
 - [Thesis](${ORIGIN}/thesis/): six lines on why clothing should come in pairs.
 - [UR Fit](${ORIGIN}/fit/): the fit app. On-device body scan: two photos, measured on the phone, never uploaded. Estimates with a confidence, not exact sizing.
-- [Waitlist](${ORIGIN}/waitlist/): ${WAITLIST.formatted} for a numbered place in the queue for Drop 01.
+- [Waitlist](${ORIGIN}/waitlist/): free to join; a ${WAITLIST.formatted} queue place is planned, not charged yet.
 - [Catalogue](${ORIGIN}/catalogue.json): the whole drop as JSON, for agents and feeds.
 
 ## Contact
