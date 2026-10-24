@@ -39,7 +39,7 @@ on another is worse than no code.
 | | |
 | :--- | :--- |
 | Files | `mediapipe/tasks-vision-1.0.1/vision_bundle.mjs` and the four files in `mediapipe/tasks-vision-1.0.1/wasm/` (`vision_wasm_internal.{js,wasm}`, `vision_wasm_nosimd_internal.{js,wasm}`). The upstream package also ships `vision_wasm_module_internal.{js,wasm}`, 11.5 MB that `FilesetResolver` never selects: it chooses between the SIMD and no-SIMD `internal` builds. Not vendored. |
-| Upstream | https://www.npmjs.com/package/@mediapipe/tasks-vision (npm tarball, `npm pack @mediapipe/tasks-vision@1.0.1`) |
+| Upstream | https://www.npmjs.com/package/@mediapipe/tasks-vision (npm tarball, `bun pm pack @mediapipe/tasks-vision@1.0.1`) |
 | Version | 1.0.1, only the vision task runtime taken: the ES module bundle and the WASM loader pairs. The `.cjs`, UMD and `.map` files in the package are not vendored. |
 | Licence | Apache-2.0 (see `mediapipe/LICENSE`, the licence text from the MediaPipe repository; the npm tarball itself carries only the SPDX id) |
 | SHA-256 | `vision_bundle.mjs` `d885630c297c0b20b1fe86096cb06291c4c8080876f27852e724f24ac603713f` |
@@ -82,7 +82,7 @@ caches it on demand, never in `install`.
 | | |
 | :--- | :--- |
 | Files | `three/0.185.1/three.module.min.js` and `three/0.185.1/three.core.min.js` (the module build is a pair since r167: the module file re-exports from the core file, so both ship side by side and the relative import resolves unchanged) |
-| Upstream | https://www.npmjs.com/package/three (npm tarball, `npm pack three@0.185.1`) |
+| Upstream | https://www.npmjs.com/package/three (npm tarball, `bun pm pack three@0.185.1`) |
 | Version | 0.185.1, only the minified ES module build taken. The `.cjs`, webgpu, TSL and non-minified variants in the package are not vendored. No addons are vendored: the viewer uses a purpose-built turntable controller instead of `OrbitControls`, so nothing has to be rewritten to drop its bare `three` specifier. |
 | Licence | MIT (see `three/LICENSE`) |
 | SHA-256 | `three.module.min.js` `86bcee248b64f44bcfc23c331ae74619061957d59cab040171dcb6fb5900beb6` |
