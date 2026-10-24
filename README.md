@@ -265,7 +265,7 @@ JSON-LD offer is `PreOrder` rather than `InStock`, and `catalogue.json` carries
 `waitlist.live: false`. Two steps turn it on, and they belong in one commit:
 
 ```sh
-npx wrangler pages secret put STRIPE_SECRET_KEY --project-name undercover-rockstars
+bunx wrangler pages secret put STRIPE_SECRET_KEY --project-name undercover-rockstars
 # or, for the no-code path, set STRIPE_PAYMENT_LINK to a Stripe Payment Link URL
 ```
 
@@ -361,7 +361,7 @@ Cloudflare Pages, direct upload from `dist/`:
 
 ```sh
 ./tools/build-dist.sh
-npx wrangler pages deploy dist --project-name undercover-rockstars --branch main
+bunx wrangler pages deploy dist --project-name undercover-rockstars --branch main
 ```
 
 `tools/build-dist.sh` builds from an explicit allowlist and stamps every CSS/JS
@@ -372,8 +372,8 @@ The reservation and signal forms need two Pages secrets, and neither belongs in
 this repo:
 
 ```sh
-npx wrangler pages secret put OWLPOST_API_KEY  --project-name undercover-rockstars
-npx wrangler pages secret put TURNSTILE_SECRET --project-name undercover-rockstars
+bunx wrangler pages secret put OWLPOST_API_KEY  --project-name undercover-rockstars
+bunx wrangler pages secret put TURNSTILE_SECRET --project-name undercover-rockstars
 ```
 
 Mail goes through Owlpost (`api.owlpost.to`). `send.undercoverrockstars.com` is
