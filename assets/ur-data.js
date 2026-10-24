@@ -221,11 +221,11 @@
     formatted: '$9',
     name: 'Drop 01 waitlist place',
     perks: [
-      'A numbered place in the queue for Drop 01.',
-      'Paid places are served first when the drop opens, before it goes public.',
-      'The $9 comes off your first pair.'
+      'Planned: a numbered place in the queue for Drop 01.',
+      'Planned: paid places are served first when the drop opens.',
+      'Planned: the $9 would come off your first pair.'
     ],
-    terms: 'A place is not a pair: it does not hold a size, a fit or a piece, and ' +
+    terms: 'Planned terms. A place would not be a pair: it does not hold a size, a fit or a piece, and ' +
       'the $9 is not refundable. It comes off your first pair when Drop 01 opens.'
   };
 

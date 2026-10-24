@@ -152,6 +152,7 @@ function footer() {
       <svg class="fz-ring" viewBox="0 0 16 16" width="11" height="11" aria-hidden="true" focusable="false"><circle cx="8" cy="8" r="6.1" fill="none" stroke="#FF5A36" stroke-width="1.9" stroke-dasharray="28.7 9.6"/></svg>
       <span>&copy; ${new Date().getFullYear()} Factory Zero</span>
     </a></span>
+    <span class="fz-badge"><a href="https://factory0.ventures/ventures/undercover-rockstars/"><img src="https://factory0.ventures/badge/undercover-rockstars.svg" alt="In development · a Factory Zero venture" height="22"></a></span>
     <span><span data-mode-time>03:00</span> · <span data-mode-label>Night</span> mode</span>
   </p>
   <!-- built-with:start --><!-- built-with:end -->
